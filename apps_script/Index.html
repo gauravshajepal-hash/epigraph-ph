@@ -205,6 +205,29 @@
     .publication-card {
       padding-bottom: 22px;
     }
+    .figure-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid rgba(20, 35, 31, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .action-link:hover {
+      background: rgba(14, 124, 102, 0.08);
+      border-color: rgba(14, 124, 102, 0.24);
+    }
     .publication-figure {
       width: 100%;
       margin-top: 18px;
@@ -218,6 +241,119 @@
       width: 100%;
       height: auto;
       background: transparent;
+    }
+    .control-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      margin-bottom: 12px;
+    }
+    .control-group {
+      display: grid;
+      gap: 8px;
+      min-width: 180px;
+    }
+    .control-group label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .control-group select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--ink);
+    }
+    .explorer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .explorer-grid-single {
+      grid-template-columns: 1fr;
+    }
+    .methodology-list,
+    .reference-groups {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .method-card,
+    .reference-group-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 20px;
+    }
+    .method-card h3,
+    .reference-group-card h3 {
+      margin: 0;
+    }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 18px;
+      margin-top: 14px;
+    }
+    .method-block {
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.58);
+    }
+    .method-block h4 {
+      margin: 0 0 8px;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .method-block ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .method-footer {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .reference-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .reference-item {
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.58);
+    }
+    .reference-item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .reference-item-top strong {
+      display: block;
+      line-height: 1.45;
+    }
+    .reference-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.6;
     }
     .trend-periods { margin-top: 10px; color: var(--muted); font-size: 0.78rem; display: flex; justify-content: space-between; gap: 10px; }
     .series-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px; }
@@ -582,7 +718,7 @@
       .hero-meta { min-width: 0; width: 100%; }
       .meta-pill { text-align: left; }
       .trend-grid { grid-template-columns: 1fr; }
-      .brief-grid, .goal-stat-grid, .method-row, .atlas-grid, .atlas-stat-strip, .mini-grid, .duo-grid { grid-template-columns: 1fr; }
+      .brief-grid, .goal-stat-grid, .method-row, .atlas-grid, .atlas-stat-strip, .mini-grid, .duo-grid, .explorer-grid, .method-grid { grid-template-columns: 1fr; }
       .chart-host { height: 300px; }
       .chart-host.scatter, .chart-host.tall { height: 340px; }
       .chart-host.mini { height: 220px; }
@@ -606,8 +742,8 @@
       </div>
       <div class="nav-row">
         <button class="nav-button is-active" data-view="overview" onclick="switchView('overview')">Overview</button>
-        <button class="nav-button" data-view="extracted" onclick="switchView('extracted')">Evidence</button>
-        <button class="nav-button" data-view="review" onclick="switchView('review')">Work queue</button>
+        <button class="nav-button" data-view="methodology" onclick="switchView('methodology')">Methodology</button>
+        <button class="nav-button" data-view="references" onclick="switchView('references')">References</button>
       </div>
       <div class="status-banner" id="status-banner"></div>
     </header>
@@ -625,6 +761,7 @@
             <span class="pill" id="national-cascade-pill">Loading</span>
           </div>
           <p class="mini-note">Grey marks show official published context, while the highlighted line shows official quarterly surveillance. The third 95 is plotted from official quarterly SHIP/WHO reporting because UNAIDS does not publish a matching annual Philippines series.</p>
+          <div class="figure-actions" id="publication-national-cascade-actions"></div>
           <div class="publication-figure" id="publication-national-cascade"></div>
           <div class="atlas-note" id="publication-national-cascade-note"></div>
         </article>
@@ -638,6 +775,7 @@
             <span class="pill" id="regional-atlas-pill">Loading</span>
           </div>
           <p class="mini-note">Diagnosis, treatment, and viral suppression by region at the latest comparable quarter, ordered from the smallest to the largest average gap to the 95% target.</p>
+          <div class="figure-actions" id="publication-regional-ladder-actions"></div>
           <div class="publication-figure" id="publication-regional-ladder"></div>
           <div class="atlas-note" id="publication-regional-ladder-note"></div>
         </article>
@@ -651,6 +789,7 @@
             <span class="signal-tag" id="surprise-pill">Loading</span>
           </div>
           <p class="mini-note">Regional deviations from the fitted cascade pattern are paired with the latest treatment-leakage concentration view, so the residuals and treatment burden stay in one interpretable figure.</p>
+          <div class="figure-actions" id="publication-anomaly-board-actions"></div>
           <div class="publication-figure" id="publication-anomaly-board"></div>
           <div class="atlas-note" id="publication-anomaly-board-note"></div>
         </article>
@@ -664,6 +803,7 @@
             <span class="pill" id="historical-atlas-pill">Loading</span>
           </div>
           <p class="mini-note">Historical panels combine direct surveillance series with official UNAIDS annual estimates. The goal is a defensible long-run view rather than a dense mixed-source chart wall.</p>
+          <div class="figure-actions" id="publication-historical-board-actions"></div>
           <div class="publication-figure" id="publication-historical-board"></div>
           <div class="atlas-note" id="publication-historical-board-note"></div>
         </article>
@@ -676,73 +816,116 @@
             </div>
             <span class="pill" id="population-outcomes-pill">Loading</span>
           </div>
-          <p class="mini-note">Pregnant women, TGW, OFW, and youth-linked signals shown on a common 2010 to 2025 x-axis. Years with no observed values stay explicitly shaded rather than being filled in.</p>
+          <p class="mini-note">Pregnant women, TGW, OFW, and youth-linked signals shown on a common 2015 to 2025 x-axis. Years with no observed values stay explicitly shaded rather than being filled in.</p>
+          <div class="figure-actions" id="publication-key-populations-actions"></div>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Regional Explorer</div>
+              <h2>Yearly regional cascade comparison</h2>
+            </div>
+            <span class="pill" id="regional-explorer-pill">Loading</span>
+          </div>
+          <p class="mini-note">Annual only. Each year uses the latest observed structured quarter inside that year. Hover any mark to see value, period, source file, and source URL.</p>
+          <div class="figure-actions" id="regional-explorer-actions"></div>
+          <div class="control-row">
+            <div class="control-group">
+              <label for="regional-year-select">Year</label>
+              <select id="regional-year-select"></select>
+            </div>
+            <div class="control-group">
+              <label for="regional-region-select">Region</label>
+              <select id="regional-region-select"></select>
+            </div>
+          </div>
+          <div class="explorer-grid">
+            <div class="atlas-card">
+              <h3>Regional ladder by year</h3>
+              <p class="analytic-subtitle">Diagnosis, treatment, and suppression coverage for the selected year.</p>
+              <div class="chart-host tall" id="regional-year-chart"></div>
+              <div class="atlas-note" id="regional-year-note"></div>
+            </div>
+            <div class="atlas-card">
+              <h3>Selected region over time</h3>
+              <p class="analytic-subtitle">Yearly cascade history for the selected region. Earlier years remain unavailable until the regional structured layer is extended.</p>
+              <div class="chart-host tall" id="regional-history-chart"></div>
+              <div class="atlas-note" id="regional-history-note"></div>
+            </div>
+          </div>
+          <div class="explorer-grid explorer-grid-single">
+            <div class="atlas-card">
+              <h3>Regional burden over time</h3>
+              <p class="analytic-subtitle">Annual structured reported-cases count for the selected region when that burden series exists.</p>
+              <div class="chart-host" id="regional-burden-chart"></div>
+              <div class="atlas-note" id="regional-burden-note"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Yearly Anomalies</div>
+              <h2>Outliers and treatment leakage by year</h2>
+            </div>
+            <span class="signal-tag" id="anomaly-explorer-pill">Loading</span>
+          </div>
+          <p class="mini-note">Hover for observed versus expected values, source period, and report reference. Treatment leakage uses the latest structured treatment-outcome snapshot inside each year.</p>
+          <div class="figure-actions" id="anomaly-explorer-actions"></div>
+          <div class="control-row">
+            <div class="control-group">
+              <label for="anomaly-year-select">Year</label>
+              <select id="anomaly-year-select"></select>
+            </div>
+          </div>
+          <div class="explorer-grid">
+            <div class="atlas-card">
+              <h3>Regional residuals</h3>
+              <p class="analytic-subtitle">Difference between observed cascade progression and fitted expectation.</p>
+              <div class="chart-host tall" id="anomaly-residual-chart"></div>
+              <div class="atlas-note" id="anomaly-residual-note"></div>
+            </div>
+            <div class="atlas-card">
+              <h3>Treatment leakage</h3>
+              <p class="analytic-subtitle">Alive on ART, lost to follow-up, and not on treatment in the selected year.</p>
+              <div class="chart-host tall" id="anomaly-leakage-chart"></div>
+              <div class="atlas-note" id="anomaly-leakage-note"></div>
+            </div>
+          </div>
         </article>
       </div>
 
     </section>
 
-    <section class="section" id="extracted-section">
+    <section class="section" id="methodology-section">
       <article class="card">
         <div class="card-header">
           <div>
-            <div class="eyebrow">Structured Evidence</div>
-            <h2>Evidence browser</h2>
+            <div class="eyebrow">Methodology</div>
+            <h2>How each figure was generated</h2>
           </div>
-          <span class="pill" id="claims-total-pill">0 results</span>
+          <span class="pill" id="methodology-pill">Loading</span>
         </div>
-        <p class="mini-note">Each record is one extracted claim plus any observation rows derived from it. Observation tables are shown directly when the claim has already been structured into chart-safe metrics.</p>
-        <div class="filter-panel">
-          <div class="filter-field" style="grid-column: span 2;">
-            <label for="claim-query">Search</label>
-            <input id="claim-query" type="text" placeholder="Search claim text, snippet, filename, metric...">
-          </div>
-          <div class="filter-field"><label for="claim-disease">Disease</label><select id="claim-disease"></select></div>
-          <div class="filter-field"><label for="claim-document-type">Document type</label><select id="claim-document-type"></select></div>
-          <div class="filter-field"><label for="claim-metric-type">Metric</label><select id="claim-metric-type"></select></div>
-          <div class="filter-field"><label for="claim-category">Category</label><select id="claim-category"></select></div>
-          <div class="filter-field"><label for="claim-year">Year</label><select id="claim-year"></select></div>
-          <div class="filter-field"><label>&nbsp;</label><label class="toggle"><input id="claim-chart-ready" type="checkbox" checked> Chart-ready only</label></div>
-          <div class="filter-actions" style="grid-column: span 2;">
-            <button class="button primary" onclick="runClaimSearch()">Apply filters</button>
-            <button class="button secondary" onclick="resetClaimFilters()">Reset</button>
-          </div>
-        </div>
-        <div class="result-count" id="claims-result-count"></div>
-        <div class="result-list" id="claims-results"></div>
+        <p class="mini-note">Each section documents the question, formulas, harmonization rules, caveats, and source references for the corresponding publication figure. PDF reports include the same explanation plus the figure export.</p>
+        <div class="methodology-list" id="methodology-list"></div>
       </article>
     </section>
 
-    <section class="section" id="review-section">
+    <section class="section" id="references-section">
       <article class="card">
         <div class="card-header">
           <div>
-            <div class="eyebrow">Outstanding Work</div>
-            <h2>Needs structuring</h2>
+            <div class="eyebrow">References</div>
+            <h2>Source reports, datasets, and checkpoints</h2>
           </div>
-          <span class="signal-tag" id="review-total-pill">0 items</span>
+          <span class="pill" id="references-pill">Loading</span>
         </div>
-        <p class="mini-note">These are claims the pipeline extracted but could not safely map into a chart-ready metric yet. They are not errors; they are the remaining deterministic structuring backlog.</p>
-        <div class="filter-panel">
-          <div class="filter-field" style="grid-column: span 2;">
-            <label for="review-query">Search</label>
-            <input id="review-query" type="text" placeholder="Search review text, filename, reason...">
-          </div>
-          <div class="filter-field"><label for="review-reason">Reason</label><select id="review-reason"></select></div>
-          <div class="filter-field"><label for="review-priority">Priority</label><select id="review-priority"></select></div>
-          <div class="filter-field"><label for="review-document-type">Document type</label><select id="review-document-type"></select></div>
-          <div class="filter-field"><label for="review-metric-type">Metric</label><select id="review-metric-type"></select></div>
-          <div class="filter-field"><label for="review-disease">Disease</label><select id="review-disease"></select></div>
-          <div class="filter-field"><label for="review-year">Year</label><select id="review-year"></select></div>
-          <div class="filter-actions" style="grid-column: span 2;">
-            <button class="button primary" onclick="runReviewSearch()">Apply filters</button>
-            <button class="button secondary" onclick="resetReviewFilters()">Reset</button>
-          </div>
-        </div>
-        <div class="result-count" id="review-result-count"></div>
-        <div class="result-list" id="review-results"></div>
+        <p class="mini-note">This is the source inventory behind the current figures. It includes official international datasets, official Philippine surveillance reports, and the local source reports used for directly extracted derived series.</p>
+        <div class="reference-groups" id="reference-groups"></div>
       </article>
     </section>
   </div>
@@ -779,11 +962,10 @@
         renderHeaderMeta();
         renderKpis();
         renderOverview();
-        populateFilters();
-        bindEnterKeys();
-
-        await runClaimSearch();
-        await runReviewSearch();
+        renderMethodologySection();
+        renderReferencesSection();
+        setupRegionalExplorer();
+        setupAnomalyExplorer();
 
         setStatus(
           state.mode === "local"
@@ -2063,6 +2245,85 @@
       renderPopulationOutcomes();
     }
 
+    function renderMethodologySection() {
+      const sections = state.bootstrap?.publication?.methodology?.sections || [];
+      document.getElementById("methodology-pill").textContent = `${formatNumber(sections.length)} figure methods`;
+      const container = document.getElementById("methodology-list");
+      if (!sections.length) {
+        container.innerHTML = `<div class="empty-state">No methodology payload was exported.</div>`;
+        return;
+      }
+
+      container.innerHTML = sections.map(section => `
+        <article class="method-card">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Figure methodology</div>
+              <h3>${escapeHtml(section.title || section.id)}</h3>
+            </div>
+            <span class="pill">${escapeHtml(section.id || "figure")}</span>
+          </div>
+          <p class="mini-note"><strong>Question:</strong> ${escapeHtml(section.question || "")}</p>
+          <p class="mini-note"><strong>Definition:</strong> ${escapeHtml(section.definition || "")}</p>
+          <div class="method-grid">
+            ${buildMethodBlock("Formulas", section.formulas)}
+            ${buildMethodBlock("Construction", section.construction)}
+            ${buildMethodBlock("Harmonization", section.harmonization)}
+            ${buildMethodBlock("Caveats", section.caveats)}
+          </div>
+          <div class="method-footer">
+            ${buildFigureActions(section.figure_key)}
+            ${buildReferenceJumpActions(section.reference_ids || [])}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderReferencesSection() {
+      const references = state.bootstrap?.publication?.references || {};
+      const items = references.items || [];
+      const groups = references.groups || [];
+      document.getElementById("references-pill").textContent = `${formatNumber(items.length)} references`;
+      const container = document.getElementById("reference-groups");
+      if (!groups.length || !items.length) {
+        container.innerHTML = `<div class="empty-state">No reference inventory was exported.</div>`;
+        return;
+      }
+
+      const itemMap = new Map(items.map(item => [item.id, item]));
+      container.innerHTML = groups.map(group => {
+        const groupItems = (group.item_ids || []).map(id => itemMap.get(id)).filter(Boolean);
+        return `
+          <article class="reference-group-card">
+            <div class="card-header">
+              <div>
+                <div class="eyebrow">Reference group</div>
+                <h3>${escapeHtml(group.title || "Sources")}</h3>
+              </div>
+              <span class="pill">${formatNumber(groupItems.length)} items</span>
+            </div>
+            <div class="reference-list">
+              ${groupItems.map(item => `
+                <article class="reference-item" id="ref-${escapeAttribute(item.id)}">
+                  <div class="reference-item-top">
+                    <div>
+                      <strong>${escapeHtml(item.title || item.id)}</strong>
+                      <div class="reference-meta">
+                        ${escapeHtml(item.organization || "Unknown organization")} · ${escapeHtml(item.kind || "Reference")}
+                      </div>
+                    </div>
+                    ${item.url ? `<a class="action-link" href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">Open source</a>` : ""}
+                  </div>
+                  <div class="reference-meta">${escapeHtml(item.note || "")}</div>
+                  <div class="reference-meta"><strong>Used in:</strong> ${escapeHtml((item.used_in || []).join(", ") || "Not tagged")}</div>
+                </article>
+              `).join("")}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
     function getPublicationFigure(key) {
       return state.bootstrap?.publication?.figures?.[key] || null;
     }
@@ -2078,10 +2339,61 @@
         return null;
       }
       target.innerHTML = figure.svg;
+      const normalizedKey = String(key || "").replace(/_/g, "-");
+      const actionsTarget = document.getElementById(`${targetId}-actions`)
+        || document.getElementById(`${key}-actions`)
+        || document.getElementById(`publication-${normalizedKey}-actions`);
+      if (actionsTarget) {
+        actionsTarget.innerHTML = buildFigureActions(key);
+      }
       if (noteTarget) {
         noteTarget.textContent = figure.note || "";
       }
       return figure;
+    }
+
+    function buildMethodBlock(title, rows) {
+      const items = (rows || []).filter(Boolean);
+      if (!items.length) return "";
+      return `
+        <div class="method-block">
+          <h4>${escapeHtml(title)}</h4>
+          <ul>
+            ${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    }
+
+    function buildFigureActions(key) {
+      const figure = typeof key === "string" ? getPublicationFigure(key) : key;
+      if (!figure) return "";
+      const links = [];
+      if (figure.pdf_path) {
+        links.push(`<a class="action-link" href="${escapeAttribute(assetHref(figure.pdf_path))}" target="_blank" rel="noopener noreferrer">PDF report</a>`);
+      }
+      if (figure.svg_path) {
+        links.push(`<a class="action-link" href="${escapeAttribute(assetHref(figure.svg_path))}" target="_blank" rel="noopener noreferrer">SVG</a>`);
+      }
+      if (figure.png_path) {
+        links.push(`<a class="action-link" href="${escapeAttribute(assetHref(figure.png_path))}" target="_blank" rel="noopener noreferrer">PNG</a>`);
+      }
+      return links.join("");
+    }
+
+    function buildReferenceJumpActions(referenceIds) {
+      const ids = (referenceIds || []).filter(Boolean);
+      if (!ids.length) return "";
+      return ids.slice(0, 4).map(id => `
+        <a class="action-link" href="#ref-${escapeAttribute(id)}" onclick="switchView('references')">Reference</a>
+      `).join("");
+    }
+
+    function assetHref(relativePath) {
+      if (!relativePath) return "#";
+      const cleaned = String(relativePath).replace(/\\/g, "/").replace(/^\.?\//, "");
+      const path = window.location.pathname || "";
+      return path.includes("/apps_script/") ? `../${cleaned}` : `./${cleaned}`;
     }
 
     function renderScienceBrief() {
@@ -2245,72 +2557,45 @@
     }
 
     function renderRegionalAtlas() {
-      const scorecard = state.bootstrap.dashboard?.charts?.regional_scorecard || {};
-      const rows = (scorecard.rows || []).filter(row => Number(row.metric_count || 0) >= 2)
-        .sort((a, b) => Number(a.mean_gap_to_target || 0) - Number(b.mean_gap_to_target || 0));
-      document.getElementById("regional-atlas-pill").textContent = `${rows.length} regions`;
-
+      const regional = state.bootstrap?.publication?.series?.regional_ladder || {};
+      renderPublicationFigure(
+        "publication-regional-ladder",
+        "regional_ladder",
+        "publication-regional-ladder-note",
+        "No curated regional ladder figure is available."
+      );
+      const rows = regional.rows || [];
       if (!rows.length) {
-        document.getElementById("regional-heatmap-chart").innerHTML = `<div class="empty-state">No regional matrix is available.</div>`;
-        document.getElementById("regional-slope-chart").innerHTML = `<div class="empty-state">No regional slopegraph is available.</div>`;
+        document.getElementById("regional-atlas-pill").textContent = "unavailable";
         return;
       }
-
-      const selected = [];
-      [...(scorecard.top_performing || []).slice(0, 4), ...(scorecard.largest_gaps || []).slice(0, 4)].forEach(row => {
-        if (!selected.some(item => item.region === row.region)) selected.push(row);
-      });
-
-      mountChart("regional-heatmap-chart", buildHeatmapOption(rows));
-      mountChart("regional-slope-chart", buildSlopegraphOption(selected));
-
-      const leader = rows[0];
-      const laggard = rows[rows.length - 1];
-      document.getElementById("regional-heatmap-note").textContent =
-        `${formatRegionLabel(leader.region)} currently has the lowest mean gap to target, while ${formatRegionLabel(laggard.region)} has the highest. The heatmap is ordered from lowest to highest mean gap.`;
-      document.getElementById("regional-slope-note").textContent =
-        `The slopegraph highlights the best-positioned and widest-gap regions together so stage-to-stage drop-offs are visually comparable within the same figure.`;
+      document.getElementById("regional-atlas-pill").textContent = `${rows.length} regions · ${escapeHtml(regional.period_label || "latest year")}`;
     }
 
     function renderSurprisingFindings() {
-      const charts = state.bootstrap.dashboard?.charts?.relationship_scatter || [];
-      const first = charts[0];
-      const second = charts[1];
-      const residualRows = [];
-      [first, second].filter(Boolean).forEach(chart => {
-        (chart.points || []).forEach(point => {
-          const x = Number(point.x || 0);
-          const y = Number(point.y || 0);
-          const fitY = interpolateFitY(chart.fit_line || [], x);
-          if (!Number.isFinite(fitY)) return;
-          residualRows.push({
-            label: `${formatRegionLabel(point.region)} (${chart.label.includes("suppression") ? "Tx→Supp" : "Dx→Tx"})`,
-            value: Number((y - fitY).toFixed(2)),
-          });
-        });
-      });
-      const topResiduals = residualRows
-        .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
-        .slice(0, 10);
-
-      mountChart("residual-diagnostic-chart", buildResidualBarOption(topResiduals));
-
-      const period = "2025 Q4";
-      const outcomeRows = buildTreatmentOutcomeRows(period);
-      const topLeak = outcomeRows
-        .sort((a, b) => (b.ltfu + b.notOnTreatment) - (a.ltfu + a.notOnTreatment))
-        .slice(0, 10);
-      mountChart("attrition-concentration-chart", buildStackedOutcomeOption(topLeak));
-
-      document.getElementById("surprise-pill").textContent = `${topResiduals.length} flagged`;
-      document.getElementById("residual-diagnostic-note").textContent =
-        topResiduals.length
-          ? `${topResiduals[0].label} shows the largest current deviation from the fitted regional pattern. Positive residuals are above pattern; negative residuals are below.`
-          : "No residual outliers are available.";
-      document.getElementById("attrition-concentration-note").textContent =
-        topLeak.length
-          ? `${formatRegionLabel(topLeak[0].region)} currently has the largest combined attrition burden in the latest treatment-outcome snapshot.`
-          : "No treatment-outcome concentration view is available.";
+      const anomalies = state.bootstrap?.publication?.series?.anomalies || {};
+      renderPublicationFigure(
+        "publication-anomaly-board",
+        "anomaly_board",
+        "publication-anomaly-board-note",
+        "No curated anomaly board is available."
+      );
+      const residuals = anomalies.residual_rows || [];
+      const leakage = anomalies.leakage_rows || [];
+      const topResidual = residuals[0];
+      const topLeak = leakage[0];
+      if (!topResidual && !topLeak) {
+        document.getElementById("surprise-pill").textContent = "unavailable";
+        return;
+      }
+      const summary = [];
+      if (topResidual) {
+        summary.push(`${formatRegionLabel(topResidual.region)} | ${String(topResidual.stage || "").toLowerCase()}`);
+      }
+      if (topLeak) {
+        summary.push(formatRegionLabel(topLeak.region));
+      }
+      document.getElementById("surprise-pill").textContent = summary.join(" / ");
     }
 
     function renderHistoricalAtlas() {
@@ -2331,122 +2616,24 @@
         document.getElementById("historical-atlas-pill").textContent = "unavailable";
         return;
       }
-      const starts = coverageRows.map(rows => Number(rows[0].year || 9999));
-      const ends = coverageRows.map(rows => Number(rows[rows.length - 1].year || 0));
-      document.getElementById("historical-atlas-pill").textContent = `${Math.min(...starts)}-${Math.max(...ends)}`;
+      document.getElementById("historical-atlas-pill").textContent = "2015-2025";
     }
 
     function renderPopulationOutcomes() {
-      const rawPanels = [
-        {
-          title: "Pregnant women diagnosed (cumulative)",
-          note: "Quarterly cumulative diagnosed pregnant women.",
-          chartId: "pop-pregnant-cumulative",
-          unit: "count",
-          points: collectObservationSeries({
-            metricType: "pregnant_women_reported_count",
-            subgroup: "pregnant_women",
-            region: "Philippines",
-            periodGranularity: "quarter",
-            periodScope: "cumulative",
-            aggregate: "max",
-            excludeBaseline: true,
-          }),
-        },
-        {
-          title: "TGW new cases",
-          note: "Quarterly TGW new cases from recent surveillance reports.",
-          chartId: "pop-tgw-snapshot",
-          unit: "count",
-          points: collectObservationSeries({
-            metricType: "new_cases_count",
-            subgroup: "tgw",
-            region: "Philippines",
-            periodGranularity: "quarter",
-            periodScope: "snapshot",
-            aggregate: "max",
-            excludeBaseline: true,
-          }),
-        },
-        {
-          title: "OFW cumulative burden",
-          note: "Cumulative reported cases among overseas Filipino workers.",
-          chartId: "pop-ofw-cumulative",
-          unit: "count",
-          points: collectObservationSeries({
-            metricType: "reported_cases_count",
-            subgroup: "migrant_workers",
-            region: "Philippines",
-            periodGranularity: "cumulative",
-            periodScope: "cumulative",
-            aggregate: "max",
-          }),
-        },
-      ].filter(panel => panel.points.length >= 3);
-
-      const curatedOrder = [
-        "Pregnant women diagnosed (cumulative)",
-        "TGW new cases",
-        "OFW cumulative burden",
-      ];
-      const panels = curatedOrder
-        .map(title => rawPanels.find(panel => panel.title === title))
-        .filter(Boolean)
-        .slice(0, 2);
-
-      document.getElementById("population-outcomes-pill").textContent = `${panels.length} sentinel panels`;
-      const miniGrid = document.getElementById("population-mini-grid");
-      miniGrid.innerHTML = panels.map(panel => `
-        <article class="mini-panel">
-          <h4>${escapeHtml(panel.title)}</h4>
-          <div class="analytic-subtitle">${escapeHtml(panel.note)}</div>
-          ${buildChartHost(panel.chartId, "mini")}
-          <div class="mini-note">${escapeHtml(`${formatCoverageWindow(panel.points[0]?.period, panel.points[panel.points.length - 1]?.period)} | latest ${formatObservationValue(panel.points[panel.points.length - 1]?.value, panel.unit)}`)}</div>
-        </article>
-      `).join("");
-
-      requestAnimationFrame(() => {
-        panels.forEach(panel => {
-          mountChart(panel.chartId, buildLineChartOption(panel.points, panel.unit, { compact: false }));
-        });
-      });
-
-      const outcomeRows = buildTreatmentOutcomeRows("2025 Q4")
-        .sort((a, b) => (b.alive + b.ltfu + b.notOnTreatment) - (a.alive + a.ltfu + a.notOnTreatment))
-        .slice(0, 10);
-      if (outcomeRows.length) {
-        mountChart("treatment-outcome-chart", buildStackedOutcomeOption(outcomeRows));
-      } else {
-        document.getElementById("treatment-outcome-chart").innerHTML = `<div class="empty-state">No treatment outcome atlas is available.</div>`;
-      }
-
-      const totalAlive = outcomeRows.reduce((sum, row) => sum + row.alive, 0);
-      const totalLtfu = outcomeRows.reduce((sum, row) => sum + row.ltfu, 0);
-      const totalNotOn = outcomeRows.reduce((sum, row) => sum + row.notOnTreatment, 0);
-      const worstLtfu = outcomeRows.slice().sort((a, b) => b.ltfu - a.ltfu)[0];
-      document.getElementById("treatment-outcome-stats").innerHTML = [
-        {
-          label: "Alive on ART",
-          value: formatCompactNumber(totalAlive),
-        },
-        {
-          label: "Lost to follow-up",
-          value: formatCompactNumber(totalLtfu),
-        },
-        {
-          label: "Not on treatment",
-          value: formatCompactNumber(totalNotOn),
-        },
-      ].map(item => `
-        <div class="atlas-stat">
-          <div class="atlas-stat-label">${escapeHtml(item.label)}</div>
-          <div class="atlas-stat-value">${escapeHtml(item.value)}</div>
-        </div>
-      `).join("");
-      document.getElementById("treatment-outcome-note").textContent =
-        worstLtfu
-          ? `${formatRegionLabel(worstLtfu.region)} currently has the largest LTFU burden in the latest structured treatment-outcome snapshot.`
-          : "No treatment-outcome summary is available.";
+      const keyPop = state.bootstrap?.publication?.series?.key_populations || {};
+      renderPublicationFigure(
+        "publication-key-populations",
+        "key_populations_board",
+        "publication-key-populations-note",
+        "No curated key-population figure is available."
+      );
+      const panels = [
+        keyPop.pregnant_cumulative || [],
+        keyPop.tgw_cumulative || [],
+        keyPop.ofw_cumulative || [],
+        keyPop.youth_share || [],
+      ].filter(rows => rows.length);
+      document.getElementById("population-outcomes-pill").textContent = panels.length ? `${panels.length} series · 2015-2025` : "unavailable";
     }
 
     function buildTreatmentOutcomeRows(periodLabel) {
@@ -2922,6 +3109,13 @@
       document.querySelectorAll(".nav-button").forEach(button => {
         button.classList.toggle("is-active", button.dataset.view === viewName);
       });
+      requestAnimationFrame(() => {
+        Object.values(state.charts || {}).forEach(chart => {
+          if (chart && typeof chart.resize === "function") {
+            chart.resize();
+          }
+        });
+      });
     }
 
     function resetClaimFilters() {
@@ -2949,8 +3143,8 @@
     function renderFailure(message) {
       document.getElementById("kpi-grid").innerHTML = "";
       document.getElementById("overview-section").innerHTML = `<div class="error-state">${escapeHtml(message)}</div>`;
-      document.getElementById("extracted-section").innerHTML = "";
-      document.getElementById("review-section").innerHTML = "";
+      document.getElementById("methodology-section").innerHTML = "";
+      document.getElementById("references-section").innerHTML = "";
     }
 
     function setStatus(message, isError) {
@@ -3121,6 +3315,476 @@
       const start = Math.min(...coverageRows.map(rows => Number(rows[0].year || 9999)));
       const end = Math.max(...coverageRows.map(rows => Number(rows[rows.length - 1].year || 0)));
       document.getElementById("population-outcomes-pill").textContent = `${start}-${end}`;
+    }
+
+    function setupRegionalExplorer() {
+      const regional = state.bootstrap?.publication?.series?.regional_yearly || {};
+      const years = regional.years || [];
+      const regions = regional.regions || [];
+      const yearSelect = document.getElementById("regional-year-select");
+      const regionSelect = document.getElementById("regional-region-select");
+      const actions = document.getElementById("regional-explorer-actions");
+      document.getElementById("regional-explorer-pill").textContent = years.length
+        ? `${years[0]}-${years[years.length - 1]} annual cascade`
+        : "unavailable";
+      if (actions) {
+        actions.innerHTML = [
+          buildFigureActions("regional_ladder"),
+          buildReferenceJumpActions(["ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]),
+        ].filter(Boolean).join("");
+      }
+
+      if (!years.length || !regions.length) {
+        ["regional-year-chart", "regional-history-chart", "regional-burden-chart"].forEach(id => {
+          const target = document.getElementById(id);
+          if (target) target.innerHTML = `<div class="empty-state">No yearly regional series was exported.</div>`;
+        });
+        return;
+      }
+
+      yearSelect.innerHTML = years.map(year => `<option value="${year}">${year}</option>`).join("");
+      regionSelect.innerHTML = regions.map(region => `<option value="${escapeAttribute(region)}">${escapeHtml(formatRegionLabel(region))}</option>`).join("");
+      yearSelect.value = String(regional.default_year || years[years.length - 1]);
+      regionSelect.value = regions.includes("Region 6") ? "Region 6" : regions[0];
+      yearSelect.addEventListener("change", renderRegionalExplorer);
+      regionSelect.addEventListener("change", renderRegionalExplorer);
+      renderRegionalExplorer();
+    }
+
+    function renderRegionalExplorer() {
+      const regional = state.bootstrap?.publication?.series?.regional_yearly || {};
+      const selectedYear = String(document.getElementById("regional-year-select")?.value || regional.default_year || "");
+      const selectedRegion = String(document.getElementById("regional-region-select")?.value || "");
+      const rows = regional.rows_by_year?.[selectedYear] || [];
+      const history = regional.region_histories?.[selectedRegion] || { cascade: [], burden: [] };
+
+      if (rows.length) {
+        mountChart("regional-year-chart", buildRegionalYearOption(rows, selectedYear));
+      } else {
+        disposeChart("regional-year-chart");
+        document.getElementById("regional-year-chart").innerHTML = `<div class="empty-state">No annual regional ladder rows are available for ${escapeHtml(selectedYear)}.</div>`;
+      }
+
+      if ((history.cascade || []).length) {
+        mountChart("regional-history-chart", buildRegionHistoryOption(selectedRegion, history.cascade || []));
+      } else {
+        disposeChart("regional-history-chart");
+        document.getElementById("regional-history-chart").innerHTML = `<div class="empty-state">No annual cascade history is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
+      }
+
+      if ((history.burden || []).length) {
+        mountChart("regional-burden-chart", buildRegionBurdenOption(selectedRegion, history.burden || []));
+      } else {
+        disposeChart("regional-burden-chart");
+        document.getElementById("regional-burden-chart").innerHTML = `<div class="empty-state">No annual burden series is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
+      }
+
+      document.getElementById("regional-year-note").textContent =
+        rows.length
+          ? `${selectedYear} uses the latest structured comparable quarter per region. Hover any mark to see the source period and report.`
+          : `No complete regional cascade rows are available for ${selectedYear}.`;
+
+      document.getElementById("regional-history-note").textContent = summarizeRegionHistory(selectedRegion, history.cascade || []);
+      document.getElementById("regional-burden-note").textContent = summarizeBurdenHistory(selectedRegion, history.burden || []);
+    }
+
+    function buildRegionalYearOption(rows, year) {
+      const sorted = [...(rows || [])].sort((a, b) => Number(a.mean_gap || 999) - Number(b.mean_gap || 999));
+      const regions = sorted.map(row => formatRegionLabel(row.region));
+      const colorByStage = {
+        diagnosis: "#5b7bd5",
+        treatment: "#0f7c66",
+        suppression: "#db6b2c",
+      };
+      return {
+        animation: false,
+        grid: { top: 28, right: 44, bottom: 56, left: 150, containLabel: false },
+        legend: {
+          top: 0,
+          textStyle: { color: "#50615d", fontSize: 12 },
+          data: ["Diagnosis", "Treatment", "Suppression"],
+        },
+        tooltip: {
+          trigger: "item",
+          confine: true,
+          borderColor: "rgba(20,35,31,0.12)",
+          backgroundColor: "rgba(255,250,242,0.98)",
+          textStyle: { color: "#14231f", fontFamily: "IBM Plex Sans" },
+          formatter: params => {
+            const data = params?.data || {};
+            const stage = params.seriesName;
+            const sourcePeriod = data.period || `${year}`;
+            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
+            return `
+              <strong>${escapeHtml(data.region || "")}</strong><br>
+              ${escapeHtml(stage)}: <strong>${formatPercent(data.value, 0)}</strong><br>
+              Source period: ${escapeHtml(sourcePeriod)}<br>
+              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
+            `;
+          },
+        },
+        xAxis: {
+          type: "value",
+          min: 30,
+          max: 100,
+          axisLabel: { color: "#50615d", formatter: value => `${Math.round(value)}%` },
+          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          name: "Coverage",
+          nameLocation: "middle",
+          nameGap: 36,
+          nameTextStyle: { color: "#50615d", fontWeight: 700, fontSize: 13 },
+        },
+        yAxis: {
+          type: "category",
+          data: regions,
+          axisLabel: { color: "#50615d", fontSize: 12, width: 120, overflow: "truncate" },
+          axisTick: { show: false },
+          axisLine: { show: false },
+        },
+        series: [
+          buildRegionalYearScatterSeries("Diagnosis", sorted, "diagnosis", colorByStage.diagnosis),
+          buildRegionalYearScatterSeries("Treatment", sorted, "treatment", colorByStage.treatment),
+          buildRegionalYearScatterSeries("Suppression", sorted, "suppression", colorByStage.suppression),
+          {
+            type: "line",
+            data: [],
+            markLine: {
+              symbol: "none",
+              silent: true,
+              label: { formatter: "95% target", color: "#9b3324", fontWeight: 700 },
+              lineStyle: { color: "rgba(196,86,27,0.75)", width: 1.5, type: "dashed" },
+              data: [{ xAxis: 95 }],
+            },
+          },
+        ],
+      };
+    }
+
+    function buildRegionalYearScatterSeries(name, rows, key, color) {
+      return {
+        name,
+        type: "scatter",
+        symbolSize: 12,
+        itemStyle: { color, borderColor: "#fffaf0", borderWidth: 1.5 },
+        data: rows.map((row, index) => ({
+          value: [Number(row[key] || 0), index],
+          region: formatRegionLabel(row.region),
+          period: row[`${key}_period`],
+          sourceUrl: row[`${key}_source_url`],
+          filename: row[`${key}_filename`],
+        })),
+      };
+    }
+
+    function buildRegionHistoryOption(region, rows) {
+      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      const xAxis = yearlyRows.map(row => String(row.year));
+      const makeSeries = (label, key, color) => ({
+        name: label,
+        type: "line",
+        symbol: "circle",
+        symbolSize: 8,
+        connectNulls: false,
+        lineStyle: { color, width: 3 },
+        itemStyle: { color, borderColor: "#fffaf0", borderWidth: 1.5 },
+        data: yearlyRows.map(row => ({
+          value: Number(row[key] || 0),
+          period: row[`${key}_period`],
+          sourceUrl: row[`${key}_source_url`],
+          filename: row[`${key}_filename`],
+        })),
+      });
+
+      return {
+        animation: false,
+        grid: { top: 32, right: 20, bottom: 52, left: 62, containLabel: false },
+        legend: { top: 0, textStyle: { color: "#50615d", fontSize: 12 } },
+        tooltip: {
+          trigger: "axis",
+          confine: true,
+          formatter: params => {
+            const header = `<strong>${escapeHtml(formatRegionLabel(region))}</strong><br>${escapeHtml(params?.[0]?.axisValue || "")}`;
+            const lines = (params || []).map(item => {
+              const sourceUrl = item.data?.sourceUrl ? `<br><a href="${escapeAttribute(item.data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
+              return `${escapeHtml(item.seriesName)}: <strong>${formatPercent(item.data?.value, 0)}</strong><br>Source period: ${escapeHtml(item.data?.period || item.axisValue)}<br>File: ${escapeHtml(item.data?.filename || "Unknown source")}${sourceUrl}`;
+            });
+            return `${header}<br><br>${lines.join("<br><br>")}`;
+          },
+        },
+        xAxis: {
+          type: "category",
+          data: xAxis,
+          axisLabel: { color: "#50615d" },
+          axisTick: { show: false },
+        },
+        yAxis: {
+          type: "value",
+          min: 30,
+          max: 100,
+          axisLabel: { color: "#50615d", formatter: value => `${Math.round(value)}%` },
+          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+        },
+        series: [
+          makeSeries("Diagnosis", "diagnosis", "#5b7bd5"),
+          makeSeries("Treatment", "treatment", "#0f7c66"),
+          makeSeries("Suppression", "suppression", "#db6b2c"),
+        ],
+      };
+    }
+
+    function buildRegionBurdenOption(region, rows) {
+      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      return {
+        animation: false,
+        grid: { top: 20, right: 20, bottom: 52, left: 68, containLabel: false },
+        tooltip: {
+          trigger: "axis",
+          confine: true,
+          formatter: params => {
+            const item = params?.[0];
+            if (!item) return "";
+            const data = item.data || {};
+            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
+            return `
+              <strong>${escapeHtml(formatRegionLabel(region))}</strong><br>
+              ${escapeHtml(item.axisValue)} reported cases: <strong>${formatNumber(data.value)}</strong><br>
+              Source period: ${escapeHtml(data.periodLabel || item.axisValue)}<br>
+              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
+            `;
+          },
+        },
+        xAxis: {
+          type: "category",
+          data: yearlyRows.map(row => String(row.year)),
+          axisLabel: { color: "#50615d" },
+          axisTick: { show: false },
+        },
+        yAxis: {
+          type: "value",
+          min: 0,
+          axisLabel: { color: "#50615d", formatter: value => formatCompactNumber(value) },
+          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+        },
+        series: [{
+          type: "bar",
+          barWidth: 28,
+          itemStyle: { color: "#0f7c66", borderRadius: [8, 8, 0, 0] },
+          data: yearlyRows.map(row => ({
+            value: Number(row.value || 0),
+            periodLabel: row.period_label || String(row.year),
+            sourceUrl: row.source_url,
+            filename: row.filename,
+          })),
+        }],
+      };
+    }
+
+    function summarizeRegionHistory(region, rows) {
+      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      if (!yearlyRows.length) {
+        return `No structured yearly cascade history is available yet for ${formatRegionLabel(region)}.`;
+      }
+      if (yearlyRows.length === 1) {
+        return `${formatRegionLabel(region)} has one structured yearly cascade point in ${yearlyRows[0].year}; earlier regional cascade coverage is not yet available in the normalized layer.`;
+      }
+      const first = yearlyRows[0];
+      const last = yearlyRows[yearlyRows.length - 1];
+      return `${formatRegionLabel(region)} changed from ${formatPercent(first.diagnosis, 0)} / ${formatPercent(first.treatment, 0)} / ${formatPercent(first.suppression, 0)} in ${first.year} to ${formatPercent(last.diagnosis, 0)} / ${formatPercent(last.treatment, 0)} / ${formatPercent(last.suppression, 0)} in ${last.year}.`;
+    }
+
+    function summarizeBurdenHistory(region, rows) {
+      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      if (!yearlyRows.length) {
+        return `No annual structured burden series is currently available for ${formatRegionLabel(region)}.`;
+      }
+      if (yearlyRows.length === 1) {
+        return `${formatRegionLabel(region)} has one annual structured burden point: ${formatNumber(yearlyRows[0].value)} reported cases in ${yearlyRows[0].year}.`;
+      }
+      let largestJump = null;
+      for (let index = 1; index < yearlyRows.length; index += 1) {
+        const delta = Number(yearlyRows[index].value || 0) - Number(yearlyRows[index - 1].value || 0);
+        if (!largestJump || Math.abs(delta) > Math.abs(largestJump.delta)) {
+          largestJump = { from: yearlyRows[index - 1].year, to: yearlyRows[index].year, delta };
+        }
+      }
+      const latest = yearlyRows[yearlyRows.length - 1];
+      return `${formatRegionLabel(region)} reaches ${formatNumber(latest.value)} reported cases in ${latest.year}. Largest observed annual change is ${formatSigned(largestJump.delta, 0)} from ${largestJump.from} to ${largestJump.to}.`;
+    }
+
+    function setupAnomalyExplorer() {
+      const series = state.bootstrap?.publication?.series?.anomaly_yearly || {};
+      const years = series.years || [];
+      const yearSelect = document.getElementById("anomaly-year-select");
+      const actions = document.getElementById("anomaly-explorer-actions");
+      document.getElementById("anomaly-explorer-pill").textContent = years.length
+        ? `${years[0]}-${years[years.length - 1]} anomaly window`
+        : "unavailable";
+      if (actions) {
+        actions.innerHTML = [
+          buildFigureActions("anomaly_board"),
+          buildReferenceJumpActions(["ship-2024-q2", "ship-2025-q4"]),
+        ].filter(Boolean).join("");
+      }
+      if (!years.length) {
+        ["anomaly-residual-chart", "anomaly-leakage-chart"].forEach(id => {
+          const target = document.getElementById(id);
+          if (target) target.innerHTML = `<div class="empty-state">No yearly anomaly series was exported.</div>`;
+        });
+        return;
+      }
+      yearSelect.innerHTML = years.map(year => `<option value="${year}">${year}</option>`).join("");
+      yearSelect.value = String(series.default_year || years[years.length - 1]);
+      yearSelect.addEventListener("change", renderAnomalyExplorer);
+      renderAnomalyExplorer();
+    }
+
+    function renderAnomalyExplorer() {
+      const series = state.bootstrap?.publication?.series?.anomaly_yearly || {};
+      const selectedYear = String(document.getElementById("anomaly-year-select")?.value || series.default_year || "");
+      const residualRows = series.residuals_by_year?.[selectedYear] || [];
+      const leakageRows = series.leakage_by_year?.[selectedYear] || [];
+      if (residualRows.length) {
+        mountChart("anomaly-residual-chart", buildResidualOption(residualRows, selectedYear));
+      } else {
+        disposeChart("anomaly-residual-chart");
+        document.getElementById("anomaly-residual-chart").innerHTML = `<div class="empty-state">No annual residual rows are available for ${escapeHtml(selectedYear)}.</div>`;
+      }
+      if (leakageRows.length) {
+        mountChart("anomaly-leakage-chart", buildLeakageOption(leakageRows, selectedYear));
+      } else {
+        disposeChart("anomaly-leakage-chart");
+        document.getElementById("anomaly-leakage-chart").innerHTML = `<div class="empty-state">No annual treatment-leakage snapshot is available for ${escapeHtml(selectedYear)}.</div>`;
+      }
+      document.getElementById("anomaly-residual-note").textContent =
+        residualRows.length ? `${selectedYear} residuals compare observed cascade progression with the fitted regional expectation.` : `No residual rows are available for ${selectedYear}.`;
+      document.getElementById("anomaly-leakage-note").textContent =
+        leakageRows.length ? summarizeLeakageYear(leakageRows, selectedYear) : `No treatment-leakage snapshot is available for ${selectedYear}.`;
+    }
+
+    function buildResidualOption(rows, year) {
+      const sorted = [...(rows || [])].sort((a, b) => Number(a.value || 0) - Number(b.value || 0));
+      return {
+        animation: false,
+        grid: { top: 20, right: 24, bottom: 44, left: 180, containLabel: false },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "shadow" },
+          confine: true,
+          formatter: params => {
+            const item = params?.[0];
+            const data = item?.data || {};
+            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
+            return `
+              <strong>${escapeHtml(data.region || "")}</strong><br>
+              ${escapeHtml(data.stage || "")}<br>
+              Observed: ${formatPercent(data.observed, 1)}<br>
+              Expected: ${formatPercent(data.expected, 1)}<br>
+              Residual: <strong>${formatSigned(data.value, 1)} points</strong><br>
+              Period: ${escapeHtml(data.periodLabel || year)}<br>
+              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
+            `;
+          },
+        },
+        xAxis: {
+          type: "value",
+          axisLabel: { color: "#50615d", formatter: value => `${Number(value).toFixed(0)}` },
+          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+        },
+        yAxis: {
+          type: "category",
+          data: sorted.map(row => `${formatRegionLabel(row.region)}\n${row.stage.toLowerCase()}`),
+          axisLabel: { color: "#50615d", fontSize: 12 },
+          axisTick: { show: false },
+          axisLine: { show: false },
+        },
+        series: [{
+          type: "bar",
+          data: sorted.map(row => ({
+            value: Number(row.value || 0),
+            region: formatRegionLabel(row.region),
+            stage: row.stage,
+            observed: row.observed,
+            expected: row.expected,
+            sourceUrl: row.source_url,
+            filename: row.filename,
+            periodLabel: row.period_label,
+            itemStyle: { color: Number(row.value || 0) >= 0 ? "#0f7c66" : "#c4561b" },
+          })),
+          barWidth: 20,
+        }],
+      };
+    }
+
+    function buildLeakageOption(rows, year) {
+      const sorted = [...(rows || [])].sort((a, b) => (Number(b.alive || 0) + Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.alive || 0) + Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
+      return {
+        animation: false,
+        grid: { top: 48, right: 20, bottom: 44, left: 120, containLabel: false },
+        legend: { top: 0, textStyle: { color: "#50615d", fontSize: 12 } },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "shadow" },
+          confine: true,
+          formatter: params => {
+            const row = params?.[0]?.data || {};
+            const sourceUrl = row.sourceUrl ? `<br><a href="${escapeAttribute(row.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
+            return `
+              <strong>${escapeHtml(row.region || "")}</strong><br>
+              Alive on ART: ${formatNumber(row.alive)}<br>
+              Lost to follow-up: ${formatNumber(row.ltfu)}<br>
+              Not on treatment: ${formatNumber(row.notOnTreatment)}${row.missingNotOnTreatment ? " (missing in source table)" : ""}<br>
+              Period: ${escapeHtml(row.periodLabel || year)}<br>
+              File: ${escapeHtml(row.filename || "Unknown source")}${sourceUrl}
+            `;
+          },
+        },
+        xAxis: {
+          type: "value",
+          axisLabel: { color: "#50615d", formatter: value => formatCompactNumber(value) },
+          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+        },
+        yAxis: {
+          type: "category",
+          data: sorted.map(row => formatRegionLabel(row.region)),
+          axisLabel: { color: "#50615d", fontSize: 12 },
+          axisTick: { show: false },
+          axisLine: { show: false },
+        },
+        series: [
+          buildLeakageSeries("Alive on ART", sorted, "alive", "#0f7c66"),
+          buildLeakageSeries("Lost to follow-up", sorted, "ltfu", "#db6b2c"),
+          buildLeakageSeries("Not on treatment", sorted, "not_on_treatment", "#c89b1d"),
+        ],
+      };
+    }
+
+    function buildLeakageSeries(name, rows, key, color) {
+      return {
+        name,
+        type: "bar",
+        stack: "total",
+        barWidth: 18,
+        itemStyle: { color },
+        data: rows.map(row => ({
+          value: Number(row[key] || 0),
+          region: formatRegionLabel(row.region),
+          alive: row.alive,
+          ltfu: row.ltfu,
+          notOnTreatment: row.not_on_treatment,
+          sourceUrl: row.source_url,
+          filename: row.filename,
+          periodLabel: row.period_label,
+          missingNotOnTreatment: row.missing_not_on_treatment,
+        })),
+      };
+    }
+
+    function summarizeLeakageYear(rows, year) {
+      const sorted = [...(rows || [])].sort((a, b) => (Number(b.alive || 0) + Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.alive || 0) + Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
+      if (!sorted.length) return `No treatment-leakage rows are available for ${year}.`;
+      const top = sorted[0];
+      const total = Number(top.alive || 0) + Number(top.ltfu || 0) + Number(top.not_on_treatment || 0);
+      return `${formatRegionLabel(top.region)} has the largest structured treatment-leakage burden in ${year}, with ${formatNumber(total)} combined alive-on-ART, lost-to-follow-up, and not-on-treatment records.`;
     }
 
     function formatPercent(value, digits) {
