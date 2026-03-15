@@ -766,32 +766,72 @@
           <div class="atlas-note" id="publication-national-cascade-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Regional Inequality</div>
-              <h2>Regional cascade ladder</h2>
+              <div class="eyebrow">Regional Explorer</div>
+              <h2>Yearly regional cascade comparison</h2>
             </div>
-            <span class="pill" id="regional-atlas-pill">Loading</span>
+            <span class="pill" id="regional-explorer-pill">Loading</span>
           </div>
-          <p class="mini-note">Diagnosis, treatment, and viral suppression by region at the latest comparable quarter, ordered from the smallest to the largest average gap to the 95% target.</p>
-          <div class="figure-actions" id="publication-regional-ladder-actions"></div>
-          <div class="publication-figure" id="publication-regional-ladder"></div>
-          <div class="atlas-note" id="publication-regional-ladder-note"></div>
+          <p class="mini-note">Annual only. Each year uses the latest observed structured quarter inside that year. The left panel compares regions in one year; the right panel shows how the selected region changed over time.</p>
+          <div class="figure-actions" id="regional-explorer-actions"></div>
+          <div class="control-row">
+            <div class="control-group">
+              <label for="regional-year-select">Year</label>
+              <select id="regional-year-select"></select>
+            </div>
+            <div class="control-group">
+              <label for="regional-region-select">Region</label>
+              <select id="regional-region-select"></select>
+            </div>
+          </div>
+          <div class="explorer-grid">
+            <div class="atlas-card">
+              <h3>Regional cascade by year</h3>
+              <p class="analytic-subtitle">Connected diagnosis, treatment, and suppression markers for the selected year, ordered by overall distance to the 95% target.</p>
+              <div class="chart-host tall" id="regional-year-chart"></div>
+              <div class="atlas-note" id="regional-year-note"></div>
+            </div>
+            <div class="atlas-card">
+              <h3>Selected region over time</h3>
+              <p class="analytic-subtitle">Yearly cascade history for the selected region. This panel is for change over time, not cross-region ranking.</p>
+              <div class="chart-host tall" id="regional-history-chart"></div>
+              <div class="atlas-note" id="regional-history-note"></div>
+            </div>
+          </div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Outliers</div>
-              <h2>Outliers and treatment leakage</h2>
+              <div class="eyebrow">Yearly Anomalies</div>
+              <h2>Outliers and treatment leakage by year</h2>
             </div>
-            <span class="signal-tag" id="surprise-pill">Loading</span>
+            <span class="signal-tag" id="anomaly-explorer-pill">Loading</span>
           </div>
-          <p class="mini-note">Regional deviations from the fitted cascade pattern are paired with the latest treatment-leakage concentration view, so the residuals and treatment burden stay in one interpretable figure.</p>
-          <div class="figure-actions" id="publication-anomaly-board-actions"></div>
-          <div class="publication-figure" id="publication-anomaly-board"></div>
-          <div class="atlas-note" id="publication-anomaly-board-note"></div>
+          <p class="mini-note">Left: regions above or below the expected cascade pattern in the selected year. Right: where loss from care is concentrated in that same year.</p>
+          <div class="figure-actions" id="anomaly-explorer-actions"></div>
+          <div class="control-row">
+            <div class="control-group">
+              <label for="anomaly-year-select">Year</label>
+              <select id="anomaly-year-select"></select>
+            </div>
+          </div>
+          <div class="explorer-grid">
+            <div class="atlas-card">
+              <h3>Regional residuals</h3>
+              <p class="analytic-subtitle">Observed versus expected cascade performance, shown as percentage points above or below the fitted regional pattern.</p>
+              <div class="chart-host tall" id="anomaly-residual-chart"></div>
+              <div class="atlas-note" id="anomaly-residual-note"></div>
+            </div>
+            <div class="atlas-card">
+              <h3>Treatment leakage</h3>
+              <p class="analytic-subtitle">Loss from care only: lost to follow-up plus not on treatment in the selected year.</p>
+              <div class="chart-host tall" id="anomaly-leakage-chart"></div>
+              <div class="atlas-note" id="anomaly-leakage-note"></div>
+            </div>
+          </div>
         </article>
 
         <article class="card publication-card">
@@ -820,82 +860,6 @@
           <div class="figure-actions" id="publication-key-populations-actions"></div>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div>
-              <div class="eyebrow">Regional Explorer</div>
-              <h2>Yearly regional cascade comparison</h2>
-            </div>
-            <span class="pill" id="regional-explorer-pill">Loading</span>
-          </div>
-          <p class="mini-note">Annual only. Each year uses the latest observed structured quarter inside that year. Hover any mark to see value, period, source file, and source URL.</p>
-          <div class="figure-actions" id="regional-explorer-actions"></div>
-          <div class="control-row">
-            <div class="control-group">
-              <label for="regional-year-select">Year</label>
-              <select id="regional-year-select"></select>
-            </div>
-            <div class="control-group">
-              <label for="regional-region-select">Region</label>
-              <select id="regional-region-select"></select>
-            </div>
-          </div>
-          <div class="explorer-grid">
-            <div class="atlas-card">
-              <h3>Regional ladder by year</h3>
-              <p class="analytic-subtitle">Diagnosis, treatment, and suppression coverage for the selected year.</p>
-              <div class="chart-host tall" id="regional-year-chart"></div>
-              <div class="atlas-note" id="regional-year-note"></div>
-            </div>
-            <div class="atlas-card">
-              <h3>Selected region over time</h3>
-              <p class="analytic-subtitle">Yearly cascade history for the selected region. Earlier years remain unavailable until the regional structured layer is extended.</p>
-              <div class="chart-host tall" id="regional-history-chart"></div>
-              <div class="atlas-note" id="regional-history-note"></div>
-            </div>
-          </div>
-          <div class="explorer-grid explorer-grid-single">
-            <div class="atlas-card">
-              <h3>Regional burden over time</h3>
-              <p class="analytic-subtitle">Annual structured reported-cases count for the selected region when that burden series exists.</p>
-              <div class="chart-host" id="regional-burden-chart"></div>
-              <div class="atlas-note" id="regional-burden-note"></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div>
-              <div class="eyebrow">Yearly Anomalies</div>
-              <h2>Outliers and treatment leakage by year</h2>
-            </div>
-            <span class="signal-tag" id="anomaly-explorer-pill">Loading</span>
-          </div>
-          <p class="mini-note">Hover for observed versus expected values, source period, and report reference. Treatment leakage uses the latest structured treatment-outcome snapshot inside each year.</p>
-          <div class="figure-actions" id="anomaly-explorer-actions"></div>
-          <div class="control-row">
-            <div class="control-group">
-              <label for="anomaly-year-select">Year</label>
-              <select id="anomaly-year-select"></select>
-            </div>
-          </div>
-          <div class="explorer-grid">
-            <div class="atlas-card">
-              <h3>Regional residuals</h3>
-              <p class="analytic-subtitle">Difference between observed cascade progression and fitted expectation.</p>
-              <div class="chart-host tall" id="anomaly-residual-chart"></div>
-              <div class="atlas-note" id="anomaly-residual-note"></div>
-            </div>
-            <div class="atlas-card">
-              <h3>Treatment leakage</h3>
-              <p class="analytic-subtitle">Alive on ART, lost to follow-up, and not on treatment in the selected year.</p>
-              <div class="chart-host tall" id="anomaly-leakage-chart"></div>
-              <div class="atlas-note" id="anomaly-leakage-note"></div>
-            </div>
-          </div>
         </article>
       </div>
 
@@ -2239,8 +2203,6 @@
 
     function renderOverview() {
       renderNationalCascade();
-      renderRegionalAtlas();
-      renderSurprisingFindings();
       renderHistoricalAtlas();
       renderPopulationOutcomes();
     }
@@ -2369,6 +2331,9 @@
       const figure = typeof key === "string" ? getPublicationFigure(key) : key;
       if (!figure) return "";
       const links = [];
+      if (figure.figure_pdf_path) {
+        links.push(`<a class="action-link" href="${escapeAttribute(assetHref(figure.figure_pdf_path))}" target="_blank" rel="noopener noreferrer">Figure PDF</a>`);
+      }
       if (figure.pdf_path) {
         links.push(`<a class="action-link" href="${escapeAttribute(assetHref(figure.pdf_path))}" target="_blank" rel="noopener noreferrer">PDF report</a>`);
       }
@@ -3335,7 +3300,7 @@
       }
 
       if (!years.length || !regions.length) {
-        ["regional-year-chart", "regional-history-chart", "regional-burden-chart"].forEach(id => {
+        ["regional-year-chart", "regional-history-chart"].forEach(id => {
           const target = document.getElementById(id);
           if (target) target.innerHTML = `<div class="empty-state">No yearly regional series was exported.</div>`;
         });
@@ -3356,7 +3321,7 @@
       const selectedYear = String(document.getElementById("regional-year-select")?.value || regional.default_year || "");
       const selectedRegion = String(document.getElementById("regional-region-select")?.value || "");
       const rows = regional.rows_by_year?.[selectedYear] || [];
-      const history = regional.region_histories?.[selectedRegion] || { cascade: [], burden: [] };
+      const history = regional.region_histories?.[selectedRegion] || { cascade: [] };
 
       if (rows.length) {
         mountChart("regional-year-chart", buildRegionalYearOption(rows, selectedYear));
@@ -3372,20 +3337,12 @@
         document.getElementById("regional-history-chart").innerHTML = `<div class="empty-state">No annual cascade history is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
       }
 
-      if ((history.burden || []).length) {
-        mountChart("regional-burden-chart", buildRegionBurdenOption(selectedRegion, history.burden || []));
-      } else {
-        disposeChart("regional-burden-chart");
-        document.getElementById("regional-burden-chart").innerHTML = `<div class="empty-state">No annual burden series is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
-      }
-
       document.getElementById("regional-year-note").textContent =
         rows.length
           ? `${selectedYear} uses the latest structured comparable quarter per region. Hover any mark to see the source period and report.`
           : `No complete regional cascade rows are available for ${selectedYear}.`;
 
       document.getElementById("regional-history-note").textContent = summarizeRegionHistory(selectedRegion, history.cascade || []);
-      document.getElementById("regional-burden-note").textContent = summarizeBurdenHistory(selectedRegion, history.burden || []);
     }
 
     function buildRegionalYearOption(rows, year) {
@@ -3442,6 +3399,40 @@
           axisLine: { show: false },
         },
         series: [
+          {
+            name: "Cascade path",
+            type: "custom",
+            coordinateSystem: "cartesian2d",
+            silent: true,
+            z: 1,
+            data: sorted.map((row, index) => [
+              index,
+              Number(row.diagnosis || 0),
+              Number(row.treatment || 0),
+              Number(row.suppression || 0),
+            ]),
+            renderItem: (params, api) => {
+              const yIndex = api.value(0);
+              const diagnosis = api.coord([api.value(1), yIndex]);
+              const treatment = api.coord([api.value(2), yIndex]);
+              const suppression = api.coord([api.value(3), yIndex]);
+              return {
+                type: "group",
+                children: [
+                  {
+                    type: "line",
+                    shape: { x1: diagnosis[0], y1: diagnosis[1], x2: treatment[0], y2: treatment[1] },
+                    style: { stroke: "rgba(20,35,31,0.18)", lineWidth: 2.2 },
+                  },
+                  {
+                    type: "line",
+                    shape: { x1: treatment[0], y1: treatment[1], x2: suppression[0], y2: suppression[1] },
+                    style: { stroke: "rgba(20,35,31,0.18)", lineWidth: 2.2 },
+                  },
+                ],
+              };
+            },
+          },
           buildRegionalYearScatterSeries("Diagnosis", sorted, "diagnosis", colorByStage.diagnosis),
           buildRegionalYearScatterSeries("Treatment", sorted, "treatment", colorByStage.treatment),
           buildRegionalYearScatterSeries("Suppression", sorted, "suppression", colorByStage.suppression),
@@ -3532,53 +3523,6 @@
       };
     }
 
-    function buildRegionBurdenOption(region, rows) {
-      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
-      return {
-        animation: false,
-        grid: { top: 20, right: 20, bottom: 52, left: 68, containLabel: false },
-        tooltip: {
-          trigger: "axis",
-          confine: true,
-          formatter: params => {
-            const item = params?.[0];
-            if (!item) return "";
-            const data = item.data || {};
-            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
-            return `
-              <strong>${escapeHtml(formatRegionLabel(region))}</strong><br>
-              ${escapeHtml(item.axisValue)} reported cases: <strong>${formatNumber(data.value)}</strong><br>
-              Source period: ${escapeHtml(data.periodLabel || item.axisValue)}<br>
-              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
-            `;
-          },
-        },
-        xAxis: {
-          type: "category",
-          data: yearlyRows.map(row => String(row.year)),
-          axisLabel: { color: "#50615d" },
-          axisTick: { show: false },
-        },
-        yAxis: {
-          type: "value",
-          min: 0,
-          axisLabel: { color: "#50615d", formatter: value => formatCompactNumber(value) },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-        },
-        series: [{
-          type: "bar",
-          barWidth: 28,
-          itemStyle: { color: "#0f7c66", borderRadius: [8, 8, 0, 0] },
-          data: yearlyRows.map(row => ({
-            value: Number(row.value || 0),
-            periodLabel: row.period_label || String(row.year),
-            sourceUrl: row.source_url,
-            filename: row.filename,
-          })),
-        }],
-      };
-    }
-
     function summarizeRegionHistory(region, rows) {
       const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
       if (!yearlyRows.length) {
@@ -3590,25 +3534,6 @@
       const first = yearlyRows[0];
       const last = yearlyRows[yearlyRows.length - 1];
       return `${formatRegionLabel(region)} changed from ${formatPercent(first.diagnosis, 0)} / ${formatPercent(first.treatment, 0)} / ${formatPercent(first.suppression, 0)} in ${first.year} to ${formatPercent(last.diagnosis, 0)} / ${formatPercent(last.treatment, 0)} / ${formatPercent(last.suppression, 0)} in ${last.year}.`;
-    }
-
-    function summarizeBurdenHistory(region, rows) {
-      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
-      if (!yearlyRows.length) {
-        return `No annual structured burden series is currently available for ${formatRegionLabel(region)}.`;
-      }
-      if (yearlyRows.length === 1) {
-        return `${formatRegionLabel(region)} has one annual structured burden point: ${formatNumber(yearlyRows[0].value)} reported cases in ${yearlyRows[0].year}.`;
-      }
-      let largestJump = null;
-      for (let index = 1; index < yearlyRows.length; index += 1) {
-        const delta = Number(yearlyRows[index].value || 0) - Number(yearlyRows[index - 1].value || 0);
-        if (!largestJump || Math.abs(delta) > Math.abs(largestJump.delta)) {
-          largestJump = { from: yearlyRows[index - 1].year, to: yearlyRows[index].year, delta };
-        }
-      }
-      const latest = yearlyRows[yearlyRows.length - 1];
-      return `${formatRegionLabel(region)} reaches ${formatNumber(latest.value)} reported cases in ${latest.year}. Largest observed annual change is ${formatSigned(largestJump.delta, 0)} from ${largestJump.from} to ${largestJump.to}.`;
     }
 
     function setupAnomalyExplorer() {
@@ -3663,6 +3588,8 @@
 
     function buildResidualOption(rows, year) {
       const sorted = [...(rows || [])].sort((a, b) => Number(a.value || 0) - Number(b.value || 0));
+      const maxAbs = Math.max(...sorted.map(row => Math.abs(Number(row.value || 0))), 5);
+      const bound = Math.ceil((maxAbs + 1) / 5) * 5;
       return {
         animation: false,
         grid: { top: 20, right: 24, bottom: 44, left: 180, containLabel: false },
@@ -3687,6 +3614,8 @@
         },
         xAxis: {
           type: "value",
+          min: -bound,
+          max: bound,
           axisLabel: { color: "#50615d", formatter: value => `${Number(value).toFixed(0)}` },
           splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
         },
@@ -3716,7 +3645,7 @@
     }
 
     function buildLeakageOption(rows, year) {
-      const sorted = [...(rows || [])].sort((a, b) => (Number(b.alive || 0) + Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.alive || 0) + Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
+      const sorted = [...(rows || [])].sort((a, b) => (Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
       return {
         animation: false,
         grid: { top: 48, right: 20, bottom: 44, left: 120, containLabel: false },
@@ -3733,6 +3662,7 @@
               Alive on ART: ${formatNumber(row.alive)}<br>
               Lost to follow-up: ${formatNumber(row.ltfu)}<br>
               Not on treatment: ${formatNumber(row.notOnTreatment)}${row.missingNotOnTreatment ? " (missing in source table)" : ""}<br>
+              Combined leakage: <strong>${formatNumber((Number(row.ltfu || 0) + Number(row.notOnTreatment || 0)))}</strong><br>
               Period: ${escapeHtml(row.periodLabel || year)}<br>
               File: ${escapeHtml(row.filename || "Unknown source")}${sourceUrl}
             `;
@@ -3751,7 +3681,6 @@
           axisLine: { show: false },
         },
         series: [
-          buildLeakageSeries("Alive on ART", sorted, "alive", "#0f7c66"),
           buildLeakageSeries("Lost to follow-up", sorted, "ltfu", "#db6b2c"),
           buildLeakageSeries("Not on treatment", sorted, "not_on_treatment", "#c89b1d"),
         ],
@@ -3780,11 +3709,11 @@
     }
 
     function summarizeLeakageYear(rows, year) {
-      const sorted = [...(rows || [])].sort((a, b) => (Number(b.alive || 0) + Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.alive || 0) + Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
+      const sorted = [...(rows || [])].sort((a, b) => (Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)));
       if (!sorted.length) return `No treatment-leakage rows are available for ${year}.`;
       const top = sorted[0];
-      const total = Number(top.alive || 0) + Number(top.ltfu || 0) + Number(top.not_on_treatment || 0);
-      return `${formatRegionLabel(top.region)} has the largest structured treatment-leakage burden in ${year}, with ${formatNumber(total)} combined alive-on-ART, lost-to-follow-up, and not-on-treatment records.`;
+      const total = Number(top.ltfu || 0) + Number(top.not_on_treatment || 0);
+      return `${formatRegionLabel(top.region)} has the largest measured loss-from-care burden in ${year}, with ${formatNumber(total)} combined lost-to-follow-up and not-on-treatment records.`;
     }
 
     function formatPercent(value, digits) {

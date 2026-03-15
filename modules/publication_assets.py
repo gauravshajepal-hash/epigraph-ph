@@ -279,6 +279,7 @@ class PublicationFigure:
     svg: str
     svg_path: str
     png_path: str
+    figure_pdf_path: str
 
 
 class PublicationAssetBuilder:
@@ -322,7 +323,7 @@ class PublicationAssetBuilder:
 
         figure_payload = {}
         for key, figure in figures.items():
-            pdf_path = self._write_pdf_report(
+            report_pdf_path = self._write_pdf_report(
                 key,
                 figure,
                 methodology.get("by_figure", {}).get(key, {}),
@@ -334,7 +335,8 @@ class PublicationAssetBuilder:
                 "svg": figure.svg,
                 "svg_path": figure.svg_path,
                 "png_path": figure.png_path,
-                "pdf_path": pdf_path,
+                "figure_pdf_path": figure.figure_pdf_path,
+                "pdf_path": report_pdf_path,
             }
 
         payload = {
@@ -454,7 +456,7 @@ class PublicationAssetBuilder:
         official_labels = {
             "first_95": "Grey annual points show official UNAIDS context.",
             "second_95": "Grey annual points show official UNAIDS context.",
-            "third_95": "Highlighted quarterly line comes from official SHIP/WHO reporting; UNAIDS does not publish an annual third-95 series for the Philippines.",
+            "third_95": "Highlighted quarterly line shows official quarter-end SHIP/WHO checkpoints. Older official SHIP viral-load figures are not used here because they rely on a different denominator.",
         }
         for series_id in ("first_95", "second_95", "third_95"):
             point_rows = [{"period": p, "value": v} for p, v in patched[series_id]]
@@ -988,7 +990,7 @@ class PublicationAssetBuilder:
                 "construction": [
                     "Annual official context for the 1st and 2nd 95 comes from the UNAIDS Philippines annual dataset, filtered to the common 2015-2025 publication window.",
                     "Quarterly surveillance points from 2023 Q2 to 2025 Q4 come from official Philippines HIV surveillance reporting and are plotted on top of the annual context without being averaged into annual values.",
-                    "The 3rd 95 uses official quarter-end suppression among PLHIV on ART checkpoints from the DOH/SHIP surveillance reports, with the WHO June 2025 release used as an external cross-check for the 2025 Q1 national cascade.",
+                    "The highlighted 3rd-95 line uses official quarter-end suppression among PLHIV on ART checkpoints from the DOH/SHIP surveillance reports, with the WHO June 2025 release used as an external cross-check for the 2025 Q1 national cascade.",
                     "The 3rd 95 is corrected to suppression among PLHIV on ART. It is not the higher suppression-among-tested metric.",
                 ],
                 "harmonization": [
@@ -996,16 +998,17 @@ class PublicationAssetBuilder:
                     "Quarterly points are kept separate from annual context because they represent different publication cadences and sometimes different reporting bases.",
                 ],
                 "caveats": [
-                    "The Philippines annual UNAIDS extract does not provide a matching annual third-95 series, so the third panel uses official quarterly SHIP/WHO reporting only.",
+                    "The Philippines annual UNAIDS extract does not provide a matching annual third-95 series.",
+                    "Older official SHIP viral-load figures publish testing and suppression among those tested, which uses a different denominator from the third 95. Those figures are therefore not used as annual third-95 context in this board.",
                 ],
                 "reference_ids": ["unaids-dataset", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "who-2025-release"],
             },
             {
                 "id": "regional_ladder",
                 "figure_key": "regional_ladder",
-                "title": "Regional cascade ladder and yearly explorer",
+                "title": "Yearly regional cascade explorer",
                 "question": "Which regions are closest to the 95-95-95 target, and how do they move year to year?",
-                "definition": "The ladder shows diagnosis, treatment, and suppression coverage by region. The yearly explorer uses the latest observed comparable quarter inside each year.",
+                "definition": "The yearly explorer compares diagnosis, treatment, and suppression coverage by region for one selected year, then shows the selected region's annual cascade history.",
                 "formulas": [
                     "Mean gap to target = average of (95 - diagnosis), (95 - treatment), and (95 - suppression)",
                 ],
@@ -1013,7 +1016,7 @@ class PublicationAssetBuilder:
                     "For each region, metric, and year, the app selects the latest structured quarter in that year.",
                     "Regions are included in the annual ladder only when all three cascade stages are present for that year.",
                     "The region-over-time chart compares annual latest diagnosis, treatment, and suppression values for the selected region.",
-                    "A separate regional burden line uses latest structured reported-cases counts by year when those rows exist.",
+                    "A separate regional burden line was intentionally excluded from the overview because the current yearly regional burden layer is too sparse to support a headline comparison.",
                 ],
                 "harmonization": [
                     "The yearly selector is annual only. Quarterly roll-ups are intentionally hidden in this view.",
@@ -1027,16 +1030,16 @@ class PublicationAssetBuilder:
             {
                 "id": "anomaly_board",
                 "figure_key": "anomaly_board",
-                "title": "Outliers and treatment leakage",
+                "title": "Yearly outliers and treatment leakage explorer",
                 "question": "Which regions are above or below the expected cascade pattern, and where is treatment leakage concentrated?",
-                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. Leakage compares alive on ART, lost to follow-up, and not on treatment.",
+                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. Leakage focuses on loss from care: lost to follow-up plus not on treatment.",
                 "formulas": [
                     "Treatment residual = observed treatment coverage - fitted treatment coverage from the diagnosis-to-treatment line",
                     "Suppression residual = observed suppression coverage - fitted suppression coverage from the treatment-to-suppression line",
                 ],
                 "construction": [
                     "Residuals are recomputed inside each year using the regions available in that year.",
-                    "Treatment leakage uses the latest structured treatment-outcome snapshot inside each year.",
+                    "Treatment leakage is restricted to loss from care: lost to follow-up plus not on treatment from the latest structured treatment-outcome snapshot inside each year.",
                     "If a yearly snapshot does not include not-on-treatment counts, the chart shows the missing category explicitly rather than inventing values.",
                 ],
                 "harmonization": [
@@ -1144,6 +1147,15 @@ class PublicationAssetBuilder:
                 "note": "Official 2023 Q4 checkpoint used in the quarterly national cascade.",
             },
             {
+                "id": "ship-2024-q1",
+                "title": "2024 Q1 HIV/AIDS surveillance report of the Philippines",
+                "organization": "SHIP / Department of Health",
+                "kind": "Official quarterly surveillance report",
+                "url": "https://www.ship.ph/wp-content/uploads/2025/11/2024_Q1-HIV-AIDS-Surveillance-of-the-Philippines.pdf",
+                "used_in": ["national_cascade"],
+                "note": "Official 2024 Q1 quarterly cascade checkpoint used in the national 95-95-95 board.",
+            },
+            {
                 "id": "ship-2024-q2",
                 "title": "2024 Q2 HIV/AIDS surveillance reporting of the Philippines",
                 "organization": "SHIP / Department of Health",
@@ -1206,6 +1218,33 @@ class PublicationAssetBuilder:
                 "used_in": ["historical_board", "key_populations_board"],
                 "note": "Derived long-run and subgroup panels use direct extraction from the locally stored Philippines HIV/STI surveillance corpus.",
             },
+            {
+                "id": "design-ahead",
+                "title": "AHEAD HIV dashboard and comparison patterns",
+                "organization": "Health Resources and Services Administration / AHEAD",
+                "kind": "Dashboard design reference",
+                "url": "https://ahead.hiv.gov/about/",
+                "used_in": ["regional_ladder", "anomaly_board", "key_populations_board"],
+                "note": "Used as a reference for comparative regional layouts, summary framing, and public-health dashboard interaction patterns.",
+            },
+            {
+                "id": "design-owid",
+                "title": "Our World in Data HIV/AIDS presentation patterns",
+                "organization": "Our World in Data",
+                "kind": "Dashboard design reference",
+                "url": "https://ourworldindata.org/hiv-aids",
+                "used_in": ["national_cascade", "historical_board"],
+                "note": "Used as a reference for long-run small multiples, annotation density, and uncluttered epidemiology figure framing.",
+            },
+            {
+                "id": "design-unaids-inequalities",
+                "title": "UNAIDS inequalities visualization framing",
+                "organization": "UNAIDS",
+                "kind": "Dashboard design reference",
+                "url": "https://www.unaids.org/en/resources/presscentre/featurestories/2024/may/20240520_inequalities-visualization-tool",
+                "used_in": ["regional_ladder", "anomaly_board"],
+                "note": "Used as a reference for regional inequality framing and simplified explanation of within-country disparities.",
+            },
         ]
 
         local_reference_urls = {}
@@ -1243,8 +1282,9 @@ class PublicationAssetBuilder:
         items.extend(local_items)
         groups = [
             {"title": "Official international datasets", "item_ids": ["unaids-dataset", "who-2025-release"]},
-            {"title": "Official Philippines surveillance reports", "item_ids": ["ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q2", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]},
+            {"title": "Official Philippines surveillance reports", "item_ids": ["ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q1", "ship-2024-q2", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]},
             {"title": "Local derived-series corpus", "item_ids": ["ship-local-corpus"]},
+            {"title": "Dashboard design references", "item_ids": ["design-ahead", "design-owid", "design-unaids-inequalities"]},
             {"title": "Local corpus reports used in derived historical and subgroup series", "item_ids": [item["id"] for item in local_items]},
         ]
         return {
@@ -1517,8 +1557,10 @@ class PublicationAssetBuilder:
     def _save_figure(self, figure: plt.Figure, basename: str, title: str, note: str) -> PublicationFigure:
         svg_path = self.figure_dir / f"{basename}.svg"
         png_path = self.figure_dir / f"{basename}.png"
+        figure_pdf_path = self.figure_dir / f"{basename}.pdf"
         figure.savefig(svg_path, format="svg", bbox_inches="tight")
-        figure.savefig(png_path, format="png", dpi=180, bbox_inches="tight")
+        figure.savefig(figure_pdf_path, format="pdf", bbox_inches="tight")
+        figure.savefig(png_path, format="png", dpi=360, bbox_inches="tight")
         plt.close(figure)
         svg = svg_path.read_text(encoding="utf-8")
         return PublicationFigure(
@@ -1527,6 +1569,7 @@ class PublicationAssetBuilder:
             svg=svg,
             svg_path=str(svg_path.relative_to(self.base_dir)).replace("\\", "/"),
             png_path=str(png_path.relative_to(self.base_dir)).replace("\\", "/"),
+            figure_pdf_path=str(figure_pdf_path.relative_to(self.base_dir)).replace("\\", "/"),
         )
 
     def _wrap_text(self, text: str, width: int = 96) -> str:
@@ -1540,19 +1583,15 @@ class PublicationAssetBuilder:
         return "\n".join(lines)
 
     def _write_pdf_report(self, key: str, figure: PublicationFigure, methodology: dict, references: dict) -> str:
-        pdf_path = self.report_dir / f"{key}.pdf"
-        png_path = self.base_dir / figure.png_path
+        from PyPDF2 import PdfReader, PdfWriter
+
+        pdf_path = self.report_dir / f"{key}_report.pdf"
+        figure_pdf_path = self.base_dir / figure.figure_pdf_path
+        text_pdf_path = self.report_dir / f"{key}.__text__.pdf"
         items_by_id = {item["id"]: item for item in references.get("items", [])}
         relevant_refs = [items_by_id[ref_id] for ref_id in methodology.get("reference_ids", []) if ref_id in items_by_id]
 
-        with PdfPages(pdf_path) as pdf:
-            image_page = plt.figure(figsize=(11, 8.5))
-            image_ax = image_page.add_axes([0.04, 0.04, 0.92, 0.92])
-            image_ax.axis("off")
-            image_ax.imshow(plt.imread(png_path))
-            pdf.savefig(image_page, bbox_inches="tight")
-            plt.close(image_page)
-
+        with PdfPages(text_pdf_path) as pdf:
             text_page = plt.figure(figsize=(8.5, 11))
             text_page.patch.set_facecolor("#fffaf0")
             text_page.text(0.08, 0.96, methodology.get("title", figure.title), fontsize=18, fontweight="bold", va="top")
@@ -1607,8 +1646,24 @@ class PublicationAssetBuilder:
             pdf.savefig(text_page, bbox_inches="tight")
             plt.close(text_page)
 
+        writer = PdfWriter()
+        for source_path in (figure_pdf_path, text_pdf_path):
+            reader = PdfReader(str(source_path))
+            for page in reader.pages:
+                writer.add_page(page)
+        with pdf_path.open("wb") as handle:
+            writer.write(handle)
+        if text_pdf_path.exists():
+            try:
+                text_pdf_path.unlink()
+            except (PermissionError, FileNotFoundError):
+                pass
+
         site_pdf_path = str(pdf_path.relative_to(self.base_dir)).replace("\\", "/")
-        shutil.copy2(pdf_path, self.output_pdf_dir / pdf_path.name)
+        try:
+            shutil.copy2(pdf_path, self.output_pdf_dir / pdf_path.name)
+        except PermissionError:
+            pass
         return site_pdf_path
 
     def _render_national_cascade(self, data: dict) -> PublicationFigure:
@@ -1720,21 +1775,19 @@ class PublicationAssetBuilder:
 
         leak_rows = data["leakage_rows"][:8]
         regions = [row["region"] for row in leak_rows][::-1]
-        alive = [row["alive"] for row in leak_rows][::-1]
         ltfu = [row["ltfu"] for row in leak_rows][::-1]
         not_on = [row["not_on_treatment"] for row in leak_rows][::-1]
         ypos = np.arange(len(regions))
-        ax_right.barh(ypos, alive, color=SERIES_COLORS["alive"], label="Alive on ART")
-        ax_right.barh(ypos, ltfu, left=alive, color=SERIES_COLORS["ltfu"], label="Lost to follow-up")
-        ax_right.barh(ypos, not_on, left=np.array(alive) + np.array(ltfu), color=SERIES_COLORS["not_on_treatment"], label="Not on treatment")
+        ax_right.barh(ypos, ltfu, color=SERIES_COLORS["ltfu"], label="Lost to follow-up")
+        ax_right.barh(ypos, not_on, left=np.array(ltfu), color=SERIES_COLORS["not_on_treatment"], label="Not on treatment")
         ax_right.set_yticks(ypos)
         ax_right.set_yticklabels(regions, fontsize=11)
         ax_right.xaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value/1000)}K" if value >= 1000 else f"{int(value)}"))
         self._finalize_axis(ax_right)
-        ax_right.set_xlabel(f"Latest structured treatment-outcome snapshot ({data['period_label']})")
+        ax_right.set_xlabel(f"Measured loss from care ({data['period_label']})")
         ax_right.legend(loc="upper left", frameon=False, fontsize=11)
         fig.subplots_adjust(left=0.24, right=0.98, top=0.92, bottom=0.13)
-        note = f"Residuals show which regions are above or below the fitted cascade pattern. Leakage uses the {data['period_label']} treatment-outcome snapshot."
+        note = f"Residuals show which regions are above or below the fitted cascade pattern. Leakage is restricted to lost to follow-up plus not on treatment in the {data['period_label']} snapshot."
         return self._save_figure(fig, "anomaly_board", "Regional outliers and treatment leakage", note)
 
     def _shade_unavailable(self, ax, start_year: int, end_year: int, observed_start: int | None, observed_end: int | None):
