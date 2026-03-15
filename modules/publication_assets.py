@@ -413,9 +413,14 @@ class PublicationAssetBuilder:
             "third_95": "3rd 95: Viral suppression",
         }
         official_map = {
-            "first_95": official.get("first_95", []),
-            "second_95": official.get("second_95", []),
+            "first_95": [row for row in official.get("first_95", []) if int(row.get("year") or 0) >= 2015],
+            "second_95": [row for row in official.get("second_95", []) if int(row.get("year") or 0) >= 2015],
             "third_95": [],
+        }
+        official_labels = {
+            "first_95": "Grey annual points show official UNAIDS context.",
+            "second_95": "Grey annual points show official UNAIDS context.",
+            "third_95": "Highlighted quarterly line comes from official SHIP/WHO reporting; UNAIDS does not publish an annual third-95 series for the Philippines.",
         }
         for series_id in ("first_95", "second_95", "third_95"):
             point_rows = [{"period": p, "value": v} for p, v in patched[series_id]]
@@ -432,6 +437,7 @@ class PublicationAssetBuilder:
                 "coverage_end": point_rows[-1]["period"],
                 "actual_metric_type": rows.get(series_id, {}).get("actual_metric_type", ""),
                 "official_annual": official_map.get(series_id, []),
+                "official_context_label": official_labels[series_id],
             })
         return {"rows": ordered}
 
@@ -908,10 +914,14 @@ class PublicationAssetBuilder:
 
     def _render_national_cascade(self, data: dict) -> PublicationFigure:
         self._base_style()
-        fig = plt.figure(figsize=(14.4, 5.3))
+        fig = plt.figure(figsize=(14.6, 5.4))
         gs = GridSpec(1, 3, figure=fig, wspace=0.18)
-        summaries = {"first_95": "Diagnosed", "second_95": "On ART", "third_95": "Virally suppressed"}
         short_titles = {"first_95": "1st 95: Diagnosed", "second_95": "2nd 95: On ART", "third_95": "3rd 95: Suppressed"}
+        legend_handles = [
+            Line2D([0], [0], color="#9eb5c7", linewidth=2.0, linestyle=(0, (2, 2)), marker="o", markerfacecolor="#fffdf8", markeredgecolor="#9eb5c7", markeredgewidth=1.2, markersize=6, label="Official published context"),
+            Line2D([0], [0], color="#0f7c66", linewidth=3.0, marker="o", markerfacecolor="#db6b2c", markeredgecolor="#fffaf0", markeredgewidth=1.2, markersize=6, label="Quarterly surveillance"),
+            Line2D([0], [0], color="#c4561b", linewidth=1.4, linestyle=(0, (4, 3)), label="95 target"),
+        ]
         for idx, row in enumerate(data["rows"]):
             ax = fig.add_subplot(gs[0, idx])
             xs = [_quarter_sort_key(point["period"]) for point in row["points"]]
@@ -920,16 +930,16 @@ class PublicationAssetBuilder:
             annual_xs = [point["year"] + 0.75 for point in annual_points]
             annual_ys = [point["value"] for point in annual_points]
             if annual_xs:
-                ax.plot(annual_xs, annual_ys, color="#9eb5c7", linewidth=2.2, linestyle="-", zorder=1)
-                ax.scatter(annual_xs, annual_ys, color="#9eb5c7", edgecolors="#fffaf0", linewidth=1.0, s=24, zorder=2)
+                ax.plot(annual_xs, annual_ys, color="#9eb5c7", linewidth=2.0, linestyle=(0, (2, 2)), zorder=1)
+                ax.scatter(annual_xs, annual_ys, facecolors="#fffdf8", edgecolors="#9eb5c7", linewidth=1.2, s=28, zorder=2)
             ax.plot(xs, ys, color="#0f7c66", linewidth=3.0, zorder=3)
             ax.scatter(xs, ys, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.4, s=50, zorder=4)
             ax.axhline(95, color="#c4561b", linewidth=1.4, linestyle=(0, (4, 3)), zorder=1)
             ax.text(xs[-1], 95.7, "95 target", color="#9b3c16", fontsize=10, ha="right", va="bottom")
-            ax.set_xlim(2010.0, _quarter_sort_key("2025 Q4") + 0.08)
+            ax.set_xlim(2015.0, _quarter_sort_key("2025 Q4") + 0.08)
             ax.set_ylim(25, 100)
-            ax.set_xticks([2010, 2015, 2020, _quarter_sort_key("2023 Q2"), _quarter_sort_key("2025 Q4")])
-            ax.set_xticklabels(["2010", "2015", "2020", "2023 Q2", "2025 Q4"])
+            ax.set_xticks([2015, 2020, _quarter_sort_key("2023 Q2"), _quarter_sort_key("2025 Q4")])
+            ax.set_xticklabels(["2015", "2020", "2023 Q2", "2025 Q4"])
             ax.yaxis.set_major_locator(MultipleLocator(10))
             ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}%"))
             self._finalize_axis(ax)
@@ -944,10 +954,12 @@ class PublicationAssetBuilder:
                 fontweight="bold",
                 bbox={"facecolor": "#fffaf0", "edgecolor": "none", "boxstyle": "round,pad=0.18", "alpha": 0.82},
             )
-            context_text = "Official annual context 2010-2024" if annual_xs else "Quarterly only; no official annual series"
+            context_text = row.get("official_context_label", "")
             ax.text(0.02, 0.04, context_text, transform=ax.transAxes, fontsize=9.4, color="#5e6a66")
             ax.set_ylabel("Coverage")
-        note = "Quarterly national cascade, 2023 Q2 to 2025 Q4. The third 95 uses suppression among PLHIV on ART."
+        fig.legend(handles=legend_handles, loc="upper center", bbox_to_anchor=(0.5, 1.03), ncol=3, frameon=False, fontsize=11)
+        fig.subplots_adjust(top=0.84, bottom=0.14, left=0.06, right=0.98)
+        note = "Grey annual points show official UNAIDS context where published. The highlighted line shows official quarterly HIV surveillance reporting. The third 95 uses suppression among PLHIV on ART and has no annual UNAIDS comparator series for the Philippines."
         return self._save_figure(fig, "national_cascade_board", "National 95-95-95 cascade", note)
 
     def _render_regional_ladder(self, data: dict) -> PublicationFigure:
