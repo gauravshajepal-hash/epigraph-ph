@@ -230,6 +230,31 @@ def _nice_percent_bounds(values: list[float], step: int = 2) -> tuple[float, flo
     return floor, ceiling, ticks
 
 
+def _collapse_annual_plateaus(points: list[dict]) -> list[dict]:
+    if not points:
+        return []
+    ordered = sorted(points, key=lambda row: int(row.get("year") or 0))
+    collapsed = [ordered[0]]
+    for row in ordered[1:]:
+        previous = collapsed[-1]
+        if abs(float(row["value"]) - float(previous["value"])) < 1e-6:
+            previous["coverage_end"] = int(row["year"])
+            continue
+        collapsed.append(row)
+    return collapsed
+
+
+def _find_nearby_numbers(lines: list[str], start_index: int, window: int = 10) -> list[float]:
+    values: list[float] = []
+    for probe in lines[start_index:start_index + window]:
+        normalized = probe.replace("\u00a0", " ").replace("\u2009", " ")
+        for token in re.findall(r"\d[\d,]*(?:\.\d+)?", normalized):
+            value = _parse_numeric(token)
+            if value is not None:
+                values.append(value)
+    return values
+
+
 def _humanize_residual_label(label: str, value: float) -> str:
     region, _, stage = str(label or "").partition(" | ")
     if "Suppression after treatment" in stage:
@@ -254,6 +279,7 @@ class PublicationAssetBuilder:
     def __init__(self, base_dir: str | Path | None = None):
         self.base_dir = Path(base_dir or Path(__file__).resolve().parents[1])
         self.normalized_dir = self.base_dir / "data" / "normalized"
+        self.audit_dir = self.normalized_dir / "audit"
         self.processed_dir = self.base_dir / "data" / "processed_md"
         self.figure_dir = self.normalized_dir / "publication_figures"
         self.asset_path = self.normalized_dir / "publication_assets.json"
@@ -306,8 +332,46 @@ class PublicationAssetBuilder:
         with path.open(encoding="utf-8", newline="") as handle:
             return list(csv.DictReader(handle))
 
+    def _read_unaids_annual_series(self) -> dict:
+        path = self.audit_dir / "unaids_philippines_all_ages.csv"
+        rows = {
+            "plhiv": [],
+            "new_infections": [],
+            "aids_deaths": [],
+            "art_coverage_plhiv": [],
+            "first_95": [],
+            "second_95": [],
+        }
+        if not path.exists():
+            return rows
+        indicator_map = {
+            "People living with HIV": "plhiv",
+            "New HIV infections": "new_infections",
+            "AIDS-related deaths": "aids_deaths",
+            "ART coverage among all PLHIV": "art_coverage_plhiv",
+            "1st 95 official": "first_95",
+            "2nd 95 official": "second_95",
+        }
+        with path.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                key = indicator_map.get(row.get("indicator", ""))
+                if not key:
+                    continue
+                year = int(row.get("year") or 0)
+                value = _parse_numeric(row.get("value"))
+                if not year or value is None or year < 2010:
+                    continue
+                rows[key].append({
+                    "year": year,
+                    "label": str(year),
+                    "sort_value": year * 100 + 12,
+                    "value": float(value),
+                })
+        return rows
+
     def _build_national_cascade(self, dashboard: dict) -> dict:
         rows = {row["series_id"]: row for row in dashboard.get("charts", {}).get("national_goal_board", [])}
+        official = self._read_unaids_annual_series()
         patched = {
             "first_95": [
                 ("2023 Q2", 59.0), ("2023 Q3", 61.0), ("2023 Q4", 63.0),
@@ -348,6 +412,11 @@ class PublicationAssetBuilder:
             "second_95": "2nd 95: Treatment coverage",
             "third_95": "3rd 95: Viral suppression",
         }
+        official_map = {
+            "first_95": official.get("first_95", []),
+            "second_95": official.get("second_95", []),
+            "third_95": [],
+        }
         for series_id in ("first_95", "second_95", "third_95"):
             point_rows = [{"period": p, "value": v} for p, v in patched[series_id]]
             ordered.append({
@@ -362,6 +431,7 @@ class PublicationAssetBuilder:
                 "coverage_start": point_rows[0]["period"],
                 "coverage_end": point_rows[-1]["period"],
                 "actual_metric_type": rows.get(series_id, {}).get("actual_metric_type", ""),
+                "official_annual": official_map.get(series_id, []),
             })
         return {"rows": ordered}
 
@@ -430,6 +500,7 @@ class PublicationAssetBuilder:
 
     def _build_historical_series(self, observations: list[dict]) -> dict:
         extracted = self._extract_markdown_series()
+        official = self._read_unaids_annual_series()
         cases = _annualize_latest(extracted["cases"])
         sexual_obs = []
         for row in observations:
@@ -439,7 +510,7 @@ class PublicationAssetBuilder:
                 continue
             value = _parse_numeric(row.get("value"))
             year = int(row.get("year") or 0)
-            if value is None or not year or value < 0 or value > 100:
+            if value is None or not year or value < 70 or value > 100:
                 continue
             sexual_obs.append({
                 "year": year,
@@ -451,13 +522,26 @@ class PublicationAssetBuilder:
         for row in _annualize_latest(sexual_obs):
             sexual_by_year[int(row["year"])] = row
         for row in _annualize_latest(extracted["sexual_share"]):
-            sexual_by_year[int(row["year"])] = row
+            year = int(row["year"])
+            current = sexual_by_year.get(year)
+            if current is None:
+                sexual_by_year[year] = row
+                continue
+            current_value = float(current["value"])
+            if abs(current_value - float(row["value"])) > 2.5 or row["sort_value"] >= current["sort_value"]:
+                sexual_by_year[year] = row
         sexual = [sexual_by_year[year] for year in sorted(sexual_by_year)]
-        return {"cases": cases, "sexual_share": sexual}
+        return {
+            "cases": cases,
+            "sexual_share": sexual,
+            "plhiv": official["plhiv"],
+            "new_infections": official["new_infections"],
+            "aids_deaths": official["aids_deaths"],
+            "art_coverage_plhiv": official["art_coverage_plhiv"],
+        }
 
     def _build_key_population_series(self, observations: list[dict]) -> dict:
         pregnant_rows = []
-        tgw_rows = []
         youth_rows = []
         for row in observations:
             if row.get("region") != "Philippines":
@@ -474,8 +558,6 @@ class PublicationAssetBuilder:
             metric = row.get("metric_type", "")
             if metric == "pregnant_women_reported_count" and subgroup == "pregnant_women" and row.get("period_scope") == "cumulative":
                 pregnant_rows.append({"year": year, "label": period_label, "sort_value": sort_value, "value": value})
-            elif metric == "new_cases_count" and subgroup == "tgw":
-                tgw_rows.append({"year": year, "label": period_label, "sort_value": sort_value, "value": value})
             elif metric == "reported_cases_pct" and subgroup == "age_15_24":
                 youth_rows.append({"year": year, "label": period_label, "sort_value": sort_value, "value": value})
 
@@ -496,21 +578,66 @@ class PublicationAssetBuilder:
                 "value": float(value),
             })
 
+        extracted = self._extract_markdown_series()
+
+        pregnant_by_year = {}
+        for row in _annualize_latest(pregnant_rows):
+            pregnant_by_year[int(row["year"])] = row
+        for row in _annualize_latest(extracted["pregnant_cumulative"]):
+            year = int(row["year"])
+            current = pregnant_by_year.get(year)
+            if current is None:
+                previous = pregnant_by_year.get(year - 1)
+                if previous is None:
+                    if 100 <= row["value"] <= 2000:
+                        pregnant_by_year[year] = row
+                else:
+                    if previous["value"] * 0.8 <= row["value"] <= previous["value"] * 1.35:
+                        pregnant_by_year[year] = row
+                continue
+            if current["value"] * 0.8 <= row["value"] <= current["value"] * 1.25 and row["sort_value"] > current["sort_value"]:
+                pregnant_by_year[year] = row
+
         ofw_by_year = {}
         for row in _annualize_latest(ofw_rows):
             ofw_by_year[int(row["year"])] = row
-        for row in _annualize_latest(self._extract_markdown_series()["ofw"]):
+        for row in _annualize_latest(extracted["ofw"]):
             ofw_by_year[int(row["year"])] = row
 
+        youth_by_year = {}
+        for row in _annualize_latest(youth_rows):
+            youth_by_year[int(row["year"])] = row
+        for row in _annualize_latest(extracted["youth_share"]):
+            year = int(row["year"])
+            current = youth_by_year.get(year)
+            if current is None:
+                youth_by_year[year] = row
+                continue
+            current_value = float(current["value"])
+            extracted_value = float(row["value"])
+            if extracted_value >= 20 and (current_value < 20 or abs(current_value - extracted_value) >= 4 or row["sort_value"] >= current["sort_value"]):
+                youth_by_year[year] = row
+
+        tgw_by_year = {}
+        for row in _annualize_latest(extracted["tgw_cumulative"]):
+            tgw_by_year[int(row["year"])] = row
+
         return {
-            "pregnant_cumulative": _annualize_latest(pregnant_rows),
-            "tgw_new_cases": _annualize_sum(tgw_rows),
+            "pregnant_cumulative": [pregnant_by_year[year] for year in sorted(pregnant_by_year)],
+            "tgw_cumulative": [tgw_by_year[year] for year in sorted(tgw_by_year)],
             "ofw_cumulative": [ofw_by_year[year] for year in sorted(ofw_by_year)],
-            "youth_share": _annualize_latest(youth_rows),
+            "youth_share": [youth_by_year[year] for year in sorted(youth_by_year)],
         }
 
     def _extract_markdown_series(self) -> dict:
-        results = {"cases": [], "sexual_share": [], "ofw": []}
+        results = {
+            "cases": [],
+            "sexual_share": [],
+            "ofw": [],
+            "youth_share": [],
+            "pregnant_cumulative": [],
+            "tgw_cumulative": [],
+        }
         for path in sorted(self.processed_dir.glob("*.md")):
             if path.name.startswith("_") or path.name.endswith(".markitdown.md"):
                 continue
@@ -528,6 +655,15 @@ class PublicationAssetBuilder:
             ofw_value = self._extract_ofw_count(text)
             if ofw_value:
                 results["ofw"].append({"year": year, "label": period_label, "sort_value": sort_value, "value": float(ofw_value), "filename": path.name})
+            youth_value = self._extract_youth_share(text)
+            if youth_value is not None:
+                results["youth_share"].append({"year": year, "label": period_label, "sort_value": sort_value, "value": float(youth_value), "filename": path.name})
+            pregnant_value = self._extract_pregnant_cumulative(text)
+            if pregnant_value:
+                results["pregnant_cumulative"].append({"year": year, "label": period_label, "sort_value": sort_value, "value": float(pregnant_value), "filename": path.name})
+            tgw_value = self._extract_tgw_cumulative(text)
+            if tgw_value:
+                results["tgw_cumulative"].append({"year": year, "label": period_label, "sort_value": sort_value, "value": float(tgw_value), "filename": path.name})
 
         deduped = {}
         for key, rows in results.items():
@@ -541,10 +677,12 @@ class PublicationAssetBuilder:
 
     def _extract_total_cases(self, text: str) -> float | None:
         lines = [line.strip() for line in text.splitlines() if line.strip()]
+        number_pattern = re.compile(r"\d[\d,\s]{2,}")
         patterns = [
-            re.compile(r"Cumulatively,\s*([\d,]+)\s+con\S*\s+HIV cases have been reported", re.I),
-            re.compile(r"Since then, there have been\s+([\d,]+)\s+confirmed HIV cases reported to the HARP", re.I),
-            re.compile(r"From January 1984 to [A-Za-z]+\s+\d{4}, there (?:has been|were)\s+([\d,]+).*?cases reported", re.I | re.S),
+            re.compile(r"Cumulatively,\s*([\d,\s]+)\s+con\S*\s+HIV cases have been reported", re.I),
+            re.compile(r"Since then, there have been\s+([\d,\s]+)\s+confirmed HIV cases reported to the HARP", re.I),
+            re.compile(r"From January 1984 to [A-Za-z]+\s+\d{4}, there (?:has been|were)\s+([\d,\s]+).*?cases reported", re.I | re.S),
+            re.compile(r"Majority of the total reported cases\s*\(([\d,\s]+)\s*,\s*[\d.]+%\)\s*were", re.I),
         ]
         for rx in patterns:
             match = rx.search(text)
@@ -556,10 +694,10 @@ class PublicationAssetBuilder:
             if "total reported cases" not in line.lower():
                 continue
             candidates = []
-            for probe in lines[index:index + 8]:
-                for number in re.findall(r"\d[\d,]{2,}", probe):
+            for probe in lines[index:index + 10]:
+                for number in number_pattern.findall(probe):
                     value = _parse_numeric(number)
-                    if value and value > 1000:
+                    if value and value > 5000:
                         candidates.append(value)
             if candidates:
                 return max(candidates)
@@ -567,27 +705,167 @@ class PublicationAssetBuilder:
 
     def _extract_sexual_share(self, text: str) -> float | None:
         patterns = [
+            re.compile(r"of the [\d,\s]+ HIV positive cases.*?([\d,\s]+)\s*\(([\d.]+)%\)\s*were infected through sexual contact", re.I | re.S),
             re.compile(r"\(([\d.]+)%\)\s+acquired HIV through sexual contact", re.I),
             re.compile(r"Sexual contact\s*\(([\d.]+)%\)\s+was the leading mode of transmission", re.I),
+            re.compile(r"Sexual contact\s*\(([\d.]+)%\)\s+was the predominant mode of transmission", re.I),
+            re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4}.*?sexual contact.*?\(([\d.]+)%\)\s+was the predominant mode of transmission", re.I | re.S),
         ]
         for rx in patterns:
             match = rx.search(text)
             if match:
-                value = _parse_numeric(match.group(1))
-                if value is not None and 0 <= value <= 100:
+                value_group = match.lastindex if (match.lastindex or 0) >= 2 else 1
+                value = _parse_numeric(match.group(value_group))
+                count = _parse_numeric(match.group(1)) if (match.lastindex or 0) >= 2 else None
+                if value is not None and 70 <= value <= 100 and (count is None or count >= 1000):
                     return value
+        total_cases = self._extract_total_cases(text)
+        if total_cases:
+            lines = [line.strip() for line in text.splitlines() if line.strip()]
+            for index, line in enumerate(lines):
+                normalized = re.sub(r"\s+", " ", line).strip().lower()
+                if normalized not in {"sexual contact", "sexual"}:
+                    continue
+                values = _find_nearby_numbers(lines, index + 1, window=8)
+                if len(values) < 6:
+                    continue
+                last_pair = values[-2:]
+                cumulative = sum(last_pair)
+                if total_cases * 0.8 <= cumulative <= total_cases:
+                    return round((cumulative / total_cases) * 100.0, 1)
+                large_values = [value for value in values if 1000 <= value <= total_cases]
+                if len(large_values) >= 2:
+                    candidate = sum(large_values[-2:])
+                    if total_cases * 0.8 <= candidate <= total_cases:
+                        return round((candidate / total_cases) * 100.0, 1)
+            count_patterns = [
+                re.compile(r"Of the [\d,\s]+ HIV positive cases.*?([\d,\s]+)\s*\(([\d.]+)%\)\s*were infected through sexual contact", re.I | re.S),
+                re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4}, there (?:has been|were)\s*[\d,\s]+.*?([\d,\s]+)\s*\(([\d.]+)%\)\s*were infected through sexual contact", re.I | re.S),
+            ]
+            for rx in count_patterns:
+                for match in rx.finditer(text):
+                    count = _parse_numeric(match.group(1))
+                    if count is None or count < 1000 or count > total_cases:
+                        continue
+                    share = (count / total_cases) * 100.0
+                    if 70 <= share <= 100:
+                        return round(share, 1)
+            lines = [line.strip() for line in text.splitlines() if line.strip()]
+            for index, line in enumerate(lines):
+                normalized = re.sub(r"\s+", " ", line).strip().lower()
+                if normalized not in {"sexual contact", "sexual"}:
+                    continue
+                values = _find_nearby_numbers(lines, index + 1, window=10)
+                if len(values) < 6:
+                    continue
+                last_pair = values[-2:]
+                cumulative = sum(last_pair)
+                if total_cases * 0.8 <= cumulative <= total_cases:
+                    return round((cumulative / total_cases) * 100.0, 1)
+                large_values = [value for value in values if 1000 <= value <= total_cases]
+                if len(large_values) >= 2:
+                    candidate = sum(large_values[-2:])
+                    if total_cases * 0.8 <= candidate <= total_cases:
+                        return round((candidate / total_cases) * 100.0, 1)
         return None
 
     def _extract_ofw_count(self, text: str) -> float | None:
         patterns = [
-            re.compile(r"Since 1984,?\s*(?:a total of\s*)?([\d,]+)\s*\(([\d.]+)%\)\s*(?:migrant workers among the diagnosed cases|of diagnosed cases have been migrant workers)", re.I),
-            re.compile(r"From January 1984 to [A-Za-z]+\s+\d{4}, out of the [\d,]+ cases,\s*([\d,]+)\s*\(([\d.]+)%\)\s*were HIV positive OFWs", re.I),
+            re.compile(r"Since 1984,?\s*(?:a total of\s*)?([\d,\s]+)\s*\(([\d.]+)%\)\s*(?:migrant workers among the diagnosed cases|of diagnosed cases have been migrant workers)", re.I),
+            re.compile(r"Since 1984,?\s*a total of\s*([\d,\s]+)\s*\(([\d.]+)%\)\s*migrant workers among the diagnosed", re.I),
+            re.compile(r"There were\s*([\d,\s]+)\s*HIV positive OFWs since 1984", re.I),
+            re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4},\s*[\d.]+%\s*\(([\d,\s]+)\)\s*of\s*the total cases were OFWs", re.I | re.S),
+            re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4},\s*([\d,\s]+)\s*\(([\d.]+)%\)\s*of the total\s*cases were OFWs", re.I | re.S),
+            re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4}, out of the [\d,\s]+ cases,\s*([\d,\s]+)\s*\(([\d.]+)%\)\s*were HIV[- ]positive OFWs", re.I | re.S),
+            re.compile(r"From January 1984(?:\s*[â€“-]\s*| to )?[A-Za-z]+\s+\d{4},\s*(?:\w+\s+percent|[\d.]+%)\s*\(([\d,\s]+)\)\s*of\s*the total cases were OFWs", re.I | re.S),
+            re.compile(r"([\d,\s]+)\s*\(([\d.]+)%\)\s*were OFWs", re.I),
         ]
         for rx in patterns:
             match = rx.search(text)
             if match:
                 value = _parse_numeric(match.group(1))
                 if value and value > 100:
+                    return value
+        return None
+
+    def _extract_youth_share(self, text: str) -> float | None:
+        patterns = [
+            re.compile(r"From January 1984 to [A-Za-z]+\s+\d{4},\s*([\d,\s]+)\s*\(([\d.]+)%\)\s*of the reported cases were 15-24 years old", re.I),
+            re.compile(r"From January 1984(?:\s*[–-]\s*| to )?[A-Za-z]+\s+\d{4},\s*([\d,\s]+)\s*\(([\d.]+)%\)\s*of the reported cases were 15-24 years old", re.I),
+            re.compile(r"([\d,\s]+)\s*\(([\d.]+)%\)\s*were youth aged\s*15-24", re.I),
+            re.compile(r"([\d,\s]+)\s*\(([\d.]+)%\)\s*were among the youth aged 15-24 years old", re.I),
+            re.compile(r"([\d,\s]+)\s*\(([\d.]+)%\)\s*were youth\s*\(15-24 years old", re.I),
+            re.compile(r"([\d,\s]+)\s*\(([\d.]+)%\)\s*were 15-24 years old", re.I),
+        ]
+        for rx in patterns:
+            match = rx.search(text)
+            if match:
+                count = _parse_numeric(match.group(1))
+                value = _parse_numeric(match.group(2))
+                if count and count > 5000 and value is not None and 10 <= value <= 60:
+                    return value
+        total_cases = self._extract_total_cases(text)
+        if total_cases:
+            lines = [line.strip() for line in text.splitlines() if line.strip()]
+            for index, line in enumerate(lines):
+                normalized = re.sub(r"\s+", " ", line).strip().lower()
+                if normalized not in {"youth 15-24yo", "youth 15-24 y/o", "15-24 y/o"}:
+                    continue
+                values = _find_nearby_numbers(lines, index + 1, window=6)
+                candidates = [value for value in values if 1000 <= value <= total_cases]
+                if candidates:
+                    return round((max(candidates) / total_cases) * 100.0, 1)
+        return None
+
+    def _extract_pregnant_cumulative(self, text: str) -> float | None:
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        patterns = [
+            re.compile(r"Since then, a total of\s*([\d,\s]+)\s*diagnosed women have been reported as pregnant at the time of diagnosis", re.I),
+            re.compile(r"a total of\s*([\d,\s]+)\s*diagnosed women (?:were|was) reported pregnant at the time of diagnosis", re.I),
+            re.compile(r"\b([\d,\s]+)\s*women reported pregnant at the time of diagnosis\b", re.I),
+        ]
+        for rx in patterns:
+            match = rx.search(text)
+            if match:
+                value = _parse_numeric(match.group(1))
+                if value and value > 100:
+                    return value
+        for index, line in enumerate(lines):
+            lower = line.lower()
+            if lower.startswith("reported pregnant"):
+                candidates = []
+                for probe in lines[index:index + 6]:
+                    for number in re.findall(r"\d[\d,\s]{1,}", probe):
+                        value = _parse_numeric(number)
+                        if value and 100 <= value <= 5000 and int(value) not in range(1984, 2031):
+                            candidates.append(value)
+                if candidates:
+                    return max(candidates)
+        caption_candidates = []
+        for index in range(len(lines)):
+            window = " ".join(lines[index:index + 4])
+            lower = window.lower()
+            if "pregnant" not in lower:
+                continue
+            for number in re.findall(r"\(N?\s*=\s*([\d,\s]+)\)", window, re.I):
+                value = _parse_numeric(number)
+                if value and 100 <= value <= 5000:
+                    caption_candidates.append(value)
+        if caption_candidates:
+            return max(caption_candidates)
+        return None
+
+    def _extract_tgw_cumulative(self, text: str) -> float | None:
+        patterns = [
+            re.compile(r"Of the\s*([\d,\s]+)\s*TGW diagnosed(?: with HIV)? from January 2018", re.I),
+            re.compile(r"A total of\s*([\d,\s]+)\s*TGW were diagnosed from January 2018", re.I),
+            re.compile(r"January 2018 to [A-Za-z]+\s+\d{4},\s*(?:three|\d+(?:\.\d+)?)\s*percent\s*\(?([\d,\s]+)\)?\s*of\s*[\d,\s]+[a-z]?\s*diagnosed.*?transgender women", re.I | re.S),
+        ]
+        for rx in patterns:
+            match = rx.search(text)
+            if match:
+                value = _parse_numeric(match.group(1))
+                if value and value > 500:
                     return value
         return None
 
@@ -638,14 +916,20 @@ class PublicationAssetBuilder:
             ax = fig.add_subplot(gs[0, idx])
             xs = [_quarter_sort_key(point["period"]) for point in row["points"]]
             ys = [point["value"] for point in row["points"]]
+            annual_points = row.get("official_annual", [])
+            annual_xs = [point["year"] + 0.75 for point in annual_points]
+            annual_ys = [point["value"] for point in annual_points]
+            if annual_xs:
+                ax.plot(annual_xs, annual_ys, color="#9eb5c7", linewidth=2.2, linestyle="-", zorder=1)
+                ax.scatter(annual_xs, annual_ys, color="#9eb5c7", edgecolors="#fffaf0", linewidth=1.0, s=24, zorder=2)
             ax.plot(xs, ys, color="#0f7c66", linewidth=3.0, zorder=3)
             ax.scatter(xs, ys, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.4, s=50, zorder=4)
             ax.axhline(95, color="#c4561b", linewidth=1.4, linestyle=(0, (4, 3)), zorder=1)
             ax.text(xs[-1], 95.7, "95 target", color="#9b3c16", fontsize=10, ha="right", va="bottom")
-            ax.set_xlim(_quarter_sort_key("2023 Q2") - 0.08, _quarter_sort_key("2025 Q4") + 0.08)
+            ax.set_xlim(2010.0, _quarter_sort_key("2025 Q4") + 0.08)
             ax.set_ylim(25, 100)
-            ax.set_xticks([_quarter_sort_key(label) for label in ("2023 Q2", "2024 Q1", "2024 Q4", "2025 Q4")])
-            ax.set_xticklabels(["2023 Q2", "2024 Q1", "2024 Q4", "2025 Q4"])
+            ax.set_xticks([2010, 2015, 2020, _quarter_sort_key("2023 Q2"), _quarter_sort_key("2025 Q4")])
+            ax.set_xticklabels(["2010", "2015", "2020", "2023 Q2", "2025 Q4"])
             ax.yaxis.set_major_locator(MultipleLocator(10))
             ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}%"))
             self._finalize_axis(ax)
@@ -660,10 +944,10 @@ class PublicationAssetBuilder:
                 fontweight="bold",
                 bbox={"facecolor": "#fffaf0", "edgecolor": "none", "boxstyle": "round,pad=0.18", "alpha": 0.82},
             )
+            context_text = "Official annual context 2010-2024" if annual_xs else "Quarterly only; no official annual series"
+            ax.text(0.02, 0.04, context_text, transform=ax.transAxes, fontsize=9.4, color="#5e6a66")
             ax.set_ylabel("Coverage")
         note = "Quarterly national cascade, 2023 Q2 to 2025 Q4. The third 95 uses suppression among PLHIV on ART."
-        fig.suptitle("National 95-95-95 cascade, Philippines", fontsize=18, fontfamily="DejaVu Serif", fontweight="bold", x=0.05, ha="left", y=0.98)
-        fig.text(0.05, 0.92, "Quarterly national surveillance series corrected to use suppression among PLHIV on ART rather than suppression among those tested.", fontsize=11.0, color="#5e6a66")
         return self._save_figure(fig, "national_cascade_board", "National 95-95-95 cascade", note)
 
     def _render_regional_ladder(self, data: dict) -> PublicationFigure:
@@ -672,14 +956,15 @@ class PublicationAssetBuilder:
         fig, ax = plt.subplots(figsize=(15.2, 9.0))
         y_positions = np.arange(len(rows))[::-1]
         markers = {"diagnosis": "o", "treatment": "s", "suppression": "D"}
+        y_offsets = {"diagnosis": 0.12, "treatment": 0.0, "suppression": -0.12}
         for y, row in zip(y_positions, rows):
             points = [row["diagnosis"], row["treatment"], row["suppression"]]
             ax.hlines(y, min(points), max(points), color="#c1c8c3", linewidth=2.4, zorder=1)
-            ax.scatter(row["diagnosis"], y, color=CASCADE_COLORS["diagnosis"], marker=markers["diagnosis"], s=130, edgecolors="#fffaf0", linewidth=1.8, zorder=5)
-            ax.scatter(row["treatment"], y, color=CASCADE_COLORS["treatment"], marker=markers["treatment"], s=115, edgecolors="#fffaf0", linewidth=1.6, zorder=6)
-            ax.scatter(row["suppression"], y, color=CASCADE_COLORS["suppression"], marker=markers["suppression"], s=120, edgecolors="#fffaf0", linewidth=1.6, zorder=7)
+            ax.scatter(row["diagnosis"], y + y_offsets["diagnosis"], color=CASCADE_COLORS["diagnosis"], marker=markers["diagnosis"], s=130, edgecolors="#fffaf0", linewidth=1.8, zorder=5)
+            ax.scatter(row["treatment"], y + y_offsets["treatment"], color=CASCADE_COLORS["treatment"], marker=markers["treatment"], s=115, edgecolors="#fffaf0", linewidth=1.6, zorder=6)
+            ax.scatter(row["suppression"], y + y_offsets["suppression"], color=CASCADE_COLORS["suppression"], marker=markers["suppression"], s=120, edgecolors="#fffaf0", linewidth=1.6, zorder=7)
         ax.axvline(95, color="#c4561b", linewidth=1.6, linestyle=(0, (4, 3)), zorder=1)
-        ax.annotate("95% target", xy=(95, 1.0), xycoords=("data", "axes fraction"), xytext=(-6, 6), textcoords="offset points", ha="right", va="bottom", color="#9b3c16", fontsize=11)
+        ax.annotate("95% target", xy=(95, 1.0), xycoords=("data", "axes fraction"), xytext=(-10, 8), textcoords="offset points", ha="right", va="bottom", color="#9b3c16", fontsize=11)
         ax.set_xlim(30, 96)
         ax.set_ylim(-0.8, len(rows) - 0.2)
         ax.set_yticks(y_positions)
@@ -699,7 +984,6 @@ class PublicationAssetBuilder:
         laggard = rows[-1]["region"]
         note = f"Regions are ordered from smallest to largest average gap to the 95% target. {leader} is closest overall; {laggard} is furthest away."
         fig.subplots_adjust(left=0.23, right=0.98, top=0.90, bottom=0.12)
-        fig.text(0.125, 0.02, note, fontsize=11.5, color="#5e6a66")
         return self._save_figure(fig, "regional_cascade_ladder", "Regional cascade ladder", note)
 
     def _render_anomaly_board(self, data: dict) -> PublicationFigure:
@@ -741,7 +1025,6 @@ class PublicationAssetBuilder:
         ax_right.legend(loc="upper left", frameon=False, fontsize=11)
         fig.subplots_adjust(left=0.24, right=0.98, top=0.92, bottom=0.13)
         note = f"Residuals show which regions are above or below the fitted cascade pattern. Leakage uses the {data['period_label']} treatment-outcome snapshot."
-        fig.text(0.05, 0.02, note, fontsize=11.5, color="#5e6a66")
         return self._save_figure(fig, "anomaly_board", "Regional outliers and treatment leakage", note)
 
     def _shade_unavailable(self, ax, start_year: int, end_year: int, observed_start: int | None, observed_end: int | None):
@@ -761,71 +1044,65 @@ class PublicationAssetBuilder:
 
     def _render_historical_board(self, data: dict) -> PublicationFigure:
         self._base_style()
-        fig = plt.figure(figsize=(14.8, 6.2))
-        gs = GridSpec(1, 2, figure=fig, width_ratios=[1.05, 1.0], wspace=0.22)
-        ax_cases = fig.add_subplot(gs[0, 0])
-        ax_sexual = fig.add_subplot(gs[0, 1])
+        fig = plt.figure(figsize=(15.6, 9.0))
+        gs = GridSpec(2, 2, figure=fig, hspace=0.44, wspace=0.22)
+        axes = [fig.add_subplot(gs[row, col]) for row in range(2) for col in range(2)]
+        panel_specs = [
+            ("Cumulative reported HIV cases", data["cases"], SERIES_COLORS["cases"], "count", "Direct surveillance end-of-year cumulative count, 2010 to 2025."),
+            ("People living with HIV", data["plhiv"], "#3565af", "count", "Official UNAIDS annual estimate, 2010 to 2024."),
+            ("New HIV infections", data["new_infections"], "#b35323", "count", "Official UNAIDS annual estimate, 2010 to 2024."),
+            ("AIDS-related deaths", data["aids_deaths"], "#8a3f2a", "count", "Official UNAIDS annual estimate, 2010 to 2024."),
+        ]
 
-        cases = data["cases"]
-        sexual = data["sexual_share"]
+        for ax, (title, points, color, unit, subtitle) in zip(axes, panel_specs):
+            years, series, observed_years, observed_values = _complete_annual_series(points)
+            observed_start, observed_end = self._annual_series_bounds(points)
+            self._shade_unavailable(ax, 2010, 2025, observed_start, observed_end)
+            if observed_years:
+                if unit == "count":
+                    ymin, ymax = _nice_count_bounds(observed_values)
+                    baseline = ymin
+                    ax.set_ylim(ymin, ymax)
+                    ax.yaxis.set_major_locator(MaxNLocator(5))
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(round(value / 1000.0))}K" if value >= 1000 else f"{int(round(value))}"))
+                else:
+                    ymin, ymax, yticks = _nice_percent_bounds(observed_values, step=2)
+                    baseline = ymin
+                    ax.set_ylim(ymin, ymax)
+                    ax.set_yticks(yticks)
+                    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(round(value))}%"))
+                ax.plot(years, series, color=color, linewidth=3.0, zorder=3)
+                ax.fill_between(years, series, baseline, where=np.isfinite(series), color="#dbece7", alpha=0.6, zorder=1)
+                ax.scatter(observed_years, observed_values, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.4, s=48, zorder=4)
+            ax.set_title(title, fontsize=16, fontfamily="DejaVu Serif", loc="left", pad=14)
+            ax.text(0.0, 1.03, subtitle, transform=ax.transAxes, fontsize=9.6, color="#5e6a66")
+            if observed_years:
+                ax.text(1.0, 1.03, f"{observed_start}-{observed_end}", transform=ax.transAxes, ha="right", fontsize=9.6, color="#0c6150", fontweight="bold")
+            ax.set_xlim(2009.5, 2025.5)
+            ax.set_xticks(_year_ticks(2010, 2025))
+            self._finalize_axis(ax)
 
-        case_years, case_series, case_obs_years, case_obs_values = _complete_annual_series(cases)
-        case_values = [point["value"] for point in cases]
-        case_start, case_end = self._annual_series_bounds(cases)
-        self._shade_unavailable(ax_cases, 2010, 2025, case_start, case_end)
-        if case_obs_years:
-            case_floor, case_ceiling = _nice_count_bounds(case_obs_values)
-            ax_cases.plot(case_years, case_series, color=SERIES_COLORS["cases"], linewidth=3.2, zorder=3)
-            ax_cases.fill_between(case_years, case_series, case_floor, where=np.isfinite(case_series), color="#dbece7", alpha=0.6, zorder=1)
-            ax_cases.scatter(case_obs_years, case_obs_values, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.5, s=55, zorder=4)
-            ax_cases.set_ylim(case_floor, case_ceiling)
-        ax_cases.set_title("Cumulative reported HIV cases", fontsize=17, fontfamily="DejaVu Serif", loc="left", pad=12)
-        ax_cases.text(0.0, 1.02, "Annual end-of-year values from 2010 to 2025, using direct source extraction and audited quarterly extensions.", transform=ax_cases.transAxes, fontsize=10.8, color="#5e6a66")
-        ax_cases.set_xlim(2009.5, 2025.5)
-        ax_cases.set_xticks(_year_ticks(2010, 2025))
-        ax_cases.yaxis.set_major_locator(MaxNLocator(6))
-        ax_cases.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(round(value / 1000.0))}K"))
-        self._finalize_axis(ax_cases)
-
-        sexual_years, sexual_series, sexual_obs_years, sexual_obs_values = _complete_annual_series(sexual)
-        sexual_start, sexual_end = self._annual_series_bounds(sexual)
-        self._shade_unavailable(ax_sexual, 2010, 2025, sexual_start, sexual_end)
-        if sexual_obs_years:
-            sexual_floor, sexual_ceiling, sexual_ticks = _nice_percent_bounds(sexual_obs_values, step=2)
-            ax_sexual.plot(sexual_years, sexual_series, color=SERIES_COLORS["sexual"], linewidth=3.2, zorder=3)
-            ax_sexual.fill_between(sexual_years, sexual_series, sexual_floor, where=np.isfinite(sexual_series), color="#dce9f2", alpha=0.55, zorder=1)
-            ax_sexual.scatter(sexual_obs_years, sexual_obs_values, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.5, s=55, zorder=4)
-            ax_sexual.set_ylim(sexual_floor, sexual_ceiling)
-            ax_sexual.set_yticks(sexual_ticks)
-        ax_sexual.set_title("Sexual contact share of reported cases", fontsize=17, fontfamily="DejaVu Serif", loc="left", pad=12)
-        ax_sexual.text(0.0, 1.02, "Annualized national share, 2010 to 2025. Interior gaps stay blank instead of being connected across missing years.", transform=ax_sexual.transAxes, fontsize=10.8, color="#5e6a66")
-        ax_sexual.set_xlim(2009.5, 2025.5)
-        ax_sexual.set_xticks(_year_ticks(2010, 2025))
-        ax_sexual.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(round(value))}%"))
-        self._finalize_axis(ax_sexual)
-
-        note = "Historical panels use annualized values and shade years outside the observed window rather than implying missing values."
-        fig.suptitle("Long-run burden and exposure shift, Philippines", fontsize=19, fontfamily="DejaVu Serif", fontweight="bold", x=0.05, ha="left", y=1.02)
-        fig.text(0.05, 0.95, "These publication figures use direct markdown extraction for the long-run burden and exposure series instead of the weaker generic trend layer.", fontsize=11.5, color="#5e6a66")
-        fig.text(0.05, 0.02, note, fontsize=11.5, color="#5e6a66")
+        fig.subplots_adjust(top=0.93, bottom=0.10, left=0.07, right=0.98)
+        note = "Historical board combines direct surveillance counts with official UNAIDS annual estimates. Shaded years indicate no observed or published value for that panel."
         return self._save_figure(fig, "historical_board", "Historical burden and exposure shift", note)
 
     def _render_key_population_board(self, data: dict) -> PublicationFigure:
         self._base_style()
-        fig = plt.figure(figsize=(14.8, 9.2))
-        gs = GridSpec(2, 2, figure=fig, hspace=0.28, wspace=0.18)
+        fig = plt.figure(figsize=(15.2, 10.2))
+        gs = GridSpec(2, 2, figure=fig, hspace=0.52, wspace=0.20)
 
         panel_specs = [
             ("Pregnant women diagnosed (cumulative)", data["pregnant_cumulative"], SERIES_COLORS["pregnant"], "count", "Annual latest cumulative value from quarterly surveillance."),
-            ("TGW new cases", data["tgw_new_cases"], SERIES_COLORS["tgw"], "count", "Annual summed new cases from structured quarterly surveillance."),
+            ("TGW diagnosed (cumulative)", data["tgw_cumulative"], SERIES_COLORS["tgw"], "count", "Annual latest cumulative count from the surveillance series."),
             ("OFW cumulative burden", data["ofw_cumulative"], SERIES_COLORS["ofw"], "count", "Annual latest cumulative count from direct source extraction."),
             ("Youth share of reported cases", data["youth_share"], SERIES_COLORS["youth"], "percent", "Annual latest share among people aged 15-24."),
         ]
 
         axes = [fig.add_subplot(gs[row, col]) for row in range(2) for col in range(2)]
         for ax, (title, points, color, unit, subtitle) in zip(axes, panel_specs):
-            years, series, observed_years, observed_values = _complete_annual_series(points)
-            observed_start, observed_end = self._annual_series_bounds(points)
+            panel_points = _collapse_annual_plateaus(points) if title == "TGW diagnosed (cumulative)" else points
+            years, series, observed_years, observed_values = _complete_annual_series(panel_points)
+            observed_start, observed_end = self._annual_series_bounds(panel_points)
             self._shade_unavailable(ax, 2010, 2025, observed_start, observed_end)
             if observed_years:
                 baseline = 0.0
@@ -843,19 +1120,15 @@ class PublicationAssetBuilder:
                     ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(round(value / 1000.0))}K" if value >= 1000 else f"{int(round(value))}"))
                 ax.fill_between(years, series, baseline, where=np.isfinite(series), color="#dbece7", alpha=0.6, zorder=1)
                 ax.scatter(observed_years, observed_values, color="#db6b2c", edgecolors="#fffaf0", linewidth=1.4, s=48, zorder=4)
-            ax.set_title(title, fontsize=16, fontfamily="DejaVu Serif", loc="left", pad=12)
-            ax.text(0.0, 1.02, subtitle, transform=ax.transAxes, fontsize=10.4, color="#5e6a66")
+            ax.set_title(title, fontsize=15, fontfamily="DejaVu Serif", loc="left", pad=12)
+            ax.text(0.0, 1.03, subtitle, transform=ax.transAxes, fontsize=9.6, color="#5e6a66")
+            if observed_years:
+                ax.text(1.0, 1.03, f"{observed_start}-{observed_end}", transform=ax.transAxes, ha="right", fontsize=9.6, color="#0c6150", fontweight="bold")
             ax.set_xlim(2009.5, 2025.5)
             ax.set_xticks(_year_ticks(2010, 2025))
             ax.yaxis.set_major_locator(MaxNLocator(5))
             self._finalize_axis(ax)
-            coverage_text = "No structured values currently available."
-            if observed_years:
-                coverage_text = f"Observed {observed_start} to {observed_end}. Shaded years have no observed values."
-            ax.text(0.0, -0.18, coverage_text, transform=ax.transAxes, fontsize=10.2, color="#5e6a66")
 
+        fig.subplots_adjust(top=0.93, bottom=0.09, left=0.07, right=0.98)
         note = "All four panels share the same 2010 to 2025 x-axis. Shaded periods indicate years with no observed values for that specific series."
-        fig.suptitle("Key population sentinel panels, Philippines", fontsize=19, fontfamily="DejaVu Serif", fontweight="bold", x=0.05, ha="left", y=0.98)
-        fig.text(0.05, 0.94, "The panels keep differing evidence windows visible instead of forcing false continuity. That makes the coverage differences interpretable.", fontsize=11.5, color="#5e6a66")
-        fig.text(0.05, 0.015, note, fontsize=11.5, color="#5e6a66")
         return self._save_figure(fig, "key_populations_board", "Key population sentinel panels", note)

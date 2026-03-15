@@ -663,7 +663,7 @@
             </div>
             <span class="pill" id="historical-atlas-pill">Loading</span>
           </div>
-          <p class="mini-note">Annualized historical series using direct source extraction. The charts show the long-run burden and the clearest national transmission share signal through the latest available 2025 report.</p>
+          <p class="mini-note">Historical panels combine direct surveillance series with official UNAIDS annual estimates. The goal is a defensible long-run view rather than a dense mixed-source chart wall.</p>
           <div class="publication-figure" id="publication-historical-board"></div>
           <div class="atlas-note" id="publication-historical-board-note"></div>
         </article>
@@ -676,7 +676,7 @@
             </div>
             <span class="pill" id="population-outcomes-pill">Loading</span>
           </div>
-          <p class="mini-note">Pregnant women, TGW, OFW, and youth-linked signals shown on a common 2010 to 2025 x-axis. Years with no observed values are shaded instead of being interpolated away.</p>
+          <p class="mini-note">Pregnant women, TGW, OFW, and youth-linked signals shown on a common 2010 to 2025 x-axis. Years with no observed values stay explicitly shaded rather than being filled in.</p>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
         </article>
@@ -2321,22 +2321,18 @@
         "publication-historical-board-note",
         "No historical publication figure is available."
       );
-      const casePoints = historical.cases || [];
-      const sexualPoints = historical.sexual_share || [];
-      if (!casePoints.length && !sexualPoints.length) {
+      const coverageRows = [
+        historical.cases || [],
+        historical.plhiv || [],
+        historical.new_infections || [],
+        historical.aids_deaths || [],
+      ].filter(rows => rows.length);
+      if (!coverageRows.length) {
         document.getElementById("historical-atlas-pill").textContent = "unavailable";
         return;
       }
-      const starts = [];
-      const ends = [];
-      if (casePoints.length) {
-        starts.push(Number(casePoints[0].year || 9999));
-        ends.push(Number(casePoints[casePoints.length - 1].year || 0));
-      }
-      if (sexualPoints.length) {
-        starts.push(Number(sexualPoints[0].year || 9999));
-        ends.push(Number(sexualPoints[sexualPoints.length - 1].year || 0));
-      }
+      const starts = coverageRows.map(rows => Number(rows[0].year || 9999));
+      const ends = coverageRows.map(rows => Number(rows[rows.length - 1].year || 0));
       document.getElementById("historical-atlas-pill").textContent = `${Math.min(...starts)}-${Math.max(...ends)}`;
     }
 
@@ -3114,7 +3110,7 @@
       );
       const coverageRows = [
         keyPop.pregnant_cumulative || [],
-        keyPop.tgw_new_cases || [],
+        keyPop.tgw_cumulative || [],
         keyPop.ofw_cumulative || [],
         keyPop.youth_share || [],
       ].filter(rows => rows.length);
