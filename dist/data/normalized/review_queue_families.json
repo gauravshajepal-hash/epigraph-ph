@@ -1,0 +1,26 @@
+{
+  "total_rows": 2333,
+  "classifier": "deterministic",
+  "family_counts": {
+    "age_distribution": 451,
+    "non_chart_context": 1357,
+    "transmission_breakdown": 143,
+    "ofw_profile": 111,
+    "quick_facts_table": 2,
+    "ocr_scrambled_table": 44,
+    "testing_summary": 19,
+    "age_distribution_table": 55,
+    "mode_of_transmission_table": 29,
+    "treatment_program": 29,
+    "regional_distribution_table": 40,
+    "historical_trend": 22,
+    "regional_distribution": 22,
+    "policy_reference": 1,
+    "workplace_policy": 5,
+    "background_policy_context": 3
+  },
+  "family_source_counts": {
+    "deterministic": 929,
+    "fallback": 1404
+  }
+}

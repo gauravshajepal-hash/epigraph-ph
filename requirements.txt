@@ -1,0 +1,23 @@
+# Ingestion & Scraping
+scrapling>=0.2.1
+requests>=2.31.0
+
+# Document Parsing
+markitdown>=0.0.1a4
+pymupdf>=1.24.11
+
+# AI & Extraction
+litellm>=1.52.0
+pydantic>=2.10.0
+
+# Database
+sqlite-utils>=3.38
+
+# Tools & Config
+pyyaml>=6.0.2
+python-dotenv>=1.0.1
+
+# Cloud Sync
+google-api-python-client>=2.155.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.1

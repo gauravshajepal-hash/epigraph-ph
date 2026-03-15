@@ -1,0 +1,7384 @@
+{
+  "overview": {
+    "claims_count": 5593,
+    "observations_count": 5898,
+    "review_queue_count": 2333,
+    "disease_counts": {
+      "HIV": 5430,
+      "AIDS": 161,
+      "STI": 2
+    }
+  },
+  "yearly_activity": [
+    {
+      "year": "1984",
+      "claim_count": 1
+    },
+    {
+      "year": "1995",
+      "claim_count": 1
+    },
+    {
+      "year": "1996",
+      "claim_count": 2
+    },
+    {
+      "year": "1998",
+      "claim_count": 1
+    },
+    {
+      "year": "1999",
+      "claim_count": 2
+    },
+    {
+      "year": "2006",
+      "claim_count": 2
+    },
+    {
+      "year": "2008",
+      "claim_count": 2
+    },
+    {
+      "year": "2010",
+      "claim_count": 345
+    },
+    {
+      "year": "2011",
+      "claim_count": 245
+    },
+    {
+      "year": "2012",
+      "claim_count": 263
+    },
+    {
+      "year": "2013",
+      "claim_count": 238
+    },
+    {
+      "year": "2014",
+      "claim_count": 279
+    },
+    {
+      "year": "2015",
+      "claim_count": 401
+    },
+    {
+      "year": "2016",
+      "claim_count": 631
+    },
+    {
+      "year": "2017",
+      "claim_count": 441
+    },
+    {
+      "year": "2018",
+      "claim_count": 562
+    },
+    {
+      "year": "2019",
+      "claim_count": 403
+    },
+    {
+      "year": "2020",
+      "claim_count": 230
+    },
+    {
+      "year": "2021",
+      "claim_count": 295
+    },
+    {
+      "year": "2022",
+      "claim_count": 277
+    },
+    {
+      "year": "2023",
+      "claim_count": 197
+    },
+    {
+      "year": "2024",
+      "claim_count": 398
+    },
+    {
+      "year": "2025",
+      "claim_count": 331
+    }
+  ],
+  "trend_candidates": [
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "migrant_workers",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2010-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 28.0
+        },
+        {
+          "period": "1984-2010-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 29.0
+        },
+        {
+          "period": "1984-2010-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 27.0
+        },
+        {
+          "period": "1984-2010-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 26.0
+        },
+        {
+          "period": "1984-2010-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 26.0
+        },
+        {
+          "period": "1984-2010-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 26.0
+        },
+        {
+          "period": "1984-2010-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 25.0
+        },
+        {
+          "period": "1984-2011-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 25.0
+        },
+        {
+          "period": "1984-2011-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 24.0
+        },
+        {
+          "period": "1984-2011-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 24.0
+        },
+        {
+          "period": "1984-2011-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 24.0
+        },
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 23.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 23.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 23.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 22.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 22.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 22.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 21.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 21.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 21.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 21.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 20.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 20.0
+        },
+        {
+          "period": "1984-2012-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 19.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 19.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 19.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 19.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 19.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 18.0
+        },
+        {
+          "period": "1984-2013-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 18.0
+        },
+        {
+          "period": "1984-2013-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 18.0
+        },
+        {
+          "period": "1984-2013-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 18.0
+        },
+        {
+          "period": "1984-2013-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2013-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2013-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2013-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2013-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 17.0
+        },
+        {
+          "period": "1984-2013-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2013-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2013-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2014-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2014-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2014-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2014-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 16.0
+        },
+        {
+          "period": "1984-2014-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2014-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 15.0
+        },
+        {
+          "period": "1984-2015-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 14.0
+        },
+        {
+          "period": "1984-2015-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2015-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2015-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2015-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2016",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2016-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2016-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2016-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2016-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 13.0
+        },
+        {
+          "period": "1984-2016-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2016-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2016-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2016-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2017",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2017-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 12.0
+        },
+        {
+          "period": "1984-2017-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        },
+        {
+          "period": "1984-2017-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers",
+          "value": 11.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "sexual_contact_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2010-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2010-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2013-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "mother_to_child_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2010-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2010-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2010-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2010-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2010-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2010-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2013-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "needle_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 4.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 4.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 4.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2017-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2017-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2017-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2017-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2018-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 4
+        },
+        {
+          "period": "2018-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 4
+        },
+        {
+          "period": "2018-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2018-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2018-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 4
+        },
+        {
+          "period": "2019-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2019-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2019-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2019-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2.0
+        },
+        {
+          "period": "2020-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2020-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2020-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 5.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2021-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2021-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2021-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        },
+        {
+          "period": "2021-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 3.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "migrant_workers_male",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2015-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 82.0
+        },
+        {
+          "period": "1984-2015-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 82.0
+        },
+        {
+          "period": "1984-2015-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 82.0
+        },
+        {
+          "period": "1984-2015-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 82.0
+        },
+        {
+          "period": "1984-2015-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "1984-2015-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2016-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "1984-2016-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2016-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "1984-2017-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 86.0
+        },
+        {
+          "period": "1984-2017-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 86.0
+        },
+        {
+          "period": "1984-2019-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "1984-2020 Q1",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "1984-2020 Q2",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "1984-2020 Q3",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "migrant_workers_male",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2010-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 75.0
+        },
+        {
+          "period": "2010-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 80.0
+        },
+        {
+          "period": "2010-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 81.0
+        },
+        {
+          "period": "2010-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "2010-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2010-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "2010-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2011-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "2011-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 86.0
+        },
+        {
+          "period": "2011-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2011-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2011-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "2011-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 85.0
+        },
+        {
+          "period": "2011-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2011-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 83.0
+        },
+        {
+          "period": "2011-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2011-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2011-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 84.0
+        },
+        {
+          "period": "2012-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 94.0
+        },
+        {
+          "period": "2012-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 93.0
+        },
+        {
+          "period": "2012-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 89.0
+        },
+        {
+          "period": "2012-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2012-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 89.0
+        },
+        {
+          "period": "2012-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2012-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 86.0
+        },
+        {
+          "period": "2012-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "2012-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 87.0
+        },
+        {
+          "period": "2012-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2012-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        },
+        {
+          "period": "2023-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_male",
+          "value": 88.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "sexual_contact_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2010-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "2010-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 79.0
+        },
+        {
+          "period": "2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 96.0
+        },
+        {
+          "period": "2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 97.0
+        },
+        {
+          "period": "2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 96.0
+        },
+        {
+          "period": "2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 96.0
+        },
+        {
+          "period": "2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 96.0
+        },
+        {
+          "period": "2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 98.0
+        },
+        {
+          "period": "2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 94.0
+        },
+        {
+          "period": "2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 94.0
+        },
+        {
+          "period": "2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 95.0
+        },
+        {
+          "period": "2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 97.0
+        },
+        {
+          "period": "2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 98.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 97.0
+        },
+        {
+          "period": "2020-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 99.0
+        },
+        {
+          "period": "2020-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 98.0
+        },
+        {
+          "period": "2020-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "migrant_workers_female",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2011-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 17.0
+        },
+        {
+          "period": "2011-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 14.0
+        },
+        {
+          "period": "2011-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        },
+        {
+          "period": "2011-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        },
+        {
+          "period": "2011-06",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 13.0
+        },
+        {
+          "period": "2011-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 15.0
+        },
+        {
+          "period": "2011-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 16.0
+        },
+        {
+          "period": "2011-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 17.0
+        },
+        {
+          "period": "2011-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 16.0
+        },
+        {
+          "period": "2011-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 16.0
+        },
+        {
+          "period": "2011-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 16.0
+        },
+        {
+          "period": "2012-01",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 6.0
+        },
+        {
+          "period": "2012-02",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 7.0
+        },
+        {
+          "period": "2012-03",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 11.0
+        },
+        {
+          "period": "2012-04",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        },
+        {
+          "period": "2012-05",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 11.0
+        },
+        {
+          "period": "2012-07",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        },
+        {
+          "period": "2012-08",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 14.0
+        },
+        {
+          "period": "2012-09",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 13.0
+        },
+        {
+          "period": "2012-10",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 13.0
+        },
+        {
+          "period": "2012-11",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        },
+        {
+          "period": "2012-12",
+          "region": "Philippines",
+          "subgroup": "migrant_workers_female",
+          "value": 12.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "male_female_sex_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 34.6
+        },
+        {
+          "period": "2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 28.1
+        },
+        {
+          "period": "2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 26.5
+        },
+        {
+          "period": "2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 26.1
+        },
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 14.0
+        },
+        {
+          "period": "2019-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 17.0
+        },
+        {
+          "period": "2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 15.0
+        },
+        {
+          "period": "2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 13.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 13.0
+        },
+        {
+          "period": "2020-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 12.0
+        },
+        {
+          "period": "2020-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 12.0
+        },
+        {
+          "period": "2020-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 14.0
+        },
+        {
+          "period": "2021-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 10.0
+        },
+        {
+          "period": "2021-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 10.0
+        },
+        {
+          "period": "2021-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 10.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "mother_to_child_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2010-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2014-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2016-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2016-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2017-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "needle_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "msm",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2016-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 5.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 5.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 3.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-05",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-06",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-09",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-10",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-11",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2017-12",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2018-01",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2018-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2018-09",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2018-12",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-01",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 4.0
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 3.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_15_24",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2015-01",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 24.0
+        },
+        {
+          "period": "2015-02",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 28.0
+        },
+        {
+          "period": "2015-03",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 26.0
+        },
+        {
+          "period": "2015-04",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 28.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2015-06",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 26.0
+        },
+        {
+          "period": "2015-08",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 12.0
+        },
+        {
+          "period": "2015-09",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 13.0
+        },
+        {
+          "period": "2015-10",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 13.0
+        },
+        {
+          "period": "2015-11",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 12.0
+        },
+        {
+          "period": "2015-12",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 13.0
+        },
+        {
+          "period": "2016-01",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 27.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2016-02",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 14.0
+        },
+        {
+          "period": "2016-11",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 29.0
+        },
+        {
+          "period": "2016-12",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 29.0
+        },
+        {
+          "period": "2017-01",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 31.0
+        },
+        {
+          "period": "2021-10",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 13.0
+        },
+        {
+          "period": "2022-09",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 29.0,
+          "sample_count": 3
+        },
+        {
+          "period": "2022-11",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 32.0
+        },
+        {
+          "period": "2022-12",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 28.0
+        },
+        {
+          "period": "2023-01",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 30.0
+        },
+        {
+          "period": "2023-03",
+          "region": "Philippines",
+          "subgroup": "age_15_24",
+          "value": 28.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "blood_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "male_female_sex_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "msm",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2015-01",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-07",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-08",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-09",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-10",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-11",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2015-12",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2016-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 91.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 92.0
+        },
+        {
+          "period": "2017-03",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 92.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "msm",
+          "value": 92.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "needle_transmission_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_lt_10",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2016-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2016-11",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 4.0
+        },
+        {
+          "period": "2016-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2017-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2017-11",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2017-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2018-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2019-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2019-07",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2019-08",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2021-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2021-09",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        },
+        {
+          "period": "2021-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 3.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_deaths_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_25_34",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2015-09",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 46.0
+        },
+        {
+          "period": "2015-10",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 46.0
+        },
+        {
+          "period": "2015-11",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 46.0
+        },
+        {
+          "period": "2015-12",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 46.0
+        },
+        {
+          "period": "2016-02",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 46.0
+        },
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "2016-11",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "2017-03",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "2017-05",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "2017-06",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_lt_10",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2018-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2018-02",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0
+        },
+        {
+          "period": "1984-2018-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0
+        },
+        {
+          "period": "1984-2018-04",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2018-05",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2018-06",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2018-07",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2018-08",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2018-09",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2018-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2019-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2019-02",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2019-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "1984-2019-05",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "new_cases_yoy_change_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 81.0
+        },
+        {
+          "period": "2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65.0
+        },
+        {
+          "period": "2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 72.0
+        },
+        {
+          "period": "2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 82.0
+        },
+        {
+          "period": "2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36.0
+        },
+        {
+          "period": "2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 48.0
+        },
+        {
+          "period": "2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36.0
+        },
+        {
+          "period": "2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0
+        },
+        {
+          "period": "2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 25.0
+        },
+        {
+          "period": "2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 48.0
+        },
+        {
+          "period": "2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 34.0
+        },
+        {
+          "period": "2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_cases_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_lt_10",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2018-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-02",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0
+        },
+        {
+          "period": "2018-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 7.0
+        },
+        {
+          "period": "2018-04",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2018-05",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2018-06",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-07",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2018-08",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2018-09",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2018-12",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-01",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        },
+        {
+          "period": "2019-03",
+          "region": "Philippines",
+          "subgroup": "age_lt_10",
+          "value": 6.0
+        }
+      ]
+    },
+    {
+      "primary_disease": "HIV",
+      "metric_type": "reported_deaths_pct",
+      "unit": "percent",
+      "region": "Philippines",
+      "subgroup": "age_25_34",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "points": [
+        {
+          "period": "1984-2016",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "1984-2016-03",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "1984-2016-04",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "1984-2016-05",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "1984-2016-06",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 47.0
+        },
+        {
+          "period": "1984-2016-11",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "1984-2016-12",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "1984-2017-01",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "1984-2017-02",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        },
+        {
+          "period": "1984-2017-03",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "1984-2017-04",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "1984-2017-05",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 49.0
+        },
+        {
+          "period": "1984-2017-06",
+          "region": "Philippines",
+          "subgroup": "age_25_34",
+          "value": 48.0
+        }
+      ]
+    }
+  ],
+  "national_cascade": [
+    {
+      "series_id": "first_95",
+      "label": "1st 95: Diagnosis coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "diagnosed_plhiv_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2023 Q2",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 10,
+      "percent_points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 115568.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 119145.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 122241.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 127217.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 131335.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 139610.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 144192.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 149375.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 153207.0
+        }
+      ]
+    },
+    {
+      "series_id": "second_95",
+      "label": "2nd 95: Treatment coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "plhiv_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2024 Q1",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 7,
+      "percent_points": [
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2015-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 8779.0
+        },
+        {
+          "period": "2015-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9113.0
+        },
+        {
+          "period": "2015-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9475.0
+        },
+        {
+          "period": "2015-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9838.0
+        },
+        {
+          "period": "2015-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 11029.0
+        },
+        {
+          "period": "2018-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32324.0
+        },
+        {
+          "period": "2018-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32909.0
+        },
+        {
+          "period": "2019-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 37091.0
+        },
+        {
+          "period": "2021-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52342.0
+        },
+        {
+          "period": "2021-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 53286.0
+        },
+        {
+          "period": "2022-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65197.0
+        }
+      ]
+    },
+    {
+      "series_id": "third_95",
+      "label": "3rd 95: Viral suppression",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "suppression_among_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2023 Q4",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 9,
+      "percent_points": [
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 47.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 22690.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 29571.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 27468.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 30996.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32801.0
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 34252.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36723.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36630.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 44714.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55130.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57184.0
+        }
+      ]
+    }
+  ],
+  "goal_forecasts": [
+    {
+      "series_id": "first_95",
+      "label": "1st 95: Diagnosis coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "diagnosed_plhiv_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        }
+      ],
+      "model_type": "theil_sen",
+      "point_count": 10,
+      "latest_period": "2025 Q4",
+      "latest_value": 61.0,
+      "gap_to_target": 34.0,
+      "trajectory": "volatile",
+      "deadline_status": "missed",
+      "projected_target_period": "",
+      "projected_target_year": "",
+      "years_to_target": "",
+      "slope_per_year": -0.0,
+      "r_squared": 0.0,
+      "fit_quality": "low"
+    },
+    {
+      "series_id": "second_95",
+      "label": "2nd 95: Treatment coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "plhiv_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        }
+      ],
+      "model_type": "theil_sen",
+      "point_count": 7,
+      "latest_period": "2025 Q4",
+      "latest_value": 66.0,
+      "gap_to_target": 29.0,
+      "trajectory": "volatile",
+      "deadline_status": "missed",
+      "projected_target_period": "",
+      "projected_target_year": "",
+      "years_to_target": "",
+      "slope_per_year": 0.0,
+      "r_squared": 0.0,
+      "fit_quality": "low"
+    },
+    {
+      "series_id": "third_95",
+      "label": "3rd 95: Viral suppression",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "suppression_among_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "points": [
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 47.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        }
+      ],
+      "model_type": "theil_sen",
+      "point_count": 9,
+      "latest_period": "2025 Q4",
+      "latest_value": 57.0,
+      "gap_to_target": 38.0,
+      "trajectory": "improving",
+      "deadline_status": "missed",
+      "projected_target_period": "2029 Q3",
+      "projected_target_year": 2029.47,
+      "years_to_target": 3.72,
+      "slope_per_year": 10.278,
+      "r_squared": 0.647,
+      "fit_quality": "medium"
+    }
+  ],
+  "national_goal_board": [
+    {
+      "series_id": "first_95",
+      "label": "1st 95: Diagnosis coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "diagnosed_plhiv_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2023 Q2",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 10,
+      "percent_points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 115568.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 119145.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 122241.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 127217.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 131335.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 139610.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 144192.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 149375.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 153207.0
+        }
+      ],
+      "latest_period": "2025 Q4",
+      "latest_value": 61.0,
+      "gap_to_target": 34.0,
+      "trajectory": "volatile",
+      "deadline_status": "missed",
+      "projected_target_period": "",
+      "years_to_target": "",
+      "r_squared": 0.0,
+      "fit_quality": "low",
+      "model_type": "theil_sen"
+    },
+    {
+      "series_id": "second_95",
+      "label": "2nd 95: Treatment coverage",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "plhiv_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2024 Q1",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 7,
+      "percent_points": [
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2015-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 8779.0
+        },
+        {
+          "period": "2015-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9113.0
+        },
+        {
+          "period": "2015-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9475.0
+        },
+        {
+          "period": "2015-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 9838.0
+        },
+        {
+          "period": "2015-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 11029.0
+        },
+        {
+          "period": "2018-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32324.0
+        },
+        {
+          "period": "2018-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32909.0
+        },
+        {
+          "period": "2019-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 37091.0
+        },
+        {
+          "period": "2021-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52342.0
+        },
+        {
+          "period": "2021-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 53286.0
+        },
+        {
+          "period": "2022-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65197.0
+        }
+      ],
+      "latest_period": "2025 Q4",
+      "latest_value": 66.0,
+      "gap_to_target": 29.0,
+      "trajectory": "volatile",
+      "deadline_status": "missed",
+      "projected_target_period": "",
+      "years_to_target": "",
+      "r_squared": 0.0,
+      "fit_quality": "low",
+      "model_type": "theil_sen"
+    },
+    {
+      "series_id": "third_95",
+      "label": "3rd 95: Viral suppression",
+      "target_value": 95.0,
+      "target_unit": "percent",
+      "deadline_year": 2025,
+      "actual_metric_type": "suppression_among_on_art_pct",
+      "proxy": false,
+      "note": "",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2023 Q4",
+      "coverage_end": "2025 Q4",
+      "coverage_point_count": 9,
+      "percent_points": [
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 39.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 40.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 47.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57.0
+        }
+      ],
+      "count_points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 22690.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 29571.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 27468.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 30996.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32801.0
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 34252.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36723.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 36630.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 44714.0
+        },
+        {
+          "period": "2025 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55130.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57184.0
+        }
+      ],
+      "latest_period": "2025 Q4",
+      "latest_value": 57.0,
+      "gap_to_target": 38.0,
+      "trajectory": "improving",
+      "deadline_status": "missed",
+      "projected_target_period": "2029 Q3",
+      "years_to_target": 3.72,
+      "r_squared": 0.647,
+      "fit_quality": "medium",
+      "model_type": "theil_sen"
+    }
+  ],
+  "burden_views": [
+    {
+      "panel_id": "cumulative_reported_cases",
+      "label": "Cumulative reported HIV cases",
+      "note": "Historical cumulative burden extracted from epidemic trend sections and surveillance bulletins.",
+      "metric_type": "reported_cases_count",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "count",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "coverage_start": "1984-2018-01",
+      "coverage_end": "1984-2021-12",
+      "point_count": 27,
+      "latest_value": 94337.0,
+      "latest_period": "1984-2021-12",
+      "delta": 3377.0,
+      "points": [
+        {
+          "period": "1984-2018-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 51409.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2018-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52280.0
+        },
+        {
+          "period": "1984-2018-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 53192.0
+        },
+        {
+          "period": "1984-2018-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54332.0
+        },
+        {
+          "period": "1984-2018-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55282.0
+        },
+        {
+          "period": "1984-2018-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 56275.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2018-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 57134.0
+        },
+        {
+          "period": "1984-2018-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 58181.0
+        },
+        {
+          "period": "1984-2018-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59135.0
+        },
+        {
+          "period": "1984-2018-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62029.0,
+          "sample_count": 2
+        },
+        {
+          "period": "1984-2019 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 74807.0
+        },
+        {
+          "period": "1984-2019-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63278.0
+        },
+        {
+          "period": "1984-2019-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 64291.0
+        },
+        {
+          "period": "1984-2019-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65463.0
+        },
+        {
+          "period": "1984-2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 67395.0
+        },
+        {
+          "period": "1984-2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 68401.0
+        },
+        {
+          "period": "1984-2019-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 69512.0
+        },
+        {
+          "period": "1984-2019-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 70740.0
+        },
+        {
+          "period": "1984-2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 71778.0
+        },
+        {
+          "period": "1984-2020 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 77625.0
+        },
+        {
+          "period": "1984-2020 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 78559.0
+        },
+        {
+          "period": "1984-2020-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 81789.0
+        },
+        {
+          "period": "1984-2020-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 82865.0
+        },
+        {
+          "period": "1984-2021-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 85651.0
+        },
+        {
+          "period": "1984-2021-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 88108.0
+        },
+        {
+          "period": "1984-2021-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90960.0
+        },
+        {
+          "period": "1984-2021-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 94337.0
+        }
+      ]
+    },
+    {
+      "panel_id": "plhiv_on_art",
+      "label": "PLHIV on ART",
+      "note": "Treatment program response from monthly and quarterly HIV/STI reports.",
+      "metric_type": "plhiv_on_art_count",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "count",
+      "period_granularity": "quarter",
+      "period_scope": "snapshot",
+      "coverage_start": "2023 Q2",
+      "coverage_end": "2025 Q4",
+      "point_count": 10,
+      "latest_value": 100671.0,
+      "latest_period": "2025 Q4",
+      "delta": 5115.0,
+      "points": [
+        {
+          "period": "2023 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 70916.0
+        },
+        {
+          "period": "2023 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 74258.0
+        },
+        {
+          "period": "2023 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 75300.0
+        },
+        {
+          "period": "2024 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 79643.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 84086.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2024 Q3",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 88544.0
+        },
+        {
+          "period": "2024 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90854.0
+        },
+        {
+          "period": "2025 Q1",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92712.0
+        },
+        {
+          "period": "2025 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 95556.0
+        },
+        {
+          "period": "2025 Q4",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 100671.0
+        }
+      ]
+    },
+    {
+      "panel_id": "reported_deaths",
+      "label": "Reported deaths",
+      "note": "Deaths among reported HIV cases extracted from surveillance bulletins.",
+      "metric_type": "reported_deaths_count",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "count",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "coverage_start": "2015-01",
+      "coverage_end": "2022-05",
+      "point_count": 36,
+      "latest_value": 21.0,
+      "latest_period": "2022-05",
+      "delta": 8.0,
+      "points": [
+        {
+          "period": "2015-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 14.0
+        },
+        {
+          "period": "2015-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 17.0
+        },
+        {
+          "period": "2015-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 18.0
+        },
+        {
+          "period": "2015-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 16.0
+        },
+        {
+          "period": "2015-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 29.0
+        },
+        {
+          "period": "2015-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "2015-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 7.0
+        },
+        {
+          "period": "2015-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 15.0
+        },
+        {
+          "period": "2015-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 13.0
+        },
+        {
+          "period": "2015-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 50.0
+        },
+        {
+          "period": "2015-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 174.0
+        },
+        {
+          "period": "2015-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 46.0
+        },
+        {
+          "period": "2016-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 64.0
+        },
+        {
+          "period": "2016-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 26.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 32.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "2016-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 21.0
+        },
+        {
+          "period": "2016-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 37.0
+        },
+        {
+          "period": "2017-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 33.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 95.0
+        },
+        {
+          "period": "2017-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 27.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 17.0
+        },
+        {
+          "period": "2017-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 15.0
+        },
+        {
+          "period": "2017-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 29.0
+        },
+        {
+          "period": "2018-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 22.0
+        },
+        {
+          "period": "2018-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 21.0
+        },
+        {
+          "period": "2018-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "2018-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 30.0
+        },
+        {
+          "period": "2021-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 142.0
+        },
+        {
+          "period": "2021-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 134.0
+        },
+        {
+          "period": "2022-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 33.0
+        },
+        {
+          "period": "2022-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 78.0
+        },
+        {
+          "period": "2022-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 13.0
+        },
+        {
+          "period": "2022-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 21.0
+        }
+      ]
+    }
+  ],
+  "transmission_views": [
+    {
+      "panel_id": "sexual_contact_share",
+      "label": "Sexual contact share of reported cases",
+      "note": "Share of diagnosed cases attributed to sexual contact in historical and recent reports.",
+      "metric_type": "sexual_contact_cases_pct",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "percent",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "coverage_start": "1984-2010-03",
+      "coverage_end": "1984-2014-10",
+      "point_count": 51,
+      "latest_value": 93.0,
+      "latest_period": "1984-2014-10",
+      "delta": 0.0,
+      "points": [
+        {
+          "period": "1984-2010-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "1984-2010-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2010-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "1984-2011-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 91.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 92.0
+        },
+        {
+          "period": "1984-2013-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2013-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 93.0
+        }
+      ]
+    },
+    {
+      "panel_id": "mother_to_child_transmission",
+      "label": "Mother-to-child transmission",
+      "note": "Historical and recent counts of mother-to-child transmission extracted from surveillance text.",
+      "metric_type": "mother_to_child_transmission_count",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "count",
+      "period_granularity": "cumulative",
+      "period_scope": "cumulative",
+      "coverage_start": "1984-2010-03",
+      "coverage_end": "1984-2024 Q2",
+      "point_count": 51,
+      "latest_value": 360.0,
+      "latest_period": "1984-2024 Q2",
+      "delta": 294.0,
+      "points": [
+        {
+          "period": "1984-2010-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 50.0
+        },
+        {
+          "period": "1984-2010-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2010-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2010-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2010-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2010-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2011-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 52.0
+        },
+        {
+          "period": "1984-2011-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54.0
+        },
+        {
+          "period": "1984-2011-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54.0
+        },
+        {
+          "period": "1984-2011-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54.0
+        },
+        {
+          "period": "1984-2011-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54.0
+        },
+        {
+          "period": "1984-2011-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 54.0
+        },
+        {
+          "period": "1984-2011-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "1984-2011-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "1984-2011-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "1984-2011-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "1984-2011-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 55.0
+        },
+        {
+          "period": "1984-2012-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 56.0
+        },
+        {
+          "period": "1984-2012-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 56.0
+        },
+        {
+          "period": "1984-2012-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 58.0
+        },
+        {
+          "period": "1984-2012-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 58.0
+        },
+        {
+          "period": "1984-2012-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 60.0
+        },
+        {
+          "period": "1984-2012-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2012-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 59.0
+        },
+        {
+          "period": "1984-2013-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "1984-2013-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "1984-2013-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 61.0
+        },
+        {
+          "period": "1984-2013-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "1984-2013-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "1984-2013-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "1984-2014-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "1984-2014-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 62.0
+        },
+        {
+          "period": "1984-2014-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "1984-2014-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "1984-2014-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "1984-2014-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "1984-2014-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 63.0
+        },
+        {
+          "period": "1984-2014-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 65.0
+        },
+        {
+          "period": "1984-2014-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "1984-2014-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 66.0
+        },
+        {
+          "period": "1984-2024 Q2",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 360.0
+        }
+      ]
+    },
+    {
+      "panel_id": "needle_transmission",
+      "label": "Needle transmission",
+      "note": "Transmission through infected needle sharing where the bulletin reports explicit counts.",
+      "metric_type": "needle_transmission_count",
+      "primary_disease": "HIV",
+      "region": "Philippines",
+      "subgroup": "",
+      "unit": "count",
+      "period_granularity": "month",
+      "period_scope": "snapshot",
+      "coverage_start": "2016-03",
+      "coverage_end": "2021-12",
+      "point_count": 38,
+      "latest_value": 1273.5,
+      "latest_period": "2021-12",
+      "delta": 14.0,
+      "points": [
+        {
+          "period": "2016-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 87.0
+        },
+        {
+          "period": "2016-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 89.0
+        },
+        {
+          "period": "2016-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 90.0
+        },
+        {
+          "period": "2016-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 94.0
+        },
+        {
+          "period": "2017-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 99.0
+        },
+        {
+          "period": "2017-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 100.0
+        },
+        {
+          "period": "2017-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 100.0
+        },
+        {
+          "period": "2017-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 102.0
+        },
+        {
+          "period": "2017-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 106.0
+        },
+        {
+          "period": "2017-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 106.0
+        },
+        {
+          "period": "2018-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 994.5,
+          "sample_count": 4
+        },
+        {
+          "period": "2018-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1004.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1010.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1024.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1038.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1042.0,
+          "sample_count": 4
+        },
+        {
+          "period": "2018-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1047.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1055.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1060.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2018-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 123.0
+        },
+        {
+          "period": "2018-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 125.0
+        },
+        {
+          "period": "2018-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1081.5,
+          "sample_count": 4
+        },
+        {
+          "period": "2019-01",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1086.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-02",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1091.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2066.0
+        },
+        {
+          "period": "2019-04",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 96.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2019-05",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 70.3333,
+          "sample_count": 3
+        },
+        {
+          "period": "2019-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 69.6667,
+          "sample_count": 3
+        },
+        {
+          "period": "2019-07",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2102.0
+        },
+        {
+          "period": "2019-08",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 2114.0
+        },
+        {
+          "period": "2019-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 48.0,
+          "sample_count": 2
+        },
+        {
+          "period": "2020-10",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 7.0
+        },
+        {
+          "period": "2020-11",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 137.0
+        },
+        {
+          "period": "2020-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 71.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2021-03",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1199.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2021-06",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1246.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2021-09",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1259.5,
+          "sample_count": 2
+        },
+        {
+          "period": "2021-12",
+          "region": "Philippines",
+          "subgroup": "",
+          "value": 1273.5,
+          "sample_count": 2
+        }
+      ]
+    }
+  ],
+  "epi_analytics": {
+    "regional_gaps": [
+      {
+        "snapshot_id": "regional_diagnosis_gap",
+        "label": "Diagnosis coverage by region",
+        "metric_type": "diagnosis_coverage",
+        "proxy": false,
+        "note": "",
+        "period_label": "2025 Q4",
+        "target_value": 95.0,
+        "unit": "percent",
+        "spread": 22.0,
+        "median_value": 59.0,
+        "leader_region": "BARMM",
+        "laggard_region": "3",
+        "regions": [
+          {
+            "region": "BARMM",
+            "value": 75.0,
+            "gap_to_target": 20.0
+          },
+          {
+            "region": "4B",
+            "value": 66.0,
+            "gap_to_target": 29.0
+          },
+          {
+            "region": "9",
+            "value": 66.0,
+            "gap_to_target": 29.0
+          },
+          {
+            "region": "NCR",
+            "value": 66.0,
+            "gap_to_target": 29.0
+          },
+          {
+            "region": "CARAGA",
+            "value": 64.0,
+            "gap_to_target": 31.0
+          },
+          {
+            "region": "10",
+            "value": 61.0,
+            "gap_to_target": 34.0
+          },
+          {
+            "region": "8",
+            "value": 61.0,
+            "gap_to_target": 34.0
+          },
+          {
+            "region": "11",
+            "value": 60.0,
+            "gap_to_target": 35.0
+          },
+          {
+            "region": "12",
+            "value": 59.0,
+            "gap_to_target": 36.0
+          },
+          {
+            "region": "4A",
+            "value": 59.0,
+            "gap_to_target": 36.0
+          },
+          {
+            "region": "CAR",
+            "value": 59.0,
+            "gap_to_target": 36.0
+          },
+          {
+            "region": "2",
+            "value": 58.0,
+            "gap_to_target": 37.0
+          },
+          {
+            "region": "7",
+            "value": 58.0,
+            "gap_to_target": 37.0
+          },
+          {
+            "region": "5",
+            "value": 57.0,
+            "gap_to_target": 38.0
+          },
+          {
+            "region": "1",
+            "value": 56.0,
+            "gap_to_target": 39.0
+          },
+          {
+            "region": "NIR",
+            "value": 55.0,
+            "gap_to_target": 40.0
+          },
+          {
+            "region": "6",
+            "value": 54.0,
+            "gap_to_target": 41.0
+          },
+          {
+            "region": "3",
+            "value": 53.0,
+            "gap_to_target": 42.0
+          }
+        ]
+      },
+      {
+        "snapshot_id": "regional_treatment_gap",
+        "label": "Treatment coverage by region",
+        "metric_type": "art_coverage",
+        "proxy": false,
+        "note": "",
+        "period_label": "2025 Q4",
+        "target_value": 95.0,
+        "unit": "percent",
+        "spread": 28.0,
+        "median_value": 68.0,
+        "leader_region": "6",
+        "laggard_region": "11",
+        "regions": [
+          {
+            "region": "6",
+            "value": 79.0,
+            "gap_to_target": 16.0
+          },
+          {
+            "region": "2",
+            "value": 74.0,
+            "gap_to_target": 21.0
+          },
+          {
+            "region": "NIR",
+            "value": 73.0,
+            "gap_to_target": 22.0
+          },
+          {
+            "region": "CAR",
+            "value": 71.0,
+            "gap_to_target": 24.0
+          },
+          {
+            "region": "10",
+            "value": 70.0,
+            "gap_to_target": 25.0
+          },
+          {
+            "region": "CARAGA",
+            "value": 69.0,
+            "gap_to_target": 26.0
+          },
+          {
+            "region": "12",
+            "value": 68.0,
+            "gap_to_target": 27.0
+          },
+          {
+            "region": "3",
+            "value": 68.0,
+            "gap_to_target": 27.0
+          },
+          {
+            "region": "4A",
+            "value": 68.0,
+            "gap_to_target": 27.0
+          },
+          {
+            "region": "5",
+            "value": 68.0,
+            "gap_to_target": 27.0
+          },
+          {
+            "region": "1",
+            "value": 67.0,
+            "gap_to_target": 28.0
+          },
+          {
+            "region": "4B",
+            "value": 65.0,
+            "gap_to_target": 30.0
+          },
+          {
+            "region": "9",
+            "value": 65.0,
+            "gap_to_target": 30.0
+          },
+          {
+            "region": "8",
+            "value": 61.0,
+            "gap_to_target": 34.0
+          },
+          {
+            "region": "NCR",
+            "value": 61.0,
+            "gap_to_target": 34.0
+          },
+          {
+            "region": "BARMM",
+            "value": 58.0,
+            "gap_to_target": 37.0
+          },
+          {
+            "region": "7",
+            "value": 57.0,
+            "gap_to_target": 38.0
+          },
+          {
+            "region": "11",
+            "value": 51.0,
+            "gap_to_target": 44.0
+          }
+        ]
+      },
+      {
+        "snapshot_id": "regional_suppression_gap",
+        "label": "Viral suppression by region",
+        "metric_type": "suppression_among_on_art",
+        "proxy": false,
+        "note": "",
+        "period_label": "2025 Q4",
+        "target_value": 95.0,
+        "unit": "percent",
+        "spread": 35.0,
+        "median_value": 56.5,
+        "leader_region": "6",
+        "laggard_region": "12",
+        "regions": [
+          {
+            "region": "6",
+            "value": 72.0,
+            "gap_to_target": 23.0
+          },
+          {
+            "region": "2",
+            "value": 68.0,
+            "gap_to_target": 27.0
+          },
+          {
+            "region": "CAR",
+            "value": 65.0,
+            "gap_to_target": 30.0
+          },
+          {
+            "region": "NIR",
+            "value": 65.0,
+            "gap_to_target": 30.0
+          },
+          {
+            "region": "3",
+            "value": 64.0,
+            "gap_to_target": 31.0
+          },
+          {
+            "region": "5",
+            "value": 61.0,
+            "gap_to_target": 34.0
+          },
+          {
+            "region": "11",
+            "value": 60.0,
+            "gap_to_target": 35.0
+          },
+          {
+            "region": "10",
+            "value": 57.0,
+            "gap_to_target": 38.0
+          },
+          {
+            "region": "4A",
+            "value": 57.0,
+            "gap_to_target": 38.0
+          },
+          {
+            "region": "1",
+            "value": 56.0,
+            "gap_to_target": 39.0
+          },
+          {
+            "region": "BARMM",
+            "value": 56.0,
+            "gap_to_target": 39.0
+          },
+          {
+            "region": "CARAGA",
+            "value": 56.0,
+            "gap_to_target": 39.0
+          },
+          {
+            "region": "7",
+            "value": 55.0,
+            "gap_to_target": 40.0
+          },
+          {
+            "region": "NCR",
+            "value": 55.0,
+            "gap_to_target": 40.0
+          },
+          {
+            "region": "8",
+            "value": 47.0,
+            "gap_to_target": 48.0
+          },
+          {
+            "region": "9",
+            "value": 44.0,
+            "gap_to_target": 51.0
+          },
+          {
+            "region": "4B",
+            "value": 41.0,
+            "gap_to_target": 54.0
+          },
+          {
+            "region": "12",
+            "value": 37.0,
+            "gap_to_target": 58.0
+          }
+        ]
+      }
+    ],
+    "regional_scorecard": {
+      "periods": {
+        "diagnosis_coverage": "2025 Q4",
+        "treatment_coverage": "2025 Q4",
+        "viral_suppression": "2025 Q4"
+      },
+      "rows": [
+        {
+          "region": "6",
+          "metric_count": 3,
+          "mean_gap_to_target": 26.67,
+          "values": {
+            "diagnosis_coverage": 54.0,
+            "treatment_coverage": 79.0,
+            "viral_suppression": 72.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 41.0,
+            "treatment_coverage": 16.0,
+            "viral_suppression": 23.0
+          }
+        },
+        {
+          "region": "2",
+          "metric_count": 3,
+          "mean_gap_to_target": 28.33,
+          "values": {
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 74.0,
+            "viral_suppression": 68.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 21.0,
+            "viral_suppression": 27.0
+          }
+        },
+        {
+          "region": "CAR",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.0,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 71.0,
+            "viral_suppression": 65.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 36.0,
+            "treatment_coverage": 24.0,
+            "viral_suppression": 30.0
+          }
+        },
+        {
+          "region": "NIR",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.67,
+          "values": {
+            "diagnosis_coverage": 55.0,
+            "treatment_coverage": 73.0,
+            "viral_suppression": 65.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 40.0,
+            "treatment_coverage": 22.0,
+            "viral_suppression": 30.0
+          }
+        },
+        {
+          "region": "BARMM",
+          "metric_count": 3,
+          "mean_gap_to_target": 32.0,
+          "values": {
+            "diagnosis_coverage": 75.0,
+            "treatment_coverage": 58.0,
+            "viral_suppression": 56.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 20.0,
+            "treatment_coverage": 37.0,
+            "viral_suppression": 39.0
+          }
+        },
+        {
+          "region": "CARAGA",
+          "metric_count": 3,
+          "mean_gap_to_target": 32.0,
+          "values": {
+            "diagnosis_coverage": 64.0,
+            "treatment_coverage": 69.0,
+            "viral_suppression": 56.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 31.0,
+            "treatment_coverage": 26.0,
+            "viral_suppression": 39.0
+          }
+        },
+        {
+          "region": "10",
+          "metric_count": 3,
+          "mean_gap_to_target": 32.33,
+          "values": {
+            "diagnosis_coverage": 61.0,
+            "treatment_coverage": 70.0,
+            "viral_suppression": 57.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 34.0,
+            "treatment_coverage": 25.0,
+            "viral_suppression": 38.0
+          }
+        },
+        {
+          "region": "5",
+          "metric_count": 3,
+          "mean_gap_to_target": 33.0,
+          "values": {
+            "diagnosis_coverage": 57.0,
+            "treatment_coverage": 68.0,
+            "viral_suppression": 61.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 38.0,
+            "treatment_coverage": 27.0,
+            "viral_suppression": 34.0
+          }
+        },
+        {
+          "region": "3",
+          "metric_count": 3,
+          "mean_gap_to_target": 33.33,
+          "values": {
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 68.0,
+            "viral_suppression": 64.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 27.0,
+            "viral_suppression": 31.0
+          }
+        },
+        {
+          "region": "4A",
+          "metric_count": 3,
+          "mean_gap_to_target": 33.67,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 68.0,
+            "viral_suppression": 57.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 36.0,
+            "treatment_coverage": 27.0,
+            "viral_suppression": 38.0
+          }
+        },
+        {
+          "region": "NCR",
+          "metric_count": 3,
+          "mean_gap_to_target": 34.33,
+          "values": {
+            "diagnosis_coverage": 66.0,
+            "treatment_coverage": 61.0,
+            "viral_suppression": 55.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 29.0,
+            "treatment_coverage": 34.0,
+            "viral_suppression": 40.0
+          }
+        },
+        {
+          "region": "1",
+          "metric_count": 3,
+          "mean_gap_to_target": 35.33,
+          "values": {
+            "diagnosis_coverage": 56.0,
+            "treatment_coverage": 67.0,
+            "viral_suppression": 56.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 39.0,
+            "treatment_coverage": 28.0,
+            "viral_suppression": 39.0
+          }
+        },
+        {
+          "region": "9",
+          "metric_count": 3,
+          "mean_gap_to_target": 36.67,
+          "values": {
+            "diagnosis_coverage": 66.0,
+            "treatment_coverage": 65.0,
+            "viral_suppression": 44.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 29.0,
+            "treatment_coverage": 30.0,
+            "viral_suppression": 51.0
+          }
+        },
+        {
+          "region": "4B",
+          "metric_count": 3,
+          "mean_gap_to_target": 37.67,
+          "values": {
+            "diagnosis_coverage": 66.0,
+            "treatment_coverage": 65.0,
+            "viral_suppression": 41.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 29.0,
+            "treatment_coverage": 30.0,
+            "viral_suppression": 54.0
+          }
+        },
+        {
+          "region": "11",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.0,
+          "values": {
+            "diagnosis_coverage": 60.0,
+            "treatment_coverage": 51.0,
+            "viral_suppression": 60.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 35.0,
+            "treatment_coverage": 44.0,
+            "viral_suppression": 35.0
+          }
+        },
+        {
+          "region": "7",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.33,
+          "values": {
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 57.0,
+            "viral_suppression": 55.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 38.0,
+            "viral_suppression": 40.0
+          }
+        },
+        {
+          "region": "8",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.67,
+          "values": {
+            "diagnosis_coverage": 61.0,
+            "treatment_coverage": 61.0,
+            "viral_suppression": 47.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 34.0,
+            "treatment_coverage": 34.0,
+            "viral_suppression": 48.0
+          }
+        },
+        {
+          "region": "12",
+          "metric_count": 3,
+          "mean_gap_to_target": 40.33,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 68.0,
+            "viral_suppression": 37.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 36.0,
+            "treatment_coverage": 27.0,
+            "viral_suppression": 58.0
+          }
+        }
+      ],
+      "top_performing": [
+        {
+          "region": "6",
+          "metric_count": 3,
+          "mean_gap_to_target": 26.67,
+          "values": {
+            "diagnosis_coverage": 54.0,
+            "treatment_coverage": 79.0,
+            "viral_suppression": 72.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 41.0,
+            "treatment_coverage": 16.0,
+            "viral_suppression": 23.0
+          }
+        },
+        {
+          "region": "2",
+          "metric_count": 3,
+          "mean_gap_to_target": 28.33,
+          "values": {
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 74.0,
+            "viral_suppression": 68.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 21.0,
+            "viral_suppression": 27.0
+          }
+        },
+        {
+          "region": "CAR",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.0,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 71.0,
+            "viral_suppression": 65.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 36.0,
+            "treatment_coverage": 24.0,
+            "viral_suppression": 30.0
+          }
+        },
+        {
+          "region": "NIR",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.67,
+          "values": {
+            "diagnosis_coverage": 55.0,
+            "treatment_coverage": 73.0,
+            "viral_suppression": 65.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 40.0,
+            "treatment_coverage": 22.0,
+            "viral_suppression": 30.0
+          }
+        },
+        {
+          "region": "BARMM",
+          "metric_count": 3,
+          "mean_gap_to_target": 32.0,
+          "values": {
+            "diagnosis_coverage": 75.0,
+            "treatment_coverage": 58.0,
+            "viral_suppression": 56.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 20.0,
+            "treatment_coverage": 37.0,
+            "viral_suppression": 39.0
+          }
+        }
+      ],
+      "largest_gaps": [
+        {
+          "region": "12",
+          "metric_count": 3,
+          "mean_gap_to_target": 40.33,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 68.0,
+            "viral_suppression": 37.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 36.0,
+            "treatment_coverage": 27.0,
+            "viral_suppression": 58.0
+          }
+        },
+        {
+          "region": "8",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.67,
+          "values": {
+            "diagnosis_coverage": 61.0,
+            "treatment_coverage": 61.0,
+            "viral_suppression": 47.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 34.0,
+            "treatment_coverage": 34.0,
+            "viral_suppression": 48.0
+          }
+        },
+        {
+          "region": "7",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.33,
+          "values": {
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 57.0,
+            "viral_suppression": 55.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 38.0,
+            "viral_suppression": 40.0
+          }
+        },
+        {
+          "region": "11",
+          "metric_count": 3,
+          "mean_gap_to_target": 38.0,
+          "values": {
+            "diagnosis_coverage": 60.0,
+            "treatment_coverage": 51.0,
+            "viral_suppression": 60.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 35.0,
+            "treatment_coverage": 44.0,
+            "viral_suppression": 35.0
+          }
+        },
+        {
+          "region": "4B",
+          "metric_count": 3,
+          "mean_gap_to_target": 37.67,
+          "values": {
+            "diagnosis_coverage": 66.0,
+            "treatment_coverage": 65.0,
+            "viral_suppression": 41.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 29.0,
+            "treatment_coverage": 30.0,
+            "viral_suppression": 54.0
+          }
+        }
+      ]
+    },
+    "relationship_scatter": [
+      {
+        "chart_id": "diagnosis_vs_treatment",
+        "label": "Diagnosis vs treatment coverage",
+        "period_label": "2025 Q4",
+        "x_metric": "diagnosis_coverage",
+        "y_metric": "art_coverage",
+        "x_label": "Diagnosis coverage",
+        "y_label": "Treatment coverage",
+        "proxy": false,
+        "points": [
+          {
+            "region": "3",
+            "x": 53.0,
+            "y": 68.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "6",
+            "x": 54.0,
+            "y": 79.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "NIR",
+            "x": 55.0,
+            "y": 73.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "1",
+            "x": 56.0,
+            "y": 67.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "5",
+            "x": 57.0,
+            "y": 68.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "2",
+            "x": 58.0,
+            "y": 74.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "7",
+            "x": 58.0,
+            "y": 57.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "12",
+            "x": 59.0,
+            "y": 68.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "4A",
+            "x": 59.0,
+            "y": 68.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "CAR",
+            "x": 59.0,
+            "y": 71.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "11",
+            "x": 60.0,
+            "y": 51.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "10",
+            "x": 61.0,
+            "y": 70.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "8",
+            "x": 61.0,
+            "y": 61.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "CARAGA",
+            "x": 64.0,
+            "y": 69.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "4B",
+            "x": 66.0,
+            "y": 65.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "9",
+            "x": 66.0,
+            "y": 65.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "NCR",
+            "x": 66.0,
+            "y": 61.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "BARMM",
+            "x": 75.0,
+            "y": 58.0,
+            "quadrant": "high-low"
+          }
+        ],
+        "spearman_r": -0.501,
+        "median_x": 59.0,
+        "median_y": 68.0,
+        "fit_line": [
+          {
+            "x": 53.0,
+            "y": 73.9
+          },
+          {
+            "x": 75.0,
+            "y": 62.86
+          }
+        ],
+        "fit_r_squared": 0.0,
+        "fit_model_type": "theil_sen",
+        "above_fit": {
+          "region": "6",
+          "residual": 5.6
+        },
+        "below_fit": {
+          "region": "11",
+          "residual": -19.39
+        }
+      },
+      {
+        "chart_id": "treatment_vs_suppression",
+        "label": "Treatment vs viral suppression",
+        "period_label": "2025 Q4",
+        "x_metric": "art_coverage",
+        "y_metric": "suppression_among_on_art",
+        "x_label": "Treatment coverage",
+        "y_label": "Viral suppression",
+        "proxy": false,
+        "points": [
+          {
+            "region": "11",
+            "x": 51.0,
+            "y": 60.0,
+            "quadrant": "low-high"
+          },
+          {
+            "region": "7",
+            "x": 57.0,
+            "y": 55.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "BARMM",
+            "x": 58.0,
+            "y": 56.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "8",
+            "x": 61.0,
+            "y": 47.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "NCR",
+            "x": 61.0,
+            "y": 55.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "4B",
+            "x": 65.0,
+            "y": 41.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "9",
+            "x": 65.0,
+            "y": 44.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "1",
+            "x": 67.0,
+            "y": 56.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "12",
+            "x": 68.0,
+            "y": 37.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "3",
+            "x": 68.0,
+            "y": 64.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "4A",
+            "x": 68.0,
+            "y": 57.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "5",
+            "x": 68.0,
+            "y": 61.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "CARAGA",
+            "x": 69.0,
+            "y": 56.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "10",
+            "x": 70.0,
+            "y": 57.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "CAR",
+            "x": 71.0,
+            "y": 65.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "NIR",
+            "x": 73.0,
+            "y": 65.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "2",
+            "x": 74.0,
+            "y": 68.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "6",
+            "x": 79.0,
+            "y": 72.0,
+            "quadrant": "high-high"
+          }
+        ],
+        "spearman_r": 0.647,
+        "median_x": 68.0,
+        "median_y": 56.5,
+        "fit_line": [
+          {
+            "x": 51.0,
+            "y": 47.43
+          },
+          {
+            "x": 79.0,
+            "y": 71.89
+          }
+        ],
+        "fit_r_squared": 0.0,
+        "fit_model_type": "theil_sen",
+        "above_fit": {
+          "region": "11",
+          "residual": 12.57
+        },
+        "below_fit": {
+          "region": "12",
+          "residual": -25.28
+        }
+      }
+    ],
+    "relationship_highlights": [
+      {
+        "title": "Diagnosis coverage by region",
+        "detail": "BARMM leads at 75.0%, while 3 trails at 53.0% in 2025 Q4."
+      },
+      {
+        "title": "Treatment coverage by region",
+        "detail": "6 leads at 79.0%, while 11 trails at 51.0% in 2025 Q4."
+      },
+      {
+        "title": "Diagnosis vs treatment coverage",
+        "detail": "2025 Q4 shows a moderate negative regional association (Spearman r=-0.50)."
+      },
+      {
+        "title": "Diagnosis vs treatment coverage outliers",
+        "detail": "6 sits above the fitted pattern (+5.6), while 11 sits below it (-19.4) in 2025 Q4."
+      }
+    ]
+  },
+  "surprising_insights": [
+    {
+      "title": "95-95-95 status",
+      "detail": "Latest national cascade readout: first 95 61.0%, second 95 66.0%, third 95 57.0%."
+    },
+    {
+      "title": "Longest historical series",
+      "detail": "Reported deaths currently spans 2015-01 to 2022-05 across 36 extracted points."
+    },
+    {
+      "title": "Transmission trend coverage",
+      "detail": "Sexual contact share of reported cases has the deepest structured history in the transmission layer with 51 points."
+    },
+    {
+      "title": "Diagnosis coverage by region",
+      "detail": "BARMM leads at 75.0%, while 3 trails in 2025 Q4."
+    },
+    {
+      "title": "Largest remaining structuring family",
+      "detail": "non chart context accounts for 1357 backlog items."
+    }
+  ],
+  "documents_with_most_claims": [
+    {
+      "filename": "2016_02_Situational_Report_Workplace_Response_to_HIV.pdf",
+      "claim_count": 136
+    },
+    {
+      "filename": "CPGs_2016_hiv_adults_adolescents.pdf",
+      "claim_count": 108
+    },
+    {
+      "filename": "HIV_STI_2025_Jul_Sep.pdf",
+      "claim_count": 88
+    },
+    {
+      "filename": "HIV_STI_2025_Q4.pdf",
+      "claim_count": 88
+    },
+    {
+      "filename": "HIV_STI_2024_April_June.pdf",
+      "claim_count": 85
+    },
+    {
+      "filename": "HIV_STI_2025_January_-_March.pdf",
+      "claim_count": 84
+    },
+    {
+      "filename": "HIV_STI_2025_Q2.pdf",
+      "claim_count": 71
+    },
+    {
+      "filename": "2016_02_Situational_Report_Workplace_Response_to_HIV_removed.pdf",
+      "claim_count": 70
+    },
+    {
+      "filename": "2024_Q4_HIV_AIDS_Surveillance_of_the_Philippines_2.pdf",
+      "claim_count": 69
+    },
+    {
+      "filename": "CPGs_2010_hiv_immunization.pdf",
+      "claim_count": 64
+    }
+  ],
+  "review_queue": {
+    "count": 2333,
+    "by_reason": {
+      "surveillance_narrative_needs_structuring": 2154,
+      "structured_table_mapping_needed": 170,
+      "policy_claim_needs_tagging": 9
+    },
+    "by_priority": {
+      "high": 2066,
+      "medium": 267
+    },
+    "by_family": {
+      "age_distribution": 451,
+      "non_chart_context": 1357,
+      "transmission_breakdown": 143,
+      "ofw_profile": 111,
+      "quick_facts_table": 2,
+      "ocr_scrambled_table": 44,
+      "testing_summary": 19,
+      "age_distribution_table": 55,
+      "mode_of_transmission_table": 29,
+      "treatment_program": 29,
+      "regional_distribution_table": 40,
+      "historical_trend": 22,
+      "regional_distribution": 22,
+      "policy_reference": 1,
+      "workplace_policy": 5,
+      "background_policy_context": 3
+    },
+    "chart_blocker_count": 170,
+    "actionable_narrative_count": 806,
+    "top_families": [
+      {
+        "family": "non_chart_context",
+        "count": 1357,
+        "share": 58.2,
+        "recommended_strategy": "model_then_manual_review"
+      },
+      {
+        "family": "age_distribution",
+        "count": 451,
+        "share": 19.3,
+        "recommended_strategy": "deterministic_mapper"
+      },
+      {
+        "family": "transmission_breakdown",
+        "count": 143,
+        "share": 6.1,
+        "recommended_strategy": "deterministic_mapper"
+      },
+      {
+        "family": "ofw_profile",
+        "count": 111,
+        "share": 4.8,
+        "recommended_strategy": "deterministic_mapper"
+      },
+      {
+        "family": "age_distribution_table",
+        "count": 55,
+        "share": 2.4,
+        "recommended_strategy": "deterministic_mapper"
+      },
+      {
+        "family": "ocr_scrambled_table",
+        "count": 44,
+        "share": 1.9,
+        "recommended_strategy": "upstream_table_reparse"
+      },
+      {
+        "family": "regional_distribution_table",
+        "count": 40,
+        "share": 1.7,
+        "recommended_strategy": "deterministic_mapper"
+      },
+      {
+        "family": "mode_of_transmission_table",
+        "count": 29,
+        "share": 1.2,
+        "recommended_strategy": "deterministic_mapper"
+      }
+    ],
+    "top_documents": [
+      {
+        "filename": "2016_02_Situational_Report_Workplace_Response_to_HIV.pdf",
+        "review_count": 54
+      },
+      {
+        "filename": "HIV_STI_2025_Jul_Sep.pdf",
+        "review_count": 38
+      },
+      {
+        "filename": "2016_02_Situational_Report_Workplace_Response_to_HIV_removed.pdf",
+        "review_count": 36
+      },
+      {
+        "filename": "HIV_STI_2025_January_-_March.pdf",
+        "review_count": 29
+      },
+      {
+        "filename": "EB_HIV_April_AIDSreg2019.pdf",
+        "review_count": 28
+      },
+      {
+        "filename": "HIV_STI_2015_May.pdf",
+        "review_count": 27
+      },
+      {
+        "filename": "EB_HIV_November_AIDSreg2018.pdf",
+        "review_count": 27
+      },
+      {
+        "filename": "HIV_STI_2025_Q2.pdf",
+        "review_count": 26
+      },
+      {
+        "filename": "HIV_STI_2010_July.pdf",
+        "review_count": 25
+      },
+      {
+        "filename": "HIV_STI_2010_December.pdf",
+        "review_count": 25
+      }
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+# EpiGraph PH Configuration
+
+extraction:
+  provider: ollama
+  model: qwen3.5:9b
+  # Models to attempt in order
+  models:
+    - ollama/qwen3.5:9b
+  
+  # Minimum confidence (0.0 to 1.0) required to keep a claim for sync
+  confidence_threshold: 0.8
+  
+  # Minimum chars needed in the snippet for verification context
+  snippet_min_chars: 200
+
+  # Keep local extractions within a context size the 9B local model can handle.
+  chunk_chars: 8000
+  max_chunks_per_doc: 40
+  enable_llm_fallback: false
+  llm_timeout_seconds: 45
+  llm_retries: 1
+  reset_model_on_timeout: true
+
+parsing:
+  # Below this many native-text characters, treat the page as OCR-heavy.
+  ocr_text_char_threshold: 80
+
+  # Only run vision for image-heavy pages when native text is still sparse.
+  image_text_char_threshold: 600
+  image_coverage_threshold: 0.35
+
+  # Table/chart heuristics are only used on lower-text pages.
+  table_text_char_threshold: 1200
+  table_detection_max_chars: 1500
+  vector_graphics_threshold: 120
+  vector_text_char_threshold: 300
+
+  # Lower render scale keeps vision fallbacks lighter on VRAM.
+  vision_render_scale: 1.5
+  prefer_ocr_for_scanned_pages: true
+  ocr_min_chars: 80
+  ocr_timeout_seconds: 120
+  ocr_cleanup_enabled: true
+  save_ocr_failure_images: true
+  parse_worker_timeout_seconds: 7200
+  vision_timeout_seconds: 45
+  vision_retries: 1
+  reset_model_on_vision_failure: true
+  flattened_table_min_lines: 80
+  flattened_table_short_line_ratio: 0.55
+  flattened_table_numeric_line_ratio: 0.45
+  scrambled_table_min_lines: 8
+  scrambled_table_pipe_line_ratio: 0.55
+  scrambled_table_numeric_token_ratio: 0.58
+  scrambled_table_alpha_token_ratio: 0.24
+  scrambled_table_short_cell_ratio: 0.62
+  qa_warn_merged_token_count: 60
+  qa_fail_merged_token_count: 220
+  qa_warn_merged_token_density: 2.0
+  qa_fail_merged_token_density: 7.5
+
+processing:
+  # Leave empty to process the full corpus. While the schema is being stabilized,
+  # keep the pipeline focused on HIV/STI documents.
+  include_folders:
+    - hiv_sti
+
+pipeline:
+  # Percentage of extracted knowledge points to physically spot check from the disk PDFs (e.g. 0.05 = 5%)
+  verification_sample_rate: 0.05
+  
+  # Time (seconds) to sleep between API calls to respect rate limits. 
+  # Note: LiteLLM handles 429s natively, this is just a baseline throttle.
+  llm_delay_seconds: 5
+
+  # Prevent overlapping boots; if a lock survives longer than this, reclaim it.
+  lock_stale_minutes: 720
+
+  # Requeue interrupted parsing/extraction work on startup.
+  resume_in_progress_on_start: true
+
+  # For the current production run, process the existing local corpus directly.
+  # Discovery/downloading can be run separately when needed.
+  run_ingestion_on_start: false
+
+cloud:
+  # Number of old runs (not claims) to keep locally before pruning metadata
+  local_run_history_retention: 30
+  
+  # ID of the Drive Folder where JSON exports (knowledge_points.json, stats.json) go
+  drive_sync_folder_id: ""
+  
+  # ID of the Google Sheet acting as the "Heartbeat" dashboard
+  dashboard_sheet_id: ""
+
+paths:
+  db: "data/epigraph.db"
+  pdfs: "data/raw_pdfs"
+  markdown: "data/processed_md"
+  normalized: "data/normalized"
