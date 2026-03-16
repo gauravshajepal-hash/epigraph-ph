@@ -409,23 +409,16 @@ class PublicationAssetBuilder:
         env = os.environ.copy()
         env["R_LIBS_USER"] = str(self._r_libs_user())
         figures: dict[str, PublicationFigure] = {}
-        try:
-            subprocess.run(
-                [str(rscript), str(self.r_script_path), str(payload_path), str(self.figure_dir)],
-                check=True,
-                cwd=str(self.base_dir),
-                env=env,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-        except (subprocess.CalledProcessError, OSError):
-            return {}
-        finally:
-            try:
-                payload_path.unlink()
-            except FileNotFoundError:
-                pass
+        result = subprocess.run(
+            [str(rscript), str(self.r_script_path), str(payload_path), str(self.figure_dir)],
+            check=True,
+            cwd=str(self.base_dir),
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        print("R output:", result.stdout)
+        print("R error:", result.stderr)
 
         configs = {
             "national_cascade": ("national_cascade_board", "National 95-95-95 board", "The board combines a target-position bullet strip, a shared 2015-2025 timeline, and a latest-cascade waterfall in people."),

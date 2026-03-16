@@ -25,16 +25,16 @@ payload <- fromJSON(input_path, simplifyVector = FALSE)
 series <- payload$series
 
 stage_palette <- c(
-  "Diagnosed" = "#5b74d6",
-  "On ART" = "#16886f",
-  "Suppressed" = "#db6b2c"
+  "Diagnosed" = "#5b9cf5",
+  "On ART" = "#2d9cdb",
+  "Suppressed" = "#f0a030"
 )
 
-positive_color <- "#16886f"
-negative_color <- "#c85f1f"
-grid_color <- "#d6ddd9"
-bg_color <- "#fffaf0"
-panel_color <- "#fffdf8"
+positive_color <- "#2d9cdb"
+negative_color <- "#e63946"
+grid_color <- "#1e2f4c"
+bg_color <- "transparent"
+panel_color <- "transparent"
 
 quarter_to_decimal <- function(period) {
   matches <- regmatches(period, regexec("^(\\d{4}) Q([1-4])$", period))[[1]]
@@ -49,7 +49,7 @@ save_plot_assets <- function(plot, basename, width = 13, height = 8) {
   pdf_path <- file.path(output_dir, paste0(basename, ".pdf"))
   png_path <- file.path(output_dir, paste0(basename, ".png"))
 
-  svglite::svglite(svg_path, width = width, height = height, bg = "white")
+  svglite::svglite(svg_path, width = width, height = height, bg = "transparent")
   print(plot)
   dev.off()
 
@@ -57,7 +57,7 @@ save_plot_assets <- function(plot, basename, width = 13, height = 8) {
   print(plot)
   dev.off()
 
-  ragg::agg_png(png_path, width = width * 180, height = height * 180, units = "px", res = 180, background = "white")
+  ragg::agg_png(png_path, width = width * 180, height = height * 180, units = "px", res = 180, background = "#0c1629")
   print(plot)
   dev.off()
 }
@@ -65,16 +65,16 @@ save_plot_assets <- function(plot, basename, width = 13, height = 8) {
 epi_theme <- function(base_size = 13) {
   theme_minimal(base_size = base_size, base_family = "sans") +
     theme(
-      plot.background = element_rect(fill = bg_color, colour = NA),
-      panel.background = element_rect(fill = panel_color, colour = "#ebe4d8", linewidth = 0.6),
+      plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.background = element_blank(),
       panel.grid.major = element_line(colour = grid_color, linewidth = 0.5),
       panel.grid.minor = element_blank(),
-      axis.title = element_text(face = "bold", colour = "#314540"),
-      axis.text = element_text(colour = "#516661"),
-      plot.title = element_text(face = "bold", family = "serif", size = base_size + 6, colour = "#14231f"),
-      plot.subtitle = element_text(size = base_size + 1, colour = "#566a64", margin = margin(b = 10)),
-      plot.caption = element_text(size = base_size - 2, colour = "#667973"),
-      strip.text = element_text(face = "bold", family = "serif", size = base_size + 1, colour = "#14231f"),
+      axis.title = element_text(face = "bold", colour = "#e0e6f0"),
+      axis.text = element_text(colour = "#7889a0"),
+      plot.title = element_text(face = "bold", family = "serif", size = base_size + 6, colour = "#ffffff"),
+      plot.subtitle = element_text(size = base_size + 1, colour = "#a0b0c0", margin = margin(b = 10)),
+      plot.caption = element_text(size = base_size - 2, colour = "#7889a0"),
+      strip.text = element_text(face = "bold", family = "serif", size = base_size + 1, colour = "#e0e6f0"),
       legend.position = "top",
       legend.title = element_blank(),
       legend.text = element_text(size = base_size),
@@ -156,15 +156,15 @@ build_national_cascade <- function(data) {
     )
 
   bullet <- ggplot(bullet_df, aes(y = anchor)) +
-    geom_segment(aes(x = 0, xend = 100, yend = anchor), linewidth = 9.5, colour = "#ebefea", lineend = "round") +
-    geom_segment(aes(x = 0, xend = 95, yend = anchor), linewidth = 9.5, colour = "#f4e6d7", lineend = "round") +
+    geom_segment(aes(x = 0, xend = 100, yend = anchor), linewidth = 9.5, colour = "#101d33", lineend = "round") +
+    geom_segment(aes(x = 0, xend = 95, yend = anchor), linewidth = 9.5, colour = "#2d9cdb44", lineend = "round") +
     geom_segment(aes(x = 0, xend = latest_value, yend = anchor, colour = stage), linewidth = 9.5, lineend = "round") +
-    geom_point(aes(x = latest_value, fill = stage), shape = 21, size = 6.2, stroke = 1.25, colour = "white") +
-    geom_vline(xintercept = 95, linetype = "22", linewidth = 0.7, colour = "#b45521") +
+    geom_point(aes(x = latest_value, fill = stage), shape = 21, size = 6.2, stroke = 1.25, colour = "#0c1629") +
+    geom_vline(xintercept = 95, linetype = "22", linewidth = 0.7, colour = "#f0a030") +
     geom_text(aes(x = 2, y = anchor, label = card_value, colour = stage), hjust = 0, vjust = 1.95, size = 7.2, fontface = "bold", family = "serif") +
-    geom_text(aes(x = 2, y = anchor, label = period_label), hjust = 0, vjust = 0.5, size = 3.6, colour = "#4d615b") +
-    geom_text(aes(x = 2, y = anchor, label = gap_label), hjust = 0, vjust = -0.75, size = 3.5, colour = "#6b7e78") +
-    annotate("text", x = 95, y = 3.45, label = "95 target", hjust = 1.05, size = 3.6, colour = "#9b3e25", fontface = "bold") +
+    geom_text(aes(x = 2, y = anchor, label = period_label), hjust = 0, vjust = 0.5, size = 3.6, colour = "#a0b0c0") +
+    geom_text(aes(x = 2, y = anchor, label = gap_label), hjust = 0, vjust = -0.75, size = 3.5, colour = "#7889a0") +
+    annotate("text", x = 95, y = 3.45, label = "95 target", hjust = 1.05, size = 3.6, colour = "#f0a030", fontface = "bold") +
     facet_wrap(~stage, nrow = 1) +
     scale_colour_manual(values = stage_palette) +
     scale_fill_manual(values = stage_palette) +
@@ -183,7 +183,7 @@ build_national_cascade <- function(data) {
       panel.grid = element_blank(),
       axis.text.y = element_blank(),
       panel.grid.minor = element_blank(),
-      axis.text.x = element_text(size = 10, colour = "#6b7e78"),
+      axis.text.x = element_text(size = 10, colour = "#7889a0"),
       axis.ticks.y = element_blank()
     )
 
@@ -196,11 +196,11 @@ build_national_cascade <- function(data) {
   latest_quarterly$label <- c("Diagnosed", "On ART", "Suppressed")
 
   timeline <- ggplot() +
-    geom_hline(yintercept = 95, linetype = "22", linewidth = 0.6, colour = "#b45521") +
+    geom_hline(yintercept = 95, linetype = "22", linewidth = 0.6, colour = "#f0a030") +
     geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 0.9, alpha = 0.18, linetype = "22", na.rm = TRUE) +
-    geom_point(data = annual, aes(x = x, y = value), shape = 21, size = 2.5, stroke = 1.0, fill = panel_color, colour = "#9fb5d0", alpha = 0.95, na.rm = TRUE) +
+    geom_point(data = annual, aes(x = x, y = value), shape = 21, size = 2.5, stroke = 1.0, fill = panel_color, colour = "#7889a0", alpha = 0.95, na.rm = TRUE) +
     geom_line(data = quarterly, aes(x = x, y = value, colour = stage, group = stage), linewidth = 2.2, na.rm = TRUE) +
-    geom_point(data = quarterly, aes(x = x, y = value, fill = stage), shape = 21, size = 3.2, stroke = 0.9, colour = "white", na.rm = TRUE) +
+    geom_point(data = quarterly, aes(x = x, y = value, fill = stage), shape = 21, size = 3.2, stroke = 0.9, colour = "#0c1629", na.rm = TRUE) +
     ggrepel::geom_text_repel(
       data = latest_quarterly,
       aes(x = x, y = value, label = sprintf("%s  %.0f%%", label, value), colour = stage),
@@ -259,10 +259,10 @@ build_national_cascade <- function(data) {
   )
 
   waterfall_plot <- ggplot(waterfall) +
-      geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill_key), colour = "white", linewidth = 0.8) +
-      geom_segment(data = connectors, aes(x = x, xend = xend, y = y, yend = yend), linewidth = 0.75, colour = "#7a8f88") +
-      geom_text(aes(x = (xmin + xmax) / 2, y = ymax + estimated_plhiv * 0.025, label = label), size = 3.8, fontface = "bold", colour = "#304641") +
-      scale_fill_manual(values = c("Estimated PLHIV" = "#d9e7e2", "Undiagnosed" = "#e88f4f", "Off ART" = "#d86a2b", "Not suppressed" = "#c4561b", "Suppressed" = "#0f7c66")) +
+      geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill_key), colour = "#0c1629", linewidth = 0.8) +
+      geom_segment(data = connectors, aes(x = x, xend = xend, y = y, yend = yend), linewidth = 0.75, colour = "#1e2f4c") +
+      geom_text(aes(x = (xmin + xmax) / 2, y = ymax + estimated_plhiv * 0.025, label = label), size = 3.8, fontface = "bold", colour = "#e0e6f0") +
+      scale_fill_manual(values = c("Estimated PLHIV" = "#435d8a", "Undiagnosed" = "#f0a030", "Off ART" = "#e63946", "Not suppressed" = "#c4561b", "Suppressed" = "#2d9cdb")) +
       scale_x_continuous(breaks = 1:5, labels = levels(waterfall$step), expand = expansion(mult = c(0.04, 0.04))) +
       scale_y_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.14))) +
       labs(
@@ -282,7 +282,7 @@ build_national_cascade <- function(data) {
       plot_annotation(
         title = "National 95-95-95 board, Philippines",
         subtitle = "Three views of the same endpoint: current target position, observed trajectory, and the latest cascade losses in people."
-      )
+      ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_regional_matrix <- function(data) {
@@ -301,10 +301,10 @@ build_regional_matrix <- function(data) {
     mutate(region = factor(region, levels = levels(rows$region)))
 
   heatmap <- ggplot(matrix_df, aes(x = stage, y = region, fill = value)) +
-    geom_tile(colour = "white", linewidth = 1.2, width = 0.96, height = 0.94) +
-    geom_text(aes(label = sprintf("%.0f%%", value)), size = 4.3, colour = "#17302a", fontface = "bold") +
+    geom_tile(colour = "#0c1629", linewidth = 1.2, width = 0.96, height = 0.94) +
+    geom_text(aes(label = sprintf("%.0f%%", value)), size = 4.3, colour = "#ffffff", fontface = "bold") +
     scale_fill_gradientn(
-      colours = c("#f6d7bf", "#e6c77b", "#86c3b1", "#0f7c66"),
+      colours = c("#202c46", "#3e5784", "#5b9cf5", "#2d9cdb"),
       limits = c(35, 95),
       labels = label_percent(scale = 1)
     ) +
@@ -323,9 +323,9 @@ build_regional_matrix <- function(data) {
     )
 
   gaps <- ggplot(gap_df, aes(x = mean_gap, y = region)) +
-    geom_segment(aes(x = 0, xend = mean_gap, yend = region), linewidth = 1.35, colour = "#d3dcd7") +
-    geom_point(size = 4.0, colour = "#b45521") +
-    geom_text(aes(label = sprintf("%.1f", mean_gap)), hjust = -0.16, size = 4.0, colour = "#304641") +
+    geom_segment(aes(x = 0, xend = mean_gap, yend = region), linewidth = 1.35, colour = "#1e2f4c") +
+    geom_point(size = 4.0, colour = "#e63946") +
+    geom_text(aes(label = sprintf("%.1f", mean_gap)), hjust = -0.16, size = 4.0, colour = "#e0e6f0") +
     scale_x_continuous(expand = expansion(mult = c(0, 0.24))) +
     labs(
       title = "Gap to 95",
@@ -347,7 +347,7 @@ build_regional_matrix <- function(data) {
       plot_annotation(
         title = "Regional stage matrix, latest yearly snapshot",
         subtitle = paste0(closest_region, " is currently closest to the combined 95-95-95 target. ", widest_gap_region, " has the widest average gap.")
-      )
+      ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_regional_fingerprint_board <- function(data) {
@@ -361,15 +361,18 @@ build_regional_fingerprint_board <- function(data) {
     mutate(mean_gap = as.numeric(mean_gap))
 
   latest_burden <- function(region) {
-    burden_rows <- bind_rows(lapply(data$region_histories[[region]]$burden, as_tibble))
-    if (!nrow(burden_rows)) return(0)
-    burden_rows <- burden_rows %>%
+    history_rows <- bind_rows(lapply(data$region_histories[[region]]$cascade, as_tibble))
+    if (!nrow(history_rows)) return(0)
+    if (!"leakage_burden" %in% names(history_rows)) return(0)
+    history_rows <- history_rows %>%
       mutate(
         year = as.integer(year),
-        burden = as.numeric(ltfu) + as.numeric(not_on_treatment)
+        burden = as.numeric(leakage_burden)
       ) %>%
+      filter(!is.na(burden)) %>%
       arrange(year)
-    tail(burden_rows$burden, 1)
+    if (!nrow(history_rows)) return(0)
+    tail(history_rows$burden, 1)
   }
 
   best_region <- latest_rows %>% arrange(mean_gap) %>% slice(1) %>% pull(region)
@@ -435,16 +438,16 @@ build_regional_fingerprint_board <- function(data) {
     )
 
   ggplot(cascade_rows, aes(x = stage, y = value, colour = stage, group = 1)) +
-    geom_hline(yintercept = 95, linewidth = 0.7, linetype = "22", colour = "#b45521") +
+    geom_hline(yintercept = 95, linewidth = 0.7, linetype = "22", colour = "#f0a030") +
     geom_col(aes(fill = stage), alpha = 0.18, width = 0.56, colour = NA) +
-    geom_line(linewidth = 1.2, colour = "#7b8e88", show.legend = FALSE) +
-    geom_point(size = 4.3, stroke = 1.0, fill = "white", shape = 21) +
+    geom_line(linewidth = 1.2, colour = "#1e2f4c", show.legend = FALSE) +
+    geom_point(size = 4.3, stroke = 1.0, fill = "#101d33", shape = 21) +
     geom_text(
       aes(label = sprintf("%.0f%%", value)),
       nudge_y = 4.0,
       size = 4.0,
       fontface = "bold",
-      colour = "#17302a",
+      colour = "#e0e6f0",
       show.legend = FALSE
     ) +
     geom_text(
@@ -452,7 +455,7 @@ build_regional_fingerprint_board <- function(data) {
       aes(label = sprintf("%+.0f", delta)),
       nudge_y = -6.8,
       size = 3.4,
-      colour = "#6a7a75",
+      colour = "#7889a0",
       show.legend = FALSE
     ) +
     geom_text(
@@ -462,7 +465,7 @@ build_regional_fingerprint_board <- function(data) {
       vjust = 0,
       inherit.aes = FALSE,
       size = 3.6,
-      colour = "#4c5f59"
+      colour = "#a0b0c0"
     ) +
     facet_wrap(~region_panel, nrow = 1) +
     scale_colour_manual(values = stage_palette) +
@@ -500,7 +503,7 @@ build_anomaly_board <- function(data) {
     slice_head(n = min(8, nrow(perf)))
 
   quad <- ggplot(perf, aes(x = residual, y = leakage_burden)) +
-    geom_vline(xintercept = 0, linewidth = 0.7, colour = "#7a8f88") +
+    geom_vline(xintercept = 0, linewidth = 0.7, colour = "#7889a0") +
     geom_point(aes(size = leakage_total, fill = stage, colour = sign), shape = 21, stroke = 1.0, alpha = 0.94) +
     ggrepel::geom_text_repel(
       data = label_df,
@@ -509,10 +512,10 @@ build_anomaly_board <- function(data) {
       min.segment.length = 0,
       box.padding = 0.3,
       max.overlaps = 50,
-      colour = "#314540"
+      colour = "#e0e6f0"
     ) +
-    scale_fill_manual(values = c("Treatment after diagnosis" = "#0f7c66", "Suppression after treatment" = "#db6b2c")) +
-    scale_colour_manual(values = c("Above expected" = "#1a8b73", "Below expected" = "#c85f1f")) +
+    scale_fill_manual(values = c("Treatment after diagnosis" = "#2d9cdb", "Suppression after treatment" = "#e63946")) +
+    scale_colour_manual(values = c("Above expected" = "#5b9cf5", "Below expected" = "#f0a030")) +
     scale_size_continuous(range = c(5, 18), labels = label_number(scale_cut = cut_short_scale())) +
       scale_x_continuous(labels = function(x) sprintf("%+.0f", x)) +
       scale_y_continuous(trans = "sqrt", labels = label_number(scale_cut = cut_short_scale())) +
@@ -538,7 +541,7 @@ build_anomaly_board <- function(data) {
 
   leak_plot <- ggplot(leak_long, aes(x = value, y = region, fill = component)) +
     geom_col(width = 0.7, position = "stack") +
-      scale_fill_manual(values = c("Lost to follow-up" = "#db6b2c", "Not on treatment" = "#c89a25")) +
+      scale_fill_manual(values = c("Lost to follow-up" = "#e63946", "Not on treatment" = "#f0a030")) +
       scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
       labs(
         title = "Largest leakage burdens",
@@ -551,15 +554,15 @@ build_anomaly_board <- function(data) {
     plot_annotation(
       title = "Performance versus treatment burden",
       subtitle = "The quadrant identifies regions that underperform the fitted cascade pattern, while the ranked bars show where loss from care is concentrated."
-    )
+    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_historical_board <- function(data) {
   panel_specs <- list(
-    list(key = "cases", title = "Cumulative reported HIV cases", color = "#0f7c66", unit = "count"),
-    list(key = "plhiv", title = "People living with HIV", color = "#3565af", unit = "count"),
-    list(key = "new_infections", title = "New HIV infections", color = "#b35323", unit = "count"),
-    list(key = "aids_deaths", title = "AIDS-related deaths", color = "#8a3f2a", unit = "count")
+    list(key = "cases", title = "Cumulative reported HIV cases", color = "#2d9cdb", unit = "count"),
+    list(key = "plhiv", title = "People living with HIV", color = "#5b9cf5", unit = "count"),
+    list(key = "new_infections", title = "New HIV infections", color = "#f0a030", unit = "count"),
+    list(key = "aids_deaths", title = "AIDS-related deaths", color = "#e63946", unit = "count")
   )
 
   plots <- lapply(panel_specs, function(spec) {
@@ -581,15 +584,15 @@ build_historical_board <- function(data) {
     plot_annotation(
       title = "Long-run burden indicators, Philippines",
       subtitle = "Observed annual values only. Missing years remain blank; no interpolation is applied."
-    )
+    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_key_population_board <- function(data) {
   panel_specs <- list(
-    list(key = "pregnant_cumulative", title = "Pregnant women diagnosed", color = "#0f7c66", unit = "count"),
-    list(key = "tgw_cumulative", title = "TGW diagnosed", color = "#b35323", unit = "count"),
-    list(key = "ofw_cumulative", title = "OFW cumulative burden", color = "#16886f", unit = "count"),
-    list(key = "youth_share", title = "Youth share of reported cases", color = "#3565af", unit = "percent")
+    list(key = "pregnant_cumulative", title = "Pregnant women diagnosed", color = "#2d9cdb", unit = "count"),
+    list(key = "tgw_cumulative", title = "TGW diagnosed", color = "#f0a030", unit = "count"),
+    list(key = "ofw_cumulative", title = "OFW cumulative burden", color = "#5b9cf5", unit = "count"),
+    list(key = "youth_share", title = "Youth share of reported cases", color = "#e63946", unit = "percent")
   )
 
   plots <- lapply(panel_specs, function(spec) {
@@ -616,7 +619,7 @@ build_key_population_board <- function(data) {
     plot_annotation(
       title = "Key population sentinel panels, Philippines",
       subtitle = "Observed annual values on a shared 2015-2025 window. Missing years remain visible as gaps."
-    )
+    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 render_safe <- function(builder, basename, width, height) {

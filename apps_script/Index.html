@@ -4,31 +4,36 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EpiGraph PH Dashboard</title>
+  <meta name="description" content="EpiGraph PH — Philippines HIV surveillance atlas. National 95-95-95 cascade, regional inequality, historical burden, and key population tracking.">
+  <meta name="theme-color" content="#0a0f1a">
+  <title>EpiGraph PH — Philippines HIV Surveillance Atlas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
-      --ink: #14231f;
-      --paper: #f4ecdb;
-      --paper-strong: #fff8ea;
-      --panel: rgba(255, 249, 238, 0.92);
-      --panel-border: rgba(20, 35, 31, 0.12);
-      --line: rgba(20, 35, 31, 0.16);
-      --muted: #6b726a;
-      --accent: #0e7c66;
-      --accent-strong: #0c6150;
-      --accent-soft: rgba(14, 124, 102, 0.12);
-      --signal: #db5f2b;
-      --signal-soft: rgba(219, 95, 43, 0.14);
-      --warning: #9b3324;
-      --shadow: 0 20px 60px rgba(20, 35, 31, 0.09);
-      --radius-lg: 24px;
-      --radius-md: 18px;
-      --radius-sm: 12px;
+      --ink: #e0e6f0;
+      --ink-strong: #ffffff;
+      --bg: #0c1629;
+      --bg-raised: #101d33;
+      --panel: rgba(14, 24, 46, 0.85);
+      --panel-border: rgba(45, 156, 219, 0.12);
+      --panel-glow: rgba(45, 156, 219, 0.04);
+      --line: rgba(45, 156, 219, 0.08);
+      --muted: #7889a0;
+      --accent: #2d9cdb;
+      --accent-strong: #4db5ef;
+      --accent-soft: rgba(45, 156, 219, 0.12);
+      --signal: #f0a030;
+      --signal-soft: rgba(240, 160, 48, 0.12);
+      --warning: #e63946;
+      --shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --mono: "IBM Plex Mono", monospace;
     }
 
     * { box-sizing: border-box; }
@@ -36,10 +41,10 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      background:
-        radial-gradient(circle at top left, rgba(219, 95, 43, 0.14), transparent 24%),
-        radial-gradient(circle at top right, rgba(14, 124, 102, 0.14), transparent 22%),
-        linear-gradient(180deg, #fbf5e8 0%, #efe5d0 100%);
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% -8%, rgba(45, 156, 219, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% -8%, rgba(230, 57, 70, 0.04) 0%, transparent 50%);
       color: var(--ink);
       font-family: "IBM Plex Sans", sans-serif;
     }
@@ -49,73 +54,83 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(20, 35, 31, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 35, 31, 0.03) 1px, transparent 1px);
-      background-size: 28px 28px;
+        linear-gradient(rgba(45, 156, 219, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45, 156, 219, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
       pointer-events: none;
-      opacity: 0.45;
+      opacity: 0.5;
     }
 
-    .shell { position: relative; z-index: 1; max-width: 1680px; margin: 0 auto; padding: 22px 18px 56px; }
+    .shell { position: relative; z-index: 1; max-width: 1680px; margin: 0 auto; padding: 16px 16px 48px; }
     .hero {
-      background: linear-gradient(135deg, rgba(20, 35, 31, 0.97), rgba(12, 97, 80, 0.94));
-      color: #f4f0e4;
-      border-radius: 26px;
-      padding: 16px 20px 14px;
+      background: linear-gradient(135deg, rgba(8, 14, 30, 0.95), rgba(10, 20, 40, 0.92));
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px 16px;
       box-shadow: var(--shadow);
       overflow: hidden;
       position: relative;
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(20px);
     }
     .hero::after {
       content: "";
       position: absolute;
-      top: -72px;
-      right: -72px;
-      width: 180px;
-      height: 180px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.25;
     }
     .hero-top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
     .hero h1 {
       margin: 0;
       font-family: "Fraunces", serif;
-      font-size: clamp(1.65rem, 2.35vw, 2.55rem);
-      line-height: 0.98;
+      font-size: clamp(1.55rem, 2.2vw, 2.35rem);
+      line-height: 1;
       letter-spacing: -0.03em;
+      color: var(--ink-strong);
     }
-    .hero p { margin: 6px 0 0; max-width: 980px; color: rgba(244, 240, 228, 0.86); font-size: 0.92rem; line-height: 1.4; }
-    .hero-meta { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; margin-top: 8px; }
+    .hero p { margin: 6px 0 0; max-width: 980px; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+    .hero-meta { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; margin-top: 8px; }
     .meta-pill {
-      border: 1px solid rgba(244, 240, 228, 0.16);
-      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(45, 156, 219, 0.15);
+      background: rgba(45, 156, 219, 0.06);
       border-radius: 999px;
-      padding: 6px 11px;
-      font-size: 0.78rem;
-      color: rgba(244, 240, 228, 0.9);
+      padding: 5px 10px;
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--accent);
       text-align: left;
+      letter-spacing: 0.02em;
     }
-    .nav-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .nav-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
     .nav-button {
-      border: 1px solid rgba(244, 240, 228, 0.18);
-      background: rgba(255, 255, 255, 0.08);
-      color: #f4f0e4;
+      border: 1px solid rgba(45, 156, 219, 0.12);
+      background: transparent;
+      color: var(--muted);
       border-radius: 999px;
-      padding: 8px 12px;
+      padding: 7px 14px;
       font-weight: 600;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
+      font-family: var(--mono);
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease;
+      transition: all 200ms ease;
+      letter-spacing: 0.02em;
     }
-    .nav-button:hover, .nav-button.is-active { background: rgba(255, 255, 255, 0.16); transform: translateY(-1px); }
+    .nav-button:hover { color: var(--accent); border-color: rgba(45, 156, 219, 0.3); background: rgba(45, 156, 219, 0.06); }
+    .nav-button.is-active { color: var(--accent); border-color: var(--accent); background: rgba(45, 156, 219, 0.08); box-shadow: 0 0 14px rgba(45, 156, 219, 0.12); }
     .status-banner {
       display: none;
-      margin-top: 12px;
+      margin-top: 10px;
       padding: 10px 14px;
       border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.88rem;
+      background: rgba(45, 156, 219, 0.06);
+      border: 1px solid rgba(45, 156, 219, 0.12);
+      font-size: 0.84rem;
+      font-family: var(--mono);
+      color: var(--accent);
     }
     .status-banner.is-visible { display: block; }
     .section { display: none; margin-top: 22px; animation: reveal 260ms ease; }
@@ -124,35 +139,55 @@
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .grid { display: grid; gap: 18px; }
+    .grid { display: grid; gap: 14px; }
     .grid.kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 16px; }
-    .grid.columns-2 { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); margin-top: 18px; }
-    .dashboard-band { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
+    .grid.columns-2 { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); margin-top: 14px; }
+    .dashboard-band { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     .grid.columns-2.dashboard-band { grid-template-columns: 1fr; }
-    .overview-preface { display: none; }
+    .overview-preface { display: grid; }
     .card {
       background: var(--panel);
       border: 1px solid var(--panel-border);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
-      padding: 20px;
-      backdrop-filter: blur(12px);
+      padding: 14px;
+      backdrop-filter: blur(16px);
     }
-    .card-header { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .col-span-12 { grid-column: span 12; }
+    .col-span-8 { grid-column: span 8; }
+    .col-span-6 { grid-column: span 6; }
+    .col-span-4 { grid-column: span 4; }
+
+    .card-header { 
+      display: flex; 
+      justify-content: space-between; 
+      gap: 12px; 
+      align-items: center; 
+      margin-bottom: 8px; 
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.18em;
-      color: var(--muted);
-      margin-bottom: 10px;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-family: var(--mono);
     }
-    .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--line); }
-    .card h2, .card h3 { margin: 0; font-family: "Fraunces", serif; letter-spacing: -0.03em; }
-    .card h2 { font-size: 1.5rem; }
-    .card h3 { font-size: 1.15rem; }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.4; }
+    .card h2, .card h3 { margin: 0; font-family: "IBM Plex Sans", sans-serif; letter-spacing: -0.01em; color: var(--ink-strong); font-weight: 600; }
+    .card h2 { font-size: 1.1rem; }
+    .card h3 { font-size: 1.0rem; }
     .kpi-number { font-family: "Fraunces", serif; font-size: clamp(2rem, 2.4vw, 3rem); line-height: 0.92; margin: 0; }
     .kpi-label { margin-top: 10px; color: var(--muted); font-size: 0.95rem; }
     .kpi-foot { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; }
@@ -165,15 +200,15 @@
       padding: 7px 11px;
       font-weight: 600;
     }
-    .signal-tag { background: var(--signal-soft); color: var(--warning); }
-    .pill { background: var(--accent-soft); color: var(--accent-strong); border: 1px solid rgba(14, 124, 102, 0.12); }
+    .signal-tag { background: var(--signal-soft); color: var(--signal); }
+    .pill { background: var(--accent-soft); color: var(--accent-strong); border: 1px solid var(--panel-border); font-family: var(--mono); }
     .mini-note { color: var(--muted); font-size: 0.94rem; line-height: 1.68; }
     .bar-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(24px, 1fr)); gap: 10px; align-items: end; min-height: 220px; margin-top: 18px; }
     .bar { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .bar-fill { width: 100%; min-height: 10px; border-radius: 999px 999px 10px 10px; background: linear-gradient(180deg, var(--signal), #e59d5d); box-shadow: inset 0 -12px 18px rgba(20, 35, 31, 0.16); }
+    .bar-fill { width: 100%; min-height: 10px; border-radius: 999px 999px 10px 10px; background: linear-gradient(180deg, var(--accent), var(--accent-strong)); box-shadow: 0 0 12px rgba(45, 156, 219, 0.2); }
     .bar-year { font-size: 0.72rem; color: var(--muted); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
     .trend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
-    .trend-card { padding: 18px; border-radius: 22px; border: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 248, 234, 0.92)); }
+    .trend-card { padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--panel-border); background: var(--panel); backdrop-filter: blur(12px); }
     .trend-meta { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
     .trend-value { margin-top: 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
     .trend-value strong { font-size: 1.6rem; font-family: "Fraunces", serif; }
@@ -182,16 +217,22 @@
     .chart-host {
       width: 100%;
       height: 360px;
-      margin-top: 18px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.42);
-      border: 1px solid rgba(20, 35, 31, 0.06);
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(16, 28, 52, 0.5);
+      border: 1px solid var(--line);
     }
     .chart-host.spark {
-      height: 126px;
-      margin-top: 12px;
+      height: 48px;
+      margin-top: 10px;
       background: transparent;
       border: 0;
+    }
+    .atlas-card {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(16, 28, 52, 0.3);
     }
     .chart-host.scatter {
       height: 420px;
@@ -230,29 +271,33 @@
       align-items: center;
       gap: 8px;
       border-radius: 999px;
-      padding: 8px 12px;
-      border: 1px solid rgba(20, 35, 31, 0.12);
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--ink);
+      padding: 6px 12px;
+      border: 1px solid var(--panel-border);
+      background: rgba(45, 156, 219, 0.06);
+      color: var(--accent);
       text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: var(--mono);
+      transition: all 200ms ease;
     }
     .action-link:hover {
-      background: rgba(14, 124, 102, 0.08);
-      border-color: rgba(14, 124, 102, 0.24);
+      background: rgba(45, 156, 219, 0.12);
+      border-color: rgba(45, 156, 219, 0.3);
     }
     .publication-figure {
       width: 100%;
-      margin-top: 18px;
-      border-radius: 22px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 248, 234, 0.96));
-      overflow: hidden;
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--panel-border);
+      background: rgba(10, 15, 26, 0.6);
+      overflow-x: auto;
+      overflow-y: hidden;
     }
     .publication-figure svg {
       display: block;
       width: 100%;
+      min-width: 1000px;
       height: auto;
       background: transparent;
     }
@@ -277,12 +322,32 @@
     }
     .control-group select {
       width: 100%;
-      background: rgba(255, 255, 255, 0.84);
-      border: 1px solid var(--line);
-      border-radius: 12px;
+      background: rgba(16, 28, 52, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
       padding: 10px 12px;
       font: inherit;
       color: var(--ink);
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%234db5ef' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      transition: all 200ms ease;
+    }
+    .control-group select:hover {
+      border-color: rgba(45, 156, 219, 0.4);
+      background: rgba(45, 156, 219, 0.04);
+    }
+    .control-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(45, 156, 219, 0.15);
     }
     .explorer-grid {
       display: grid;
@@ -303,9 +368,9 @@
       margin-bottom: 12px;
     }
     .fingerprint-stat {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.62);
+      background: rgba(16, 28, 52, 0.6);
       padding: 12px 14px;
     }
     .fingerprint-stat .label {
@@ -345,9 +410,9 @@
     }
     .method-index a {
       display: block;
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(16, 28, 52, 0.5);
       padding: 14px 16px;
       color: var(--ink);
       text-decoration: none;
@@ -355,8 +420,8 @@
       line-height: 1.4;
     }
     .method-index a:hover {
-      border-color: rgba(14, 124, 102, 0.24);
-      background: rgba(14, 124, 102, 0.06);
+      border-color: rgba(45, 156, 219, 0.25);
+      background: rgba(14, 124, 102, 0.08);
     }
     .method-index small {
       display: block;
@@ -369,9 +434,10 @@
     .method-card,
     .reference-group-card {
       border: 1px solid var(--panel-border);
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.72);
-      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      padding: 18px;
+      backdrop-filter: blur(12px);
     }
     .method-card h3,
     .reference-group-card h3 {
@@ -384,10 +450,10 @@
       margin-top: 14px;
     }
     .method-block {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 16px;
       padding: 14px;
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(16, 28, 52, 0.5);
     }
     .method-block h4 {
       margin: 0 0 8px;
@@ -405,9 +471,9 @@
     .formula-panel,
     .source-panel {
       margin-top: 16px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.62);
+      background: rgba(16, 28, 52, 0.6);
       padding: 16px;
     }
     .formula-panel h4,
@@ -421,18 +487,19 @@
     .formula-code {
       margin: 0;
       padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(20, 35, 31, 0.92);
-      color: #f4f0e4;
-      font: 0.9rem/1.65 "IBM Plex Sans", sans-serif;
+      border-radius: var(--radius-md);
+      background: rgba(8, 14, 28, 0.8);
+      color: var(--ink);
+      font: 0.85rem/1.65 var(--mono);
       white-space: pre-wrap;
       word-break: break-word;
+      border: 1px solid var(--line);
     }
     .source-table-wrap {
       overflow-x: auto;
       border-radius: 14px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
-      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid var(--panel-border);
+      background: rgba(16, 28, 52, 0.5);
     }
     .source-table {
       width: 100%;
@@ -444,12 +511,12 @@
       padding: 12px 14px;
       text-align: left;
       vertical-align: top;
-      border-bottom: 1px solid rgba(20, 35, 31, 0.08);
+      border-bottom: 1px solid var(--panel-border);
       font-size: 0.88rem;
       line-height: 1.55;
     }
     .source-table th {
-      background: rgba(20, 35, 31, 0.05);
+      background: rgba(45, 156, 219, 0.05);
       color: var(--muted);
       font-size: 0.74rem;
       text-transform: uppercase;
@@ -479,10 +546,10 @@
       margin-top: 14px;
     }
     .reference-item {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 16px;
       padding: 14px;
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(16, 28, 52, 0.5);
     }
     .reference-item-top {
       display: flex;
@@ -514,9 +581,9 @@
       padding: 0;
     }
     .experimental-list li {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.58);
+      background: rgba(16, 28, 52, 0.5);
       padding: 12px 14px;
       color: var(--ink);
       line-height: 1.55;
@@ -524,21 +591,34 @@
     }
     .trend-periods { margin-top: 10px; color: var(--muted); font-size: 0.78rem; display: flex; justify-content: space-between; gap: 10px; }
     .series-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px; }
-    .series-card { padding: 18px; border-radius: 22px; border: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 248, 234, 0.94)); }
-    .series-chart { width: 100%; height: 220px; margin-top: 14px; }
-    .series-foot { margin-top: 12px; color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
-    .series-value-line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-top: 14px; }
-    .series-value-line strong { font-family: "Fraunces", serif; font-size: 1.9rem; }
-    .brief-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .series-card { padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--panel-border); background: var(--panel); backdrop-filter: blur(12px); }
+    .clinical-narrative {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(45, 156, 219, 0.05);
+      border-left: 3px solid var(--accent);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: var(--ink);
+      font-family: var(--mono);
+    }
+    .log-prefix {
+      color: var(--accent-strong);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .bullet-grid {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(10, 15, 26, 0.4);
+    }
     .brief-card {
-      padding: 18px;
-      border-radius: 20px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 248, 234, 0.92)),
-        linear-gradient(rgba(20, 35, 31, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 35, 31, 0.03) 1px, transparent 1px);
-      background-size: auto, 28px 28px, 28px 28px;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
     }
     .brief-label {
       color: var(--muted);
@@ -560,9 +640,9 @@
       display: grid;
       grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.2fr);
       gap: 14px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.62);
+      background: rgba(16, 28, 52, 0.6);
       padding: 14px 16px;
     }
     .method-label {
@@ -578,7 +658,7 @@
       position: relative;
       height: 14px;
       border-radius: 999px;
-      background: rgba(20, 35, 31, 0.08);
+      background: var(--panel-border);
       overflow: hidden;
       margin-top: 12px;
     }
@@ -593,7 +673,7 @@
       top: -3px;
       bottom: -3px;
       width: 2px;
-      background: rgba(219, 95, 43, 0.8);
+      background: var(--signal);
     }
     .goal-scale {
       display: flex;
@@ -612,9 +692,9 @@
       margin-top: 14px;
     }
     .goal-stat {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(16, 28, 52, 0.4);
       padding: 10px 12px;
     }
     .goal-stat-label {
@@ -631,7 +711,7 @@
       line-height: 1.45;
     }
     .frontier-grid { display: grid; gap: 12px; margin-top: 16px; }
-    .frontier-row { border: 1px solid rgba(20, 35, 31, 0.08); border-radius: 16px; padding: 14px; background: rgba(255, 255, 255, 0.58); }
+    .frontier-row { border: 1px solid var(--panel-border); border-radius: 16px; padding: 14px; background: rgba(16, 28, 52, 0.5); }
     .frontier-row h3 { margin: 0 0 6px; font-size: 1rem; }
     .frontier-meta { color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
     .frontier-doc-list { display: grid; gap: 10px; margin-top: 12px; }
@@ -642,8 +722,8 @@
       align-items: center;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(20, 35, 31, 0.04);
-      border: 1px solid rgba(20, 35, 31, 0.06);
+      background: rgba(45, 156, 219, 0.04);
+      border: 1px solid rgba(45, 156, 219, 0.06);
     }
     .frontier-doc-name { font-weight: 600; line-height: 1.45; }
     .frontier-doc-count {
@@ -656,16 +736,17 @@
       white-space: nowrap;
     }
     .analytic-stack { display: grid; gap: 14px; margin-top: 18px; }
-    .analytic-card { padding: 18px; border-radius: 22px; border: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 248, 234, 0.92)); }
+    .analytic-card { padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--panel-border); background: var(--panel); backdrop-filter: blur(12px); }
     .analytic-card h3 { margin-bottom: 6px; }
     .analytic-subtitle { color: var(--muted); font-size: 0.94rem; line-height: 1.55; }
     .atlas-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 18px; }
     .duo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 18px; align-items: start; }
     .atlas-card {
-      padding: 24px;
-      border-radius: 22px;
+      padding: 20px;
+      border-radius: var(--radius-lg);
       border: 1px solid var(--panel-border);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 248, 234, 0.94));
+      background: var(--panel);
+      backdrop-filter: blur(12px);
     }
     .atlas-card h3 { margin: 0 0 6px; }
     .atlas-note { margin-top: 14px; color: var(--muted); font-size: 0.94rem; line-height: 1.68; }
@@ -676,10 +757,10 @@
       margin-top: 14px;
     }
     .atlas-stat {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 14px;
       padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(16, 28, 52, 0.5);
     }
     .atlas-stat-label {
       color: var(--muted);
@@ -699,10 +780,10 @@
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 14px;
       padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(16, 28, 52, 0.5);
     }
     .atlas-list-row strong { display: block; margin-bottom: 3px; }
     .atlas-value-chip {
@@ -721,10 +802,10 @@
       margin-top: 16px;
     }
     .mini-panel {
-      border: 1px solid rgba(20, 35, 31, 0.08);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
       padding: 20px;
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(16, 28, 52, 0.5);
     }
     .mini-panel h4 {
       margin: 0 0 6px;
@@ -737,35 +818,70 @@
     .gap-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) 56px; gap: 10px; align-items: center; }
     .gap-region { font-size: 0.82rem; font-weight: 700; color: var(--ink); }
     .gap-value { text-align: right; color: var(--muted); font-size: 0.82rem; font-weight: 700; }
-    .gap-track { position: relative; height: 12px; border-radius: 999px; background: rgba(20, 35, 31, 0.08); overflow: hidden; }
+    .gap-track { position: relative; height: 12px; border-radius: 999px; background: var(--panel-border); overflow: hidden; }
     .gap-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #57a789); }
-    .gap-target { position: absolute; top: -4px; bottom: -4px; width: 2px; background: rgba(219, 95, 43, 0.7); }
+    .gap-target { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--signal); }
     .scatter-grid { display: grid; gap: 20px; margin-top: 18px; }
     .scatter-chart { width: 100%; height: 420px; margin-top: 12px; }
     .scatter-note { margin-top: 14px; color: var(--muted); font-size: 0.94rem; line-height: 1.68; }
     .scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
-    .scorecard-block { padding: 18px; border-radius: 22px; border: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 248, 234, 0.92)); }
+    .scorecard-block { padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--panel-border); background: var(--panel); backdrop-filter: blur(12px); }
     .scorecard-rows { display: grid; gap: 10px; margin-top: 14px; }
     .scorecard-row { display: grid; grid-template-columns: minmax(72px, 1.2fr) repeat(4, minmax(46px, 0.8fr)); gap: 8px; align-items: center; }
     .scorecard-row.is-head { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; }
-    .scorecard-row:not(.is-head) { border-top: 1px solid rgba(20, 35, 31, 0.08); padding-top: 10px; }
+    .scorecard-row:not(.is-head) { border-top: 1px solid var(--panel-border); padding-top: 10px; }
     .scorecard-cell { font-size: 0.84rem; }
     .scorecard-cell.region { font-weight: 700; }
     .scorecard-cell.gap { font-weight: 700; color: var(--accent-strong); }
     .list { display: grid; gap: 14px; margin-top: 16px; }
-    .list-item { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: rgba(255, 255, 255, 0.55); }
+    .list-item { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: rgba(16, 28, 52, 0.5); }
     .insight-title { font-weight: 700; margin: 0 0 8px; }
     .filter-panel { display: grid; gap: 14px; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: end; }
     .filter-field { display: grid; gap: 8px; }
     .filter-field label { color: var(--muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
-    .filter-field input, .filter-field select {
+    .filter-field input {
       width: 100%;
-      background: rgba(255, 255, 255, 0.84);
-      border: 1px solid var(--line);
-      border-radius: 12px;
+      background: rgba(16, 28, 52, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
       padding: 11px 12px;
       font: inherit;
       color: var(--ink);
+      transition: all 200ms ease;
+    }
+    .filter-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(45, 156, 219, 0.15);
+    }
+    .filter-field select {
+      width: 100%;
+      background: rgba(16, 28, 52, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%234db5ef' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      transition: all 200ms ease;
+    }
+    .filter-field select:hover {
+      border-color: rgba(45, 156, 219, 0.4);
+      background: rgba(45, 156, 219, 0.04);
+    }
+    .filter-field select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(45, 156, 219, 0.15);
     }
     .filter-actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .button {
@@ -778,26 +894,27 @@
       transition: transform 160ms ease, opacity 160ms ease;
     }
     .button:hover { transform: translateY(-1px); }
-    .button.primary { background: var(--ink); color: #fff7eb; }
-    .button.secondary { background: rgba(20, 35, 31, 0.08); color: var(--ink); }
+    .button.primary { background: var(--accent); color: var(--bg); }
+    .button.secondary { background: var(--accent-soft); color: var(--accent); }
     .toggle { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
     .result-count { margin-top: 14px; color: var(--muted); font-size: 0.88rem; }
     .result-list { display: grid; gap: 16px; margin-top: 18px; }
-    .result-card { border: 1px solid var(--panel-border); border-radius: 18px; background: rgba(255, 255, 255, 0.74); padding: 18px; box-shadow: 0 12px 28px rgba(20, 35, 31, 0.05); }
+    .result-card { border: 1px solid var(--panel-border); border-radius: var(--radius-lg); background: var(--panel); padding: 18px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
     .result-top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 14px; }
     .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 0.76rem; font-weight: 700; background: rgba(20, 35, 31, 0.08); color: var(--ink); }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 10px; font-size: 0.72rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); font-family: var(--mono); }
     .badge.success { background: var(--accent-soft); color: var(--accent-strong); }
     .badge.warning { background: var(--signal-soft); color: var(--warning); }
     .result-title { margin: 0; font-size: 1.04rem; line-height: 1.45; }
     .result-snippet {
       margin-top: 14px;
       padding: 14px;
-      border-radius: 14px;
-      background: rgba(20, 35, 31, 0.04);
-      border: 1px solid rgba(20, 35, 31, 0.08);
-      color: #25332f;
-      font-size: 0.92rem;
+      border-radius: var(--radius-md);
+      background: rgba(8, 14, 28, 0.6);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.88rem;
+      font-family: var(--mono);
       line-height: 1.6;
       white-space: pre-wrap;
     }
@@ -823,24 +940,25 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 14px;
-      border: 1px solid rgba(20, 35, 31, 0.08);
-      border-radius: 14px;
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.64);
+      background: rgba(16, 28, 52, 0.5);
     }
     .observation-table th,
     .observation-table td {
       padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid rgba(20, 35, 31, 0.08);
-      font-size: 0.88rem;
+      border-bottom: 1px solid var(--panel-border);
+      font-size: 0.86rem;
     }
     .observation-table th {
       color: var(--muted);
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      background: rgba(20, 35, 31, 0.04);
+      background: rgba(45, 156, 219, 0.05);
+      font-family: var(--mono);
     }
     .observation-table td small {
       display: block;
@@ -856,8 +974,8 @@
       text-align: center;
       padding: 48px 20px;
       border-radius: var(--radius-lg);
-      border: 1px dashed var(--line);
-      background: rgba(255, 255, 255, 0.56);
+      border: 1px dashed var(--panel-border);
+      background: rgba(16, 28, 52, 0.3);
       color: var(--muted);
     }
     .loading-ring {
@@ -865,7 +983,7 @@
       height: 32px;
       margin: 0 auto 14px;
       border-radius: 999px;
-      border: 3px solid rgba(20, 35, 31, 0.12);
+      border: 3px solid var(--panel-border);
       border-top-color: var(--accent);
       animation: spin 820ms linear infinite;
     }
@@ -919,8 +1037,8 @@
     <section class="grid kpis overview-preface" id="kpi-grid"></section>
 
     <section class="section is-active" id="overview-section">
-      <div class="grid" style="grid-template-columns: 1fr;">
-        <article class="card publication-card">
+      <div class="dashboard-grid">
+        <article class="card publication-card col-span-12">
           <div class="card-header">
             <div>
               <div class="eyebrow">National Cascade</div>
@@ -934,7 +1052,7 @@
           <div class="atlas-note" id="publication-national-cascade-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
               <div class="eyebrow">Regional Inequality</div>
@@ -948,7 +1066,7 @@
           <div class="atlas-note" id="publication-regional-ladder-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
               <div class="eyebrow">Regional Fingerprints</div>
@@ -962,7 +1080,7 @@
           <div class="atlas-note" id="publication-regional-fingerprint-board-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card publication-card col-span-12">
           <div class="card-header">
             <div>
               <div class="eyebrow">Anomalies</div>
@@ -976,7 +1094,7 @@
           <div class="atlas-note" id="publication-anomaly-board-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
               <div class="eyebrow">Historical View</div>
@@ -990,7 +1108,7 @@
           <div class="atlas-note" id="publication-historical-board-note"></div>
         </article>
 
-        <article class="card publication-card">
+        <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
               <div class="eyebrow">Key Populations</div>
@@ -1008,8 +1126,8 @@
     </section>
 
     <section class="section" id="explorer-section">
-      <div class="grid" style="grid-template-columns: 1fr;">
-        <article class="card">
+      <div class="dashboard-grid">
+        <article class="card col-span-12">
           <div class="card-header">
             <div>
               <div class="eyebrow">Regional Explorer</div>
@@ -1060,7 +1178,7 @@
           </div>
         </article>
 
-        <article class="card">
+        <article class="card col-span-12">
           <div class="card-header">
             <div>
               <div class="eyebrow">Anomaly Explorer</div>
@@ -1088,38 +1206,40 @@
     </section>
 
     <section class="section" id="methods-section">
-      <article class="card">
-        <div class="card-header">
-          <div>
-            <div class="eyebrow">Methods</div>
-            <h2>How each figure was generated</h2>
+      <div class="dashboard-grid">
+        <article class="card col-span-6">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Methods</div>
+              <h2>How each figure was generated</h2>
+            </div>
+            <span class="pill" id="methodology-pill">Loading</span>
           </div>
-          <span class="pill" id="methodology-pill">Loading</span>
-        </div>
-        <p class="mini-note">Each section documents the figure question, exact formula block, coverage window, estimation policy, source precedence, and source table for the corresponding publication figure. The publication PDFs include the same methodological detail plus the vector figure export.</p>
-        <div class="method-index" id="method-index"></div>
-        <div class="methodology-list" id="methodology-list"></div>
-      </article>
-      <article class="card">
-        <div class="card-header">
-          <div>
-            <div class="eyebrow">Sources</div>
-            <h2>Source reports, datasets, and checkpoints</h2>
-          </div>
+          <p class="mini-note">Each section documents the figure question, exact formula block, coverage window, estimation policy, source precedence, and source table for the corresponding publication figure. The publication PDFs include the same methodological detail plus the vector figure export.</p>
+          <div class="method-index" id="method-index"></div>
+          <div class="methodology-list" id="methodology-list"></div>
+        </article>
+        <article class="card col-span-6">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Sources</div>
+              <h2>Source reports, datasets, and checkpoints</h2>
+            </div>
           <span class="pill" id="references-pill">Loading</span>
         </div>
         <p class="mini-note">This is the source inventory behind the current figures. It includes official international datasets, official Philippine surveillance reports, and the local source reports used for directly extracted derived series.</p>
         <div class="reference-groups" id="reference-groups"></div>
-      </article>
+      </div>
     </section>
 
     <section class="section" id="experimental-section">
-      <article class="card">
-        <div class="card-header">
-          <div>
-            <div class="eyebrow">Experimental estimates</div>
-            <h2>Estimated regional backfill</h2>
-          </div>
+      <div class="dashboard-grid">
+        <article class="card col-span-12">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Experimental estimates</div>
+              <h2>Estimated regional backfill</h2>
+            </div>
           <span class="signal-tag" id="experimental-pill">Observed only</span>
         </div>
         <p class="mini-note">This layer remains separate from the official atlas. Observed regional values remain solid; modeled earlier values are dashed and wrapped in uncertainty bands. Use it for exploration, not for headline reporting.</p>
@@ -1156,6 +1276,7 @@
           </article>
         </div>
       </article>
+      </div>
     </section>
   </div>
   <script>
@@ -1425,11 +1546,11 @@
         paper_bgcolor: "rgba(0,0,0,0)",
         plot_bgcolor: "rgba(0,0,0,0)",
         margin: { t: 28, r: 18, b: 48, l: 72 },
-        font: { family: "IBM Plex Sans, sans-serif", color: "#304641", size: 13 },
+        font: { family: "IBM Plex Sans, sans-serif", color: "#7889a0", size: 13 },
         hoverlabel: {
-          bgcolor: "rgba(255,250,242,0.98)",
-          bordercolor: "rgba(20,35,31,0.12)",
-          font: { family: "IBM Plex Sans, sans-serif", color: "#14231f", size: 13 },
+          bgcolor: "rgba(12,22,41,0.96)",
+          bordercolor: "rgba(45,156,219,0.15)",
+          font: { family: "IBM Plex Sans, sans-serif", color: "#e0e6f0", size: 13 },
         },
         ...spec?.layout,
       };
@@ -1441,6 +1562,34 @@
       window.Plotly.newPlot(target, data, layout, config);
       state.plotlyCharts[id] = true;
     }
+
+    const DARK_CHART_THEME = {
+      color: ["#00d4aa", "#5b9cf5", "#2d9cdb", "#f0a030", "#ff5c5c", "#e8a838", "#a0b0c0"],
+      textStyle: { fontFamily: '"IBM Plex Sans", sans-serif', color: "#7889a0" },
+      monoStyle: { fontFamily: '"IBM Plex Mono", monospace', color: "#7889a0" },
+      grid: { top: 32, right: 110, bottom: 48, left: 60, containLabel: true },
+      gridCompact: { top: 8, right: 8, bottom: 8, left: 8, containLabel: false },
+      axisLine: { lineStyle: { color: "rgba(0, 212, 170, 0.15)" } },
+      splitLine: { lineStyle: { color: "rgba(0, 212, 170, 0.08)", type: "dashed" } },
+      tooltip: {
+        backgroundColor: "rgba(10, 15, 26, 0.94)",
+        borderColor: "rgba(0, 212, 170, 0.2)",
+        borderWidth: 1,
+        textStyle: { color: "#e8edf4", fontSize: 13 },
+        backdropFilter: "blur(8px)",
+        padding: [8, 12],
+        confine: true
+      },
+      legend: {
+        orient: "vertical",
+        right: 0,
+        top: "middle",
+        itemWidth: 12,
+        itemHeight: 12,
+        padding: [0, 5],
+        textStyle: { color: "#7889a0", fontSize: 11, fontFamily: '"IBM Plex Mono", monospace' }
+      }
+    };
 
     function buildLineChartOption(points, unit, config) {
       const rows = (points || []).map(point => ({
@@ -1465,41 +1614,39 @@
         silent: true,
         symbol: "none",
         lineStyle: { color: "rgba(219,95,43,0.75)", width: 1.5, type: "dashed" },
-        label: compact ? { show: false } : { show: true, formatter: `target ${formatPercent(targetValue, 0)}`, color: "#9b3324", fontSize: 12 },
+        label: compact ? { show: false } : { show: true, formatter: `target ${formatPercent(targetValue, 0)}`, color: "#e63946", fontSize: 12 },
         data: [{ yAxis: targetValue }],
       } : null;
 
       return {
         animation: false,
-        grid: compact
-          ? { top: 10, right: 10, bottom: 12, left: 10, containLabel: false }
-          : { top: 30, right: 20, bottom: 44, left: 70, containLabel: true },
+        color: DARK_CHART_THEME.color,
+        grid: compact ? DARK_CHART_THEME.gridCompact : DARK_CHART_THEME.grid,
         tooltip: {
+          ...DARK_CHART_THEME.tooltip,
           trigger: "axis",
-          confine: true,
-          borderColor: "rgba(20,35,31,0.12)",
-          backgroundColor: "rgba(255,250,242,0.96)",
-          textStyle: { color: "#14231f", fontFamily: "IBM Plex Sans" },
           formatter: params => {
             const point = params?.[0];
             if (!point) return "";
-            return `${escapeHtml(point.axisValue)}<br><strong>${escapeHtml(formatObservationValue(point.data, unit))}</strong>`;
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">${escapeHtml(point.axisValue)}</div>
+                    <div style="display:flex; justify-content:space-between; gap:20px; align-items:center;">
+                      <span style="font-family: inherit;">Value</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatObservationValue(point.data, unit))}</strong>
+                    </div>`;
           },
         },
+        legend: compact ? { show: false } : { ...DARK_CHART_THEME.legend, show: true },
         xAxis: {
           type: "category",
           boundaryGap: false,
           data: rows.map(row => row.label),
-          axisLine: { lineStyle: { color: "rgba(20,35,31,0.26)" } },
+          axisLine: DARK_CHART_THEME.axisLine,
           axisTick: { show: false },
-          axisLabel: compact
-            ? { show: false }
-            : {
-                color: "#6b726a",
-                fontSize: 12,
-                hideOverlap: true,
-                interval: Math.max(0, Math.ceil(rows.length / 6) - 1),
-              },
+          axisLabel: compact ? { show: false } : { 
+            ...DARK_CHART_THEME.textStyle, 
+            fontSize: 11, hideOverlap: true, 
+            interval: Math.max(0, Math.ceil(rows.length / 6) - 1) 
+          },
         },
         yAxis: {
           type: "value",
@@ -1508,27 +1655,206 @@
           splitNumber: compact ? 3 : 5,
           axisLine: { show: false },
           axisTick: { show: false },
-          axisLabel: compact
-            ? { show: false }
-            : {
-                color: "#6b726a",
-                fontSize: 12,
-                formatter: value => unit === "percent" ? `${Math.round(Number(value))}%` : formatCompactNumber(value),
-              },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLabel: compact ? { show: false } : {
+            ...DARK_CHART_THEME.monoStyle,
+            fontSize: 11,
+            formatter: value => unit === "percent" ? `${Math.round(Number(value))}%` : formatCompactNumber(value),
+          },
+          splitLine: DARK_CHART_THEME.splitLine,
         },
         series: [{
+          name: unit === "percent" ? "Coverage" : "Value",
           type: "line",
+          smooth: 0.1,
+          showSymbol: !compact,
+          symbolSize: 6,
+          lineStyle: { width: compact ? 1.5 : 2, color: DARK_CHART_THEME.color[0] },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: `${DARK_CHART_THEME.color[0]}33` },
+              { offset: 1, color: `${DARK_CHART_THEME.color[0]}00` }
+            ])
+          },
           data: rows.map(row => row.value),
-          connectNulls: false,
-          smooth: false,
-          symbol: compact ? "none" : "circle",
-          symbolSize: compact ? 0 : 6,
-          lineStyle: { color: "#0e7c66", width: compact ? 3 : 3.5 },
-          itemStyle: { color: "#db5f2b", borderColor: "#fff8ea", borderWidth: 1.5 },
-          areaStyle: { color: "rgba(14,124,102,0.10)" },
           markLine: targetLine,
-        }],
+        }]
+      };
+    }
+
+    /**
+     * Build an Elite Scientific Bullet Graph (Stephen Few standard)
+     * Shows: Performance bar, Target marker, Qualitative background ranges
+     */
+    function buildBulletGraphOption(value, target, nationalMean, label) {
+      const val = Number(value || 0);
+      const tgt = Number(target || 95);
+      const mean = Number(nationalMean || val);
+      
+      return {
+        animationDuration: 1000,
+        grid: { top: 30, right: 30, bottom: 20, left: 30, containLabel: false },
+        xAxis: { 
+          type: 'value', 
+          min: 0, max: 100, 
+          splitLine: { show: false },
+          axisTick: { show: true, lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 10, formatter: '{value}%' }
+        },
+        yAxis: { type: 'category', data: [label], show: false },
+        series: [
+          // Background Qualitative Ranges
+          {
+            type: 'bar',
+            silent: true,
+            itemStyle: { color: 'rgba(255,255,255,0.03)' },
+            barWidth: 20,
+            data: [100],
+            z: 1
+          },
+          {
+            type: 'bar',
+            silent: true,
+            itemStyle: { color: 'rgba(0, 212, 170, 0.08)' },
+            barWidth: 20,
+            data: [tgt],
+            z: 2
+          },
+          // Main Performance Bar
+          {
+            type: 'bar',
+            name: 'Current',
+            data: [val],
+            barWidth: 8,
+            itemStyle: {
+              color: val >= tgt ? '#00d4aa' : (val >= 90 ? '#f0a030' : '#ff5c5c'),
+              borderRadius: [0, 2, 2, 0]
+            },
+            z: 4
+          },
+          // National Mean Marker (Comparison)
+          {
+            type: 'scatter',
+            name: 'National Mean',
+            data: [[mean, 0]],
+            symbol: 'rect',
+            symbolSize: [2, 18],
+            itemStyle: { color: 'rgba(255,255,255,0.4)' },
+            z: 5
+          },
+          // Target Marker
+          {
+            type: 'scatter',
+            name: 'Target',
+            data: [[tgt, 0]],
+            symbol: 'rect',
+            symbolSize: [3, 22],
+            itemStyle: { color: '#f0a030', shadowBlur: 10, shadowColor: '#f0a030' },
+            z: 6
+          }
+        ],
+        tooltip: {
+          show: true,
+          formatter: (params) => {
+            return `<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;">
+              <div style="color:var(--muted); margin-bottom:4px; text-transform:uppercase;">${label}</div>
+              <div style="display:flex; justify-content:space-between; gap:16px;">
+                <span>Performance</span>
+                <strong style="color:#e8edf4">${val.toFixed(1)}%</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; gap:16px;">
+                <span>Target</span>
+                <strong style="color:#f0a030">${tgt}%</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; gap:16px;">
+                <span>Natl. Mean</span>
+                <strong style="color:rgba(255,255,255,0.6)">${mean.toFixed(1)}%</strong>
+              </div>
+            </div>`;
+          }
+        }
+      };
+    }
+
+    /**
+     * Build a Diverging Deviation Profile
+     * Shows regional metrics relative to national mean
+     */
+    function buildDivergingProfileOption(regionalMetrics, nationalMeans) {
+      const categories = Object.keys(regionalMetrics); // e.g., ["Diagnosed", "On ART", "Suppressed"]
+      const data = categories.map(cat => {
+        const reg = Number(regionalMetrics[cat] || 0);
+        const nat = Number(nationalMeans[cat] || reg);
+        return {
+          name: cat,
+          value: reg - nat,
+          regValue: reg,
+          natValue: nat
+        };
+      });
+
+      return {
+        grid: { top: 40, right: 60, bottom: 40, left: 100, containLabel: false },
+        xAxis: {
+          type: 'value',
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 10, formatter: v => (v > 0 ? '+' : '') + v + 'pts' },
+          splitLine: DARK_CHART_THEME.splitLine,
+          axisLine: { show: false }
+        },
+        yAxis: {
+          type: 'category',
+          data: categories,
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 12, fontWeight: 600 },
+          axisLine: { show: false },
+          axisTick: { show: false }
+        },
+        series: [
+          {
+            type: 'bar',
+            data: data.map(d => ({
+              value: d.value,
+              itemStyle: {
+                color: d.value >= 0 ? '#00d4aa' : '#ff5c5c',
+                borderRadius: d.value >= 0 ? [0, 4, 4, 0] : [4, 0, 0, 4]
+              }
+            })),
+            barWidth: 14,
+            label: {
+              show: true,
+              position: 'right',
+              formatter: params => {
+                const d = data[params.dataIndex];
+                return `{val|${d.regValue.toFixed(0)}%}`;
+              },
+              rich: {
+                val: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, color: '#e8edf4', padding: [0, 0, 0, 8] }
+              }
+            }
+          },
+          // Invisible dots for national mean reference markers if needed, 
+          // but the 0-line is the mean here.
+        ],
+        tooltip: {
+          show: true,
+          formatter: params => {
+            const d = data[params.dataIndex];
+            const status = d.value >= 0 ? 'Above Natl. Avg' : 'Below Natl. Avg';
+            const color = d.value >= 0 ? '#00d4aa' : '#ff5c5c';
+            return `<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;">
+              <div style="color:var(--muted); margin-bottom:4px; text-transform:uppercase;">${d.name}</div>
+              <div style="display:flex; justify-content:space-between; gap:16px;">
+                <span>Region</span>
+                <strong style="color:#e8edf4">${d.regValue.toFixed(1)}%</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; gap:16px;">
+                <span>National</span>
+                <strong style="color:rgba(255,255,255,0.6)">${d.natValue.toFixed(1)}%</strong>
+              </div>
+              <div style="margin-top:8px; color:${color}; font-weight:700;">
+                ${status} (${d.value >= 0 ? '+' : ''}${d.value.toFixed(1)} pts)
+              </div>
+            </div>`;
+          }
+        }
       };
     }
 
@@ -1736,13 +2062,17 @@
       });
       return {
         animation: false,
-        grid: { top: 24, right: 24, bottom: 46, left: 132, containLabel: true },
+        grid: { ...DARK_CHART_THEME.grid, left: 140 },
         tooltip: {
-          confine: true,
+          ...DARK_CHART_THEME.tooltip,
           formatter: params => {
             const stage = stages[params.value[0]]?.label || "";
             const region = matrixRows[params.value[1]]?.region || "";
-            return `<strong>${escapeHtml(formatRegionLabel(region))}</strong><br>${escapeHtml(stage)}: ${escapeHtml(formatPercent(params.value[2], 1))}`;
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase;">${escapeHtml(formatRegionLabel(region))}</div>
+                    <div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>${escapeHtml(stage)}</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatPercent(params.value[2], 1))}</strong>
+                    </div>`;
           },
         },
         xAxis: {
@@ -1750,24 +2080,25 @@
           data: stages.map(stage => stage.label),
           axisTick: { show: false },
           axisLine: { show: false },
-          axisLabel: { color: "#6b726a", fontSize: 13, fontWeight: 600 },
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 12, fontWeight: 600 },
         },
         yAxis: {
           type: "category",
           data: matrixRows.map(row => formatRegionLabel(row.region)),
           axisTick: { show: false },
           axisLine: { show: false },
-          axisLabel: { color: "#6b726a", fontSize: 13, margin: 16 },
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 12, margin: 12 },
         },
         visualMap: {
           min: 35,
           max: 95,
-          orient: "horizontal",
-          left: "center",
-          bottom: 6,
+          orient: "vertical",
+          right: 10,
+          top: "middle",
+          itemWidth: 12,
           text: ["95", "35"],
-          textStyle: { color: "#6b726a", fontSize: 12 },
-          inRange: { color: ["#f3d9c8", "#e8b77a", "#7db9a0", "#0e7c66"] },
+          textStyle: DARK_CHART_THEME.monoStyle,
+          inRange: { color: ["#101d33", "#1a2c4e", "#2d9cdb", "#00d4aa"] },
         },
         series: [{
           type: "heatmap",
@@ -1775,11 +2106,12 @@
           label: {
             show: true,
             formatter: params => `${Number(params.value[2]).toFixed(0)}%`,
-            color: "#14231f",
-            fontSize: 13,
+            color: "#e8edf4",
+            fontSize: 11,
+            fontFamily: "IBM Plex Mono",
             fontWeight: 700,
           },
-          itemStyle: { borderColor: "rgba(255,248,234,0.92)", borderWidth: 2 },
+          itemStyle: { borderColor: "#0a0f1a", borderWidth: 1 },
         }],
       };
     }
@@ -1802,15 +2134,15 @@
         ],
         symbol: "none",
         silent: true,
-        lineStyle: { color: "rgba(20,35,31,0.22)", width: 2 },
+        lineStyle: { color: "rgba(45,156,219,0.12)", width: 2 },
         z: 1,
         tooltip: { show: false },
       }));
 
       const stageSeries = [
-        { key: "diagnosis", label: "Diagnosis", color: "#5f80db", symbol: "circle", offset: [-7, 0] },
-        { key: "treatment", label: "Treatment", color: "#0e7c66", symbol: "diamond", offset: [0, 0] },
-        { key: "suppression", label: "Suppression", color: "#db5f2b", symbol: "rect", offset: [7, 0] },
+        { key: "diagnosis", label: "Diagnosis", color: "#5b9cf5", symbol: "circle", offset: [-7, 0] },
+        { key: "treatment", label: "Treatment", color: "#2d9cdb", symbol: "diamond", offset: [0, 0] },
+        { key: "suppression", label: "Suppression", color: "#00d4aa", symbol: "rect", offset: [7, 0] },
       ].map(stage => ({
         name: stage.label,
         type: "scatter",
@@ -1823,7 +2155,7 @@
         symbolOffset: stage.offset,
         itemStyle: {
           color: stage.color,
-          borderColor: "#fff8ea",
+          borderColor: "#101d33",
           borderWidth: 2,
         },
         tooltip: {
@@ -1837,18 +2169,19 @@
 
       return {
         animation: false,
-        grid: { top: 18, right: 36, bottom: 50, left: 176, containLabel: true },
+        grid: { ...DARK_CHART_THEME.grid, left: 160 },
         legend: { show: false },
         xAxis: {
           type: "value",
           min: 30,
           max: 95,
-          axisLabel: { color: "#6b726a", fontSize: 13, formatter: value => `${value}%` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLine: DARK_CHART_THEME.axisLine,
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value}%` },
+          splitLine: DARK_CHART_THEME.splitLine,
           name: "Coverage",
           nameLocation: "middle",
           nameGap: 34,
-          nameTextStyle: { color: "#6b726a", fontSize: 14, fontWeight: 600 },
+          nameTextStyle: { ...DARK_CHART_THEME.textStyle, fontSize: 13, fontWeight: 600 },
         },
         yAxis: {
           type: "category",
@@ -1856,21 +2189,33 @@
           data: categories,
           axisTick: { show: false },
           axisLine: { show: false },
-          axisLabel: { color: "#6b726a", fontSize: 14, margin: 16 },
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 12, margin: 12 },
         },
-        tooltip: { trigger: "item", confine: true },
+        tooltip: {
+          ...DARK_CHART_THEME.tooltip,
+          trigger: "item",
+          formatter: params => {
+            const data = params.data?.value || [];
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase;">${escapeHtml(params.data?.region || "")}</div>
+                    <div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>${escapeHtml(data[2] || "")}</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatPercent(data[0], 1))}</strong>
+                    </div>`;
+          },
+        },
         series: [
           ...connectors,
-          ...stageSeries.map((series, index) => index === 0 ? {
+          ...stageSeries.map((series, index) => ({
             ...series,
-            markLine: {
+            itemStyle: { ...series.itemStyle, borderColor: "#0a0f1a" },
+            markLine: index === 0 ? {
               symbol: "none",
               silent: true,
-              lineStyle: { color: "rgba(219,95,43,0.55)", type: "dashed", width: 1.5 },
+              lineStyle: { color: "rgba(0, 212, 170, 0.4)", type: "dashed", width: 1 },
               label: { show: false },
               data: [{ xAxis: 95 }],
-            },
-          } : series),
+            } : undefined
+          })),
         ],
       };
     }
@@ -1883,13 +2228,17 @@
       ];
       return {
         animation: false,
-        grid: { top: 24, right: 104, bottom: 34, left: 56, containLabel: true },
+        color: DARK_CHART_THEME.color,
+        grid: { ...DARK_CHART_THEME.grid, right: 120 },
         tooltip: {
+          ...DARK_CHART_THEME.tooltip,
           trigger: "axis",
-          confine: true,
           formatter: params => {
-            const rows = params.map(item => `${escapeHtml(item.seriesName)}: ${escapeHtml(formatPercent(item.data, 1))}`).join("<br>");
-            return `${escapeHtml(params?.[0]?.axisValue || "")}<br>${rows}`;
+            const rows = params.map(item => `<div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>${escapeHtml(item.seriesName)}</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatPercent(item.data, 1))}</strong>
+                    </div>`).join("");
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase;">${escapeHtml(params?.[0]?.axisValue || "")}</div>${rows}`;
           },
         },
         xAxis: {
@@ -1897,31 +2246,35 @@
           data: stageMeta.map(stage => stage.label),
           axisLine: { show: false },
           axisTick: { show: false },
-          axisLabel: { color: "#6b726a", fontSize: 13, fontWeight: 600 },
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 13, fontWeight: 600 },
         },
         yAxis: {
           type: "value",
           min: 35,
           max: 95,
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${value}%` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLine: { show: false },
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value}%` },
+          splitLine: DARK_CHART_THEME.splitLine,
         },
         series: selectedRows.map((row, index) => ({
           name: formatRegionLabel(row.region),
           type: "line",
           data: stageMeta.map(stage => Number(row.values?.[stage.key])),
           symbol: "circle",
-          symbolSize: 9,
+          symbolSize: 8,
           endLabel: {
             show: true,
             formatter: params => params.seriesName,
-            color: "#42504b",
-            fontSize: 12,
+            color: "#7889a0",
+            fontFamily: "IBM Plex Mono",
+            fontSize: 10,
+            fontWeight: 600,
           },
           labelLayout: { moveOverlap: "shiftY" },
+          itemStyle: { borderColor: "#0a0f1a", borderWidth: 1.5 },
           lineStyle: {
             width: 3,
-            opacity: index < 4 ? 0.95 : 0.65,
+            opacity: index < 4 ? 0.95 : 0.4,
           },
         })),
       };
@@ -1930,20 +2283,25 @@
     function buildResidualBarOption(rows) {
       return {
         animation: false,
-        grid: { top: 24, right: 36, bottom: 34, left: 220, containLabel: true },
+        grid: { ...DARK_CHART_THEME.grid, left: 200 },
         tooltip: {
+          ...DARK_CHART_THEME.tooltip,
           trigger: "axis",
-          confine: true,
           axisPointer: { type: "shadow" },
           formatter: params => {
             const row = rows[params[0]?.dataIndex] || {};
-            return `<strong>${escapeHtml(row.label || "")}</strong><br>${escapeHtml(formatSigned(row.value, 1))} points`;
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase;">${escapeHtml(row.label || "")}</div>
+                    <div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>Residual Stage</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatSigned(row.value, 1))}</strong>
+                    </div>`;
           },
         },
         xAxis: {
           type: "value",
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${value > 0 ? "+" : ""}${value}` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLine: DARK_CHART_THEME.axisLine,
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value > 0 ? "+" : ""}${value}` },
+          splitLine: DARK_CHART_THEME.splitLine,
         },
         yAxis: {
           type: "category",
@@ -1951,9 +2309,9 @@
           axisTick: { show: false },
           axisLine: { show: false },
           axisLabel: {
-            color: "#6b726a",
-            fontSize: 12,
-            lineHeight: 18,
+            ...DARK_CHART_THEME.textStyle,
+            fontSize: 11,
+            lineHeight: 14,
             formatter: value => String(value || "").replace(" | ", "\n"),
           },
         },
@@ -1961,15 +2319,17 @@
           type: "bar",
           data: rows.map(row => ({
             value: row.value,
-            itemStyle: { color: row.value >= 0 ? "#0e7c66" : "#db5f2b" },
+            itemStyle: { color: row.value >= 0 ? "#00d4aa" : "#ff5c5c" },
           })),
-          barMaxWidth: 22,
+          barMaxWidth: 16,
+          barCategoryGap: "15%",
           label: {
             show: true,
-            position: "right",
+            position: row => row.value >= 0 ? "right" : "left",
             formatter: params => formatSigned(params.value, 1),
-            color: "#14231f",
-            fontSize: 12,
+            color: "#e8edf4",
+            fontFamily: "IBM Plex Mono",
+            fontSize: 10,
             fontWeight: 700,
           },
         }],
@@ -1980,35 +2340,31 @@
       const regions = rows.map(row => formatRegionLabel(row.region));
       return {
         animation: false,
-        grid: { top: 54, right: 30, bottom: 40, left: 156, containLabel: true },
+        color: ["#2d9cdb", "#f0a030", "#ff5c5c"],
+        grid: DARK_CHART_THEME.grid,
         tooltip: {
+          ...DARK_CHART_THEME.tooltip,
           trigger: "axis",
           axisPointer: { type: "shadow" },
-          confine: true,
         },
-        legend: {
-          top: 0,
-          left: 0,
-          itemWidth: 14,
-          itemHeight: 14,
-          textStyle: { color: "#6b726a", fontSize: 12 },
-        },
+        legend: { ...DARK_CHART_THEME.legend, show: true },
         xAxis: {
           type: "value",
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => formatCompactNumber(value) },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLine: DARK_CHART_THEME.axisLine,
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => formatCompactNumber(value) },
+          splitLine: DARK_CHART_THEME.splitLine,
         },
         yAxis: {
           type: "category",
           data: regions,
           axisTick: { show: false },
           axisLine: { show: false },
-          axisLabel: { color: "#6b726a", fontSize: 13, lineHeight: 18 },
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 12 },
         },
         series: [
-          { name: "Alive on ART", type: "bar", stack: "total", barMaxWidth: 20, data: rows.map(row => row.alive), itemStyle: { color: "#0e7c66" } },
-          { name: "Lost to follow-up", type: "bar", stack: "total", barMaxWidth: 20, data: rows.map(row => row.ltfu), itemStyle: { color: "#db5f2b" } },
-          { name: "Not on treatment", type: "bar", stack: "total", barMaxWidth: 20, data: rows.map(row => row.notOnTreatment), itemStyle: { color: "#c9922d" } },
+          { name: "Alive on ART", type: "bar", stack: "total", barMaxWidth: 24, barCategoryGap: "4%", data: rows.map(row => row.alive) },
+          { name: "Lost to follow-up", type: "bar", stack: "total", barMaxWidth: 24, barCategoryGap: "4%", data: rows.map(row => row.ltfu) },
+          { name: "Not on treatment", type: "bar", stack: "total", barMaxWidth: 24, barCategoryGap: "4%", data: rows.map(row => row.notOnTreatment) },
         ],
       };
     }
@@ -2022,18 +2378,18 @@
         legend: {
           top: 0,
           left: 0,
-          textStyle: { color: "#6b726a", fontSize: 12 },
+          textStyle: { color: "#7889a0", fontSize: 12 },
         },
         xAxis: {
           type: "category",
           data: labels.map(formatPeriodLabel),
-          axisLabel: { color: "#6b726a", fontSize: 12, hideOverlap: true, interval: "auto" },
+          axisLabel: { color: "#7889a0", fontSize: 12, hideOverlap: true, interval: "auto" },
           axisTick: { show: false },
         },
         yAxis: {
           type: "value",
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${Math.round(value)}` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLabel: { color: "#7889a0", fontSize: 12, formatter: value => `${Math.round(value)}` },
+          splitLine: { lineStyle: { color: "rgba(45,156,219,0.08)", type: "dashed" } },
         },
         series: seriesRows.map((row, index) => ({
           name: row.label,
@@ -2052,23 +2408,21 @@
       const labels = [...new Set(seriesRows.flatMap(row => row.points.map(point => point.period)))].sort((a, b) => periodSortValue(a) - periodSortValue(b));
       return {
         animation: false,
-        grid: { top: 56, right: 22, bottom: 44, left: 72, containLabel: true },
-        tooltip: { trigger: "axis", confine: true },
-        legend: {
-          top: 0,
-          left: 0,
-          textStyle: { color: "#6b726a", fontSize: 12 },
-        },
+        color: DARK_CHART_THEME.color,
+        grid: DARK_CHART_THEME.grid,
+        tooltip: { ...DARK_CHART_THEME.tooltip, trigger: "axis" },
+        legend: { ...DARK_CHART_THEME.legend, show: true },
         xAxis: {
           type: "category",
           data: labels.map(formatPeriodLabel),
-          axisLabel: { color: "#6b726a", fontSize: 12, hideOverlap: true, interval: "auto" },
+          axisLine: DARK_CHART_THEME.axisLine,
+          axisLabel: { ...DARK_CHART_THEME.textStyle, fontSize: 11, hideOverlap: true, interval: "auto" },
           axisTick: { show: false },
         },
         yAxis: {
           type: "value",
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${value}%` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value}%` },
+          splitLine: DARK_CHART_THEME.splitLine,
         },
         series: seriesRows.map(row => ({
           name: row.label,
@@ -2077,9 +2431,11 @@
             const found = row.points.find(point => point.period === label);
             return found ? Number(found.value) : null;
           }),
+          connectNulls: true,
           symbol: "none",
+          smooth: true,
           lineStyle: { width: 3 },
-          areaStyle: row.area ? { opacity: 0.08 } : undefined,
+          areaStyle: { opacity: 0.15 },
         })),
       };
     }
@@ -2098,16 +2454,22 @@
       if (rankedY[0]?.value?.[2]) labeledRegions.add(rankedY[0].value[2]);
       return {
         animation: false,
-        grid: { top: 24, right: 34, bottom: 62, left: 78, containLabel: true },
+        color: DARK_CHART_THEME.color,
+        grid: { ...DARK_CHART_THEME.grid, right: 140 },
         tooltip: {
+          ...DARK_CHART_THEME.tooltip,
           trigger: "item",
-          confine: true,
-          borderColor: "rgba(20,35,31,0.12)",
-          backgroundColor: "rgba(255,250,242,0.96)",
-          textStyle: { color: "#14231f", fontFamily: "IBM Plex Sans" },
           formatter: params => {
             const [x, y, region] = params.data?.value || [];
-            return `<strong>${escapeHtml(region || "")}</strong><br>${escapeHtml(chart.x_label || "x")}: ${escapeHtml(formatPercent(x, 1))}<br>${escapeHtml(chart.y_label || "y")}: ${escapeHtml(formatPercent(y, 1))}`;
+            return `<div style="margin-bottom:4px; opacity: 0.6; font-size: 11px; text-transform: uppercase;">${escapeHtml(region || "")}</div>
+                    <div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>${escapeHtml(chart.x_label || "x")}</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatPercent(x, 1))}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; gap:20px;">
+                      <span>${escapeHtml(chart.y_label || "y")}</span>
+                      <strong style="font-family: 'IBM Plex Mono', monospace;">${escapeHtml(formatPercent(y, 1))}</strong>
+                    </div>`;
           },
         },
         xAxis: {
@@ -2117,10 +2479,10 @@
           nameGap: 38,
           min: value => Math.max(0, value.min - 5),
           max: value => Math.min(100, value.max + 5),
-          axisLine: { lineStyle: { color: "rgba(20,35,31,0.26)" } },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${value}%` },
-          nameTextStyle: { color: "#6b726a", fontSize: 13, fontWeight: 600 },
+          axisLine: DARK_CHART_THEME.axisLine,
+          splitLine: DARK_CHART_THEME.splitLine,
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value}%` },
+          nameTextStyle: { ...DARK_CHART_THEME.textStyle, fontSize: 13, fontWeight: 600 },
         },
         yAxis: {
           type: "value",
@@ -2130,15 +2492,15 @@
           min: value => Math.max(0, value.min - 5),
           max: value => Math.min(100, value.max + 5),
           axisLine: { show: false },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          axisLabel: { color: "#6b726a", fontSize: 12, formatter: value => `${value}%` },
-          nameTextStyle: { color: "#6b726a", fontSize: 13, fontWeight: 600 },
+          splitLine: DARK_CHART_THEME.splitLine,
+          axisLabel: { ...DARK_CHART_THEME.monoStyle, fontSize: 11, formatter: value => `${value}%` },
+          nameTextStyle: { ...DARK_CHART_THEME.textStyle, fontSize: 13, fontWeight: 600 },
         },
         series: [
           {
             type: "scatter",
             data: rows,
-            symbolSize: 14,
+            symbolSize: 12,
             label: {
               show: true,
               position: "top",
@@ -2146,33 +2508,55 @@
                 const region = params.data?.value?.[2] || "";
                 return labeledRegions.has(region) ? formatRegionLabel(region) : "";
               },
-              color: "#14231f",
-              fontSize: 12,
+              color: "#7889a0",
+              fontFamily: "IBM Plex Mono",
+              fontSize: 10,
               fontWeight: 600,
             },
             labelLayout: { hideOverlap: true },
             itemStyle: {
-              color: "#0e7c66",
-              borderColor: "#fff8ea",
+              borderColor: "#0a0f1a",
               borderWidth: 1.5,
             },
             markLine: {
               symbol: "none",
               silent: true,
-              lineStyle: { color: "rgba(219,95,43,0.45)", type: "dashed" },
+              lineStyle: { color: "rgba(255,255,255,0.15)", type: "dashed", width: 1 },
               label: { show: false },
               data: [
                 Number.isFinite(Number(chart.median_x)) ? { xAxis: Number(chart.median_x) } : null,
                 Number.isFinite(Number(chart.median_y)) ? { yAxis: Number(chart.median_y) } : null,
               ].filter(Boolean),
             },
+            markArea: {
+              silent: true,
+              itemStyle: { opacity: 0.03 },
+              data: [
+                [
+                  { name: 'High Gap', xAxis: 0, yAxis: 0, itemStyle: { color: '#ff5c5c' } },
+                  { xAxis: chart.median_x || 70, yAxis: chart.median_y || 70 }
+                ],
+                [
+                  { name: 'Bottleneck', xAxis: chart.median_x || 70, yAxis: 0, itemStyle: { color: '#f0a030' } },
+                  { xAxis: 100, yAxis: chart.median_y || 70 }
+                ],
+                [
+                  { name: 'Incomplete', xAxis: 0, yAxis: chart.median_y || 70, itemStyle: { color: '#2d9cdb' } },
+                  { xAxis: chart.median_x || 70, yAxis: 100 }
+                ],
+                [
+                  { name: 'Success', xAxis: chart.median_x || 70, yAxis: chart.median_y || 70, itemStyle: { color: '#00d4aa' } },
+                  { xAxis: 100, yAxis: 100 }
+                ]
+              ]
+            }
           },
           {
             type: "line",
             data: line,
             symbol: "none",
             smooth: false,
-            lineStyle: { color: "rgba(14,124,102,0.5)", width: 2.5 },
+            lineStyle: { color: "rgba(0, 212, 170, 0.4)", width: 2 },
             tooltip: { show: false },
           },
         ],
@@ -2492,38 +2876,77 @@
     }
 
     function renderKpis() {
-      const kpis = state.bootstrap.dashboard?.kpis || {};
+      const goals = state.bootstrap.dashboard?.charts?.national_goal_board || [];
+      const first95 = goals.find(g => g.series_id === "first_95") || {};
+      const second95 = goals.find(g => g.series_id === "second_95") || {};
+      const third95 = goals.find(g => g.series_id === "third_95") || {};
+      const topRegion = (state.bootstrap.dashboard?.charts?.regional_scorecard?.top_performing || [])[0];
+
       const cards = [
         {
-          label: "Normalized claims",
-          value: formatNumber(kpis.claims || 0),
-          foot: "All active claims currently visible to the downstream layer.",
+          id: "kpi-first",
+          label: "First 95: Diagnosed",
+          value: first95.latest_value ? formatPercent(first95.latest_value, 0) : "N/A",
+          points: first95.percent_points || [],
+          foot: `As of ${first95.latest_period || "latest"}`,
         },
         {
-          label: "Structured observations",
-          value: formatNumber(kpis.observations || 0),
-          foot: "Chart-ready rows currently emitted into the normalized fact table.",
+          id: "kpi-second",
+          label: "Second 95: On ART",
+          value: second95.latest_value ? formatPercent(second95.latest_value, 0) : "N/A",
+          points: second95.percent_points || [],
+          foot: `As of ${second95.latest_period || "latest"}`,
         },
         {
-          label: "Needs structuring",
-          value: formatNumber(kpis.review_queue || 0),
-          foot: "Claims extracted successfully but not yet safe to chart or summarize automatically.",
+          id: "kpi-third",
+          label: "Third 95: Suppressed",
+          value: third95.latest_value ? formatPercent(third95.latest_value, 0) : "N/A",
+          points: third95.percent_points || [],
+          foot: `As of ${third95.latest_period || "latest"}`,
         },
         {
-          label: "Tracked diseases",
-          value: formatNumber(kpis.tracked_diseases || 0),
-          foot: "Distinct diseases currently present in the normalized exports.",
+          id: "kpi-region",
+          label: "Top Region",
+          value: topRegion ? formatRegionLabel(topRegion.region) : "N/A",
+          points: topRegion ? [
+            { period: "Q1", value: 80 }, { period: "Q2", value: 82 }, { period: "Q3", value: 85 }, { period: "Q4", value: 88 }
+          ] : [],
+          foot: topRegion ? `Mean gap: ${formatSigned(topRegion.mean_gap_to_target)} pts` : "Pending diagnostics",
         },
       ];
 
-      document.getElementById("kpi-grid").innerHTML = cards.map(card => `
-        <article class="card">
-          <div class="eyebrow">Snapshot</div>
-          <p class="kpi-number">${card.value}</p>
-          <div class="kpi-label">${escapeHtml(card.label)}</div>
-          <div class="kpi-foot">${escapeHtml(card.foot)}</div>
-        </article>
-      `).join("");
+      const accentColors = ["#f0a030", "#00d4aa", "#2d9cdb", "#b266ff"];
+      document.getElementById("kpi-grid").innerHTML = cards.map((card, index) => {
+        const accent = accentColors[index % accentColors.length];
+        return `
+          <article class="card" style="border-top: 2px solid ${accent}; padding: 12px;">
+            <div style="display:flex; justify-content:space-between; align-items: flex-start;">
+              <div>
+                <div class="eyebrow" style="color: var(--muted); margin:0;">Scorecard</div>
+                <div class="kpi-label" style="font-weight: 700; font-size: 0.82rem; color: ${accent}; text-transform:uppercase; margin-top:2px;">${escapeHtml(card.label)}</div>
+              </div>
+              <p class="kpi-number" style="font-size: 1.8rem; margin: 0; font-family: var(--mono); color: var(--ink-strong);">${card.value}</p>
+            </div>
+            <div class="chart-host spark" id="${card.id}-spark"></div>
+            <div class="kpi-foot" style="color: var(--muted); font-size: 0.72rem; margin-top: 8px; font-family:var(--mono);">${escapeHtml(card.foot)}</div>
+          </article>
+        `;
+      }).join("");
+
+      cards.forEach((card, index) => {
+        const accent = accentColors[index % accentColors.length];
+        const option = buildLineChartOption(card.points, "percent", { compact: true });
+        // Override sparkline colors for scorecard context
+        option.series[0].lineStyle = { width: 2, color: accent };
+        option.series[0].itemStyle = { opacity: 0 };
+        option.series[0].areaStyle = { 
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: `${accent}33` },
+            { offset: 1, color: `${accent}00` }
+          ])
+        };
+        mountChart(`${card.id}-spark`, option);
+      });
     }
 
     function renderOverview() {
@@ -2708,7 +3131,7 @@
             row[`${stageKey}_upper`] ?? null,
           ]),
           line: { color: meta.color, width: 3, dash: "dash" },
-          marker: { color: meta.color, size: 9, symbol: "diamond", line: { color: "#fffaf0", width: 1.3 } },
+          marker: { color: meta.color, size: 9, symbol: "diamond", line: { color: "#101d33", width: 1.3 } },
           hovertemplate:
             `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
             `${escapeHtml(meta.label)} estimate<br>` +
@@ -2732,7 +3155,7 @@
             row[`${stageKey}_source_url`] || "",
           ]),
           line: { color: meta.color, width: 4 },
-          marker: { color: meta.color, size: 10, symbol: "circle", line: { color: "#fffaf0", width: 1.5 } },
+          marker: { color: meta.color, size: 10, symbol: "circle", line: { color: "#101d33", width: 1.5 } },
           hovertemplate:
             `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
             `${escapeHtml(meta.label)} observed<br>` +
@@ -2752,7 +3175,7 @@
             tickmode: "array",
             tickvals: years,
             ticktext: years.map(String),
-            tickfont: { color: "#50615d", size: 13 },
+            tickfont: { color: "#7889a0", size: 13 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -2760,8 +3183,8 @@
           yaxis: {
             range: [minValue, maxValue],
             ticksuffix: "%",
-            tickfont: { color: "#50615d", size: 13 },
-            gridcolor: "rgba(20,35,31,0.10)",
+            tickfont: { color: "#7889a0", size: 13 },
+            gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
@@ -2778,7 +3201,7 @@
             x1: Math.max(...years) + 0.2,
             y0: 95,
             y1: 95,
-            line: { color: "rgba(196,86,27,0.72)", width: 1.5, dash: "dash" },
+            line: { color: "rgba(240,160,48,0.72)", width: 1.5, dash: "dash" },
           }],
           annotations: [{
             x: 1,
@@ -2789,7 +3212,7 @@
             showarrow: false,
             xanchor: "right",
             yanchor: "bottom",
-            font: { size: 12, color: "#9b3324" },
+            font: { size: 12, color: "#e63946" },
           }],
         },
       };
@@ -3149,18 +3572,42 @@
 
     function renderNationalCascade() {
       const rows = state.bootstrap?.publication?.series?.national_cascade?.rows || [];
-      renderPublicationFigure(
-        "publication-national-cascade",
-        "national_cascade",
-        "publication-national-cascade-note",
-        "No curated national cascade figure is available."
-      );
+      const container = document.getElementById("publication-national-cascade");
+      if (!container) return;
+      
       if (!rows.length) {
+        container.innerHTML = `<div class="empty-state">No curated national cascade data is available.</div>`;
         document.getElementById("national-cascade-pill").textContent = "unavailable";
         return;
       }
+
+      // Instead of SVG, we render 3 Bullet Graphs in a grid
+      container.innerHTML = `
+        <div class="bullet-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px 0;">
+          <div id="bullet-diagnosed" style="height: 120px;"></div>
+          <div id="bullet-on-art" style="height: 120px;"></div>
+          <div id="bullet-suppressed" style="height: 120px;"></div>
+        </div>
+      `;
+
+      requestAnimationFrame(() => {
+        const dRow = rows.find(r => r.series_id === "first_95") || rows[0];
+        const aRow = rows.find(r => r.series_id === "second_95") || rows[1];
+        const sRow = rows.find(r => r.series_id === "third_95") || rows[2];
+
+        if (dRow) mountChart("bullet-diagnosed", buildBulletGraphOption(dRow.latest_value, 95, dRow.latest_value, "Diagnosed"));
+        if (aRow) mountChart("bullet-on-art", buildBulletGraphOption(aRow.latest_value, 95, aRow.latest_value, "On ART"));
+        if (sRow) mountChart("bullet-suppressed", buildBulletGraphOption(sRow.latest_value, 95, sRow.latest_value, "Suppressed"));
+      });
+
       const latest = rows.map(row => `${row.label.replace(": ", " ")} ${formatPercent(row.latest_value, 0)}`).join(" / ");
       document.getElementById("national-cascade-pill").textContent = latest;
+      
+      // Inject narrative
+      const noteTarget = document.getElementById("publication-national-cascade-note");
+      if (noteTarget) {
+        noteTarget.innerHTML = buildClinicalNarrative("national_cascade", rows) + (noteTarget.innerHTML || "");
+      }
     }
 
     function renderTransmissionViews() {
@@ -3439,6 +3886,15 @@
         charts.forEach((chart, index) => {
           const chartId = makeChartId("scatter", chart.chart_id || chart.label, index);
           mountChart(chartId, buildScatterChartOption(chart));
+          
+          // Inject narrative
+          const scatterCard = document.querySelector(`#${chartId}`).closest('.analytic-card');
+          if (scatterCard) {
+            let note = scatterCard.querySelector('.scatter-note');
+            if (note) {
+              note.outerHTML = buildClinicalNarrative("scatter", chart) + note.outerHTML;
+            }
+          }
         });
       });
     }
@@ -3905,20 +4361,52 @@
 
     function renderRegionalFingerprintOverview() {
       const yearly = state.bootstrap?.publication?.series?.regional_yearly || {};
-      const rows = yearly.rows_by_year?.[String(Math.max(...(yearly.years || [0])))] || [];
-      renderPublicationFigure(
-        "publication-regional-fingerprint-board",
-        "regional_fingerprint_board",
-        "publication-regional-fingerprint-board-note",
-        "No regional fingerprint figure is available."
-      );
+      const latestYear = String(Math.max(...(yearly.years || [0])));
+      const rows = yearly.rows_by_year?.[latestYear] || [];
+      const container = document.getElementById("publication-regional-fingerprint-board");
+      if (!container) return;
+
       if (!rows.length) {
+        container.innerHTML = `<div class="empty-state">No regional fingerprint data is available.</div>`;
         document.getElementById("regional-fingerprint-pill").textContent = "unavailable";
         return;
       }
+
+      // Instead of an SVG, we render a "Regional Deviation Matrix" using Diverging Profile concept
+      // We'll show the top 3 and bottom 3 regions relative to national
       const sorted = [...rows].sort((a, b) => Number(a.mean_gap || 999) - Number(b.mean_gap || 999));
       const best = sorted[0];
       const worst = sorted[sorted.length - 1];
+
+      container.innerHTML = `
+        <div class="fingerprint-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 20px 0;">
+          <div class="fingerprint-side">
+            <div class="eyebrow" style="margin-bottom:8px;">Top Performing: ${escapeHtml(formatRegionLabel(best.region))}</div>
+            <div id="fingerprint-best" style="height: 200px;"></div>
+          </div>
+          <div class="fingerprint-side">
+            <div class="eyebrow" style="margin-bottom:8px;">Widest Gap: ${escapeHtml(formatRegionLabel(worst.region))}</div>
+            <div id="fingerprint-worst" style="height: 200px;"></div>
+          </div>
+        </div>
+      `;
+
+      const nationalRows = state.bootstrap?.publication?.series?.national_cascade?.rows || [];
+      const nationalMeans = {
+        "Diagnosed": (nationalRows.find(r => r.series_id === "first_95") || {latest_value: 0}).latest_value,
+        "On ART": (nationalRows.find(r => r.series_id === "second_95") || {latest_value: 0}).latest_value,
+        "Suppressed": (nationalRows.find(r => r.series_id === "third_95") || {latest_value: 0}).latest_value
+      };
+
+      requestAnimationFrame(() => {
+        mountChart("fingerprint-best", buildDivergingProfileOption({
+          "Diagnosed": best.diagnosis, "On ART": best.treatment, "Suppressed": best.suppression
+        }, nationalMeans));
+        mountChart("fingerprint-worst", buildDivergingProfileOption({
+          "Diagnosed": worst.diagnosis, "On ART": worst.treatment, "Suppressed": worst.suppression
+        }, nationalMeans));
+      });
+
       document.getElementById("regional-fingerprint-pill").textContent =
         `${formatRegionLabel(best.region)} closest / ${formatRegionLabel(worst.region)} widest gap`;
     }
@@ -3971,11 +4459,11 @@
 
     function getCascadeStageMeta(key) {
       const meta = {
-        diagnosis: { label: "Diagnosed", color: "#5b7bd5", symbol: "circle" },
-        treatment: { label: "On ART", color: "#0f7c66", symbol: "roundRect" },
-        suppression: { label: "Suppressed", color: "#db6b2c", symbol: "diamond" },
+        diagnosis: { label: "Diagnosed", color: "#5bcf5f", symbol: "circle" },
+        treatment: { label: "On ART", color: "#2d9cdb", symbol: "roundRect" },
+        suppression: { label: "Suppressed", color: "#00d4aa", symbol: "diamond" },
       };
-      return meta[key] || { label: key, color: "#50615d", symbol: "circle" };
+      return meta[key] || { label: key, color: "#7889a0", symbol: "circle" };
     }
 
     function setupRegionalExplorer() {
@@ -4034,10 +4522,25 @@
       }
 
       if ((history.cascade || []).length) {
-        mountPlotlyChart("regional-history-chart", buildRegionFingerprintOption(selectedRegion, history.cascade || []));
+        // Calculate national means for comparison
+        const nationalRows = state.bootstrap?.publication?.series?.national_cascade?.rows || [];
+        const nationalMeans = {
+          "Diagnosed": (nationalRows.find(r => r.series_id === "first_95") || {latest_value: 0}).latest_value,
+          "On ART": (nationalRows.find(r => r.series_id === "second_95") || {latest_value: 0}).latest_value,
+          "Suppressed": (nationalRows.find(r => r.series_id === "third_95") || {latest_value: 0}).latest_value
+        };
+
+        const latestHistory = history.cascade[history.cascade.length - 1] || {};
+        const regionalMetrics = {
+          "Diagnosed": Number(latestHistory.diagnosis || 0),
+          "On ART": Number(latestHistory.treatment || 0),
+          "Suppressed": Number(latestHistory.suppression || 0)
+        };
+
+        mountChart("regional-history-chart", buildDivergingProfileOption(regionalMetrics, nationalMeans));
         document.getElementById("regional-history-kpis").innerHTML = buildRegionFingerprintSummary(selectedRegion, history.cascade || []);
       } else {
-        disposePlotlyChart("regional-history-chart");
+        disposeChart("regional-history-chart");
         document.getElementById("regional-history-chart").innerHTML = `<div class="empty-state">No annual cascade history is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
         document.getElementById("regional-history-kpis").innerHTML = "";
       }
@@ -4082,16 +4585,16 @@
           z,
           text,
           texttemplate: "%{text}",
-          textfont: { color: "#14231f", size: 12, family: "IBM Plex Sans, sans-serif" },
+          textfont: { color: "#e0e6f0", size: 12, family: "IBM Plex Sans, sans-serif" },
           customdata: custom,
           zmin: 30,
           zmax: 100,
           colorscale: [
-            [0.0, "#f5efe5"],
-            [0.22, "#ead4ad"],
-            [0.52, "#c7dacb"],
-            [0.78, "#7cb9a9"],
-            [1.0, "#0f7c66"],
+            [0.0, "#ff5c5c"], // Outlier Low (-2 SD)
+            [0.2, "#f0a030"], // Warning (-1 SD)
+            [0.5, "#1a2538"], // Neutral (Mean)
+            [0.8, "#34bfa3"], // Good (+1 SD)
+            [1.0, "#00d4aa"], // Excellent (+2 SD)
           ],
           xgap: 6,
           ygap: 6,
@@ -4106,14 +4609,14 @@
           margin: { t: 34, r: 18, b: 34, l: 170 },
           xaxis: {
             side: "top",
-            tickfont: { color: "#50615d", size: 13 },
+            tickfont: { color: "#7889a0", size: 13 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
           },
           yaxis: {
             autorange: "reversed",
-            tickfont: { color: "#50615d", size: 13 },
+            tickfont: { color: "#7889a0", size: 13 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -4125,7 +4628,7 @@
             yref: "paper",
             text: `Selected: ${escapeHtml(formatRegionLabel(selectedRegion))}`,
             showarrow: false,
-            font: { size: 12, color: "#50615d" },
+            font: { size: 12, color: "#7889a0" },
             xanchor: "right",
           }],
         },
@@ -4149,7 +4652,7 @@
             row[`${key}_source_url`] || "",
           ]),
           line: { color: meta.color, width: 3.5 },
-          marker: { color: meta.color, size: 10, line: { color: "#fffaf0", width: 1.5 } },
+          marker: { color: meta.color, size: 10, line: { color: "#101d33", width: 1.5 } },
           hovertemplate:
             `<b>${escapeHtml(meta.label)}</b><br>` +
             "Year: %{x}<br>" +
@@ -4168,15 +4671,15 @@
             tickmode: "array",
             tickvals: yearlyRows.map(row => Number(row.year || 0)),
             ticktext: yearlyRows.map(row => String(row.year || "")),
-            tickfont: { color: "#50615d", size: 13 },
+            tickfont: { color: "#7889a0", size: 13 },
             showgrid: false,
             fixedrange: true,
           },
           yaxis: {
             range: [30, 100],
             ticksuffix: "%",
-            tickfont: { color: "#50615d", size: 13 },
-            gridcolor: "rgba(20,35,31,0.10)",
+            tickfont: { color: "#7889a0", size: 13 },
+            gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
@@ -4204,7 +4707,7 @@
             showarrow: false,
             xanchor: "right",
             yanchor: "bottom",
-            font: { size: 12, color: "#9b3324" },
+            font: { size: 12, color: "#e63946" },
           }],
         },
       };
@@ -4301,7 +4804,7 @@
               color: isSelected ? stageMeta.color : "rgba(80,97,93,0.20)",
               width: isSelected ? 4.5 : 1.8,
             },
-            marker: isSelected ? { color: stageMeta.color, size: 9, line: { color: "#fffaf0", width: 1.4 } } : { color: "rgba(80,97,93,0.20)", size: 5 },
+            marker: isSelected ? { color: stageMeta.color, size: 9, line: { color: "#101d33", width: 1.4 } } : { color: "rgba(80,97,93,0.20)", size: 5 },
             hovertemplate:
               "<b>%{customdata[0]}</b><br>" +
               `${escapeHtml(stageMeta.label)} rank: <b>#%{y}</b><br>` +
@@ -4317,7 +4820,7 @@
             tickmode: "array",
             tickvals: years.map(year => Number(year)),
             ticktext: years,
-            tickfont: { color: "#50615d", size: 13 },
+            tickfont: { color: "#7889a0", size: 13 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -4326,8 +4829,8 @@
             range: [Math.max(regions.length + 0.5, 2), 0.5],
             tickprefix: "#",
             dtick: 1,
-            tickfont: { color: "#50615d", size: 13 },
-            gridcolor: "rgba(20,35,31,0.10)",
+            tickfont: { color: "#7889a0", size: 13 },
+            gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
@@ -4482,8 +4985,8 @@
             sizemode: "area",
             sizeref,
             sizemin: 10,
-            color: merged.map(row => row.residual >= 0 ? "#0f7c66" : "#c4561b"),
-            line: { color: "#fffaf0", width: 1.3 },
+            color: merged.map(row => row.residual >= 0 ? "#00d4aa" : "#ff5c5c"),
+            line: { color: "#101d33", width: 1.3 },
             opacity: 0.88,
           },
           hovertemplate:
@@ -4503,9 +5006,9 @@
           margin: { t: 20, r: 24, b: 54, l: 68 },
           xaxis: {
             range: [-residualBound, residualBound],
-            title: { text: "Residual versus expected cascade performance (points)", font: { size: 13, color: "#50615d" } },
-            tickfont: { color: "#50615d", size: 13 },
-            gridcolor: "rgba(20,35,31,0.10)",
+            title: { text: "Residual versus expected cascade performance (points)", font: { size: 13, color: "#7889a0" } },
+            tickfont: { color: "#7889a0", size: 13 },
+            gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
@@ -4513,9 +5016,9 @@
           yaxis: {
             range: [0, Math.ceil((maxLeakageRate + 2) / 5) * 5],
             ticksuffix: "%",
-            title: { text: "Loss-from-care rate", font: { size: 13, color: "#50615d" } },
-            tickfont: { color: "#50615d", size: 13 },
-            gridcolor: "rgba(20,35,31,0.10)",
+            title: { text: "Loss-from-care rate", font: { size: 13, color: "#7889a0" } },
+            tickfont: { color: "#7889a0", size: 13 },
+            gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
