@@ -309,7 +309,11 @@ class PublicationAssetBuilder:
             "key_populations": self._build_key_population_series(observations, filename_source_map),
             "regional_yearly": self._build_regional_yearly_series(observations),
         }
-        series["anomaly_yearly"] = self._build_yearly_anomaly_series(series["regional_yearly"], observations)
+        series["anomaly_yearly"] = self._build_yearly_anomaly_series(
+            series["regional_yearly"],
+            observations,
+            filename_source_map,
+        )
         methodology = self._build_methodology(series)
         references = self._build_references(series)
 
@@ -366,6 +370,7 @@ class PublicationAssetBuilder:
             source_url = str(row.get("source_url") or "").strip()
             if filename and source_url and filename not in source_map:
                 source_map[filename] = source_url
+                source_map.setdefault(f"{Path(filename).stem}.md", source_url)
         return source_map
 
     def _read_unaids_annual_series(self) -> dict:
@@ -850,7 +855,12 @@ class PublicationAssetBuilder:
             "coverage_note": "Yearly regional cascade uses the latest observed comparable quarter inside each year. Structured region-level cascade is currently available for 2024 and 2025 only.",
         }
 
-    def _build_yearly_anomaly_series(self, regional_yearly: dict, observations: list[dict]) -> dict:
+    def _build_yearly_anomaly_series(
+        self,
+        regional_yearly: dict,
+        observations: list[dict],
+        filename_source_map: dict[str, str] | None = None,
+    ) -> dict:
         def _fit(points_x: list[float], points_y: list[float]) -> tuple[float, float]:
             if len(points_x) < 2 or len(set(points_x)) < 2:
                 return 0.0, float(np.mean(points_y)) if points_y else 0.0
@@ -893,9 +903,9 @@ class PublicationAssetBuilder:
             return sorted(top, key=lambda item: item["value"])
 
         leakage_metric_map = {
-            "alive_on_art_count": "alive",
-            "lost_to_follow_up_count": "ltfu",
-            "not_on_treatment_count": "not_on_treatment",
+            "alive_on_art_count": ("alive", "Alive on ART", False),
+            "lost_to_follow_up_count": ("ltfu", "Lost to follow-up", False),
+            "not_on_treatment_count": ("not_on_treatment", "Other documented off treatment", False),
         }
         annual_leakage: dict[tuple[int, str, str], dict] = {}
         for row in observations:
@@ -914,13 +924,15 @@ class PublicationAssetBuilder:
             value = _parse_numeric(row.get("value"))
             if value is None:
                 continue
-            metric = leakage_metric_map[metric_type]
+            metric, label, is_proxy = leakage_metric_map[metric_type]
             key = (year, region, metric)
             current = annual_leakage.get(key)
             candidate = {
                 "year": year,
                 "region": region,
                 "metric": metric,
+                "metric_label": label,
+                "is_proxy_metric": is_proxy,
                 "value": float(value),
                 "period_label": period_label,
                 "filename": row.get("filename", ""),
@@ -930,6 +942,27 @@ class PublicationAssetBuilder:
             }
             if current is None or sort_value > current["_sort_value"] or (sort_value == current["_sort_value"] and confidence > current["_confidence"]):
                 annual_leakage[key] = candidate
+
+        extracted_year_end = self._extract_year_end_treatment_outcomes(filename_source_map or {})
+        for year, rows in extracted_year_end.items():
+            for row in rows:
+                for metric in ("alive", "ltfu", "not_on_treatment"):
+                    key = (year, row["region"], metric)
+                    if key in annual_leakage:
+                        continue
+                    annual_leakage[key] = {
+                        "year": year,
+                        "region": row["region"],
+                        "metric": metric,
+                        "metric_label": "Other documented off treatment" if metric == "not_on_treatment" else ("Alive on ART" if metric == "alive" else "Lost to follow-up"),
+                        "is_proxy_metric": metric == "not_on_treatment",
+                        "value": float(row[metric]),
+                        "period_label": row["period_label"],
+                        "filename": row["filename"],
+                        "source_url": row["source_url"],
+                        "_sort_value": row["sort_value"],
+                        "_confidence": 1.0,
+                    }
 
         residuals_by_year = {}
         for year_text, year_rows in regional_yearly.get("rows_by_year", {}).items():
@@ -951,6 +984,8 @@ class PublicationAssetBuilder:
                     "alive": float(alive["value"]) if alive else 0.0,
                     "ltfu": float(ltfu["value"]) if ltfu else 0.0,
                     "not_on_treatment": float(not_on["value"]) if not_on else 0.0,
+                    "other_off_treatment_label": (not_on.get("metric_label") if not_on else "Other documented off treatment"),
+                    "is_proxy_off_treatment": bool(not_on and not_on.get("is_proxy_metric")),
                     "period_label": max(
                         [item["period_label"] for item in (alive, ltfu, not_on) if item],
                         key=_period_sort_value,
@@ -971,7 +1006,7 @@ class PublicationAssetBuilder:
             "default_year": max(available_years, default=None),
             "residuals_by_year": residuals_by_year,
             "leakage_by_year": leakage_by_year,
-            "coverage_note": "Residuals are available where regional cascade coverage exists. Treatment leakage uses the latest structured treatment-outcome snapshot inside each year.",
+            "coverage_note": "Residuals are available where regional cascade coverage exists. Treatment leakage uses the latest official treatment-outcome snapshot inside each year, with 2023 backfilled from the year-end SHIP table.",
         }
 
     def _build_methodology(self, series: dict) -> dict:
@@ -982,10 +1017,17 @@ class PublicationAssetBuilder:
                 "title": "National 95-95-95 cascade",
                 "question": "How close is the Philippines to the UNAIDS 95-95-95 targets?",
                 "definition": "The national cascade compares diagnosed PLHIV, PLHIV on ART, and virally suppressed PLHIV on ART against the 95% target.",
+                "coverage_window": "Shared publication axis: 2015-2025. Official annual context for the first and second 95 is available from 2016-2024. Official quarterly surveillance checkpoints are available from 2023 Q2-2025 Q4.",
+                "estimation_policy": "No synthetic values are injected into the published national cascade. Missing annual third-95 context remains blank because the public annual UNAIDS Philippines extract does not publish usable values for that field.",
                 "formulas": [
                     "1st 95 = diagnosed PLHIV / estimated PLHIV * 100",
                     "2nd 95 = PLHIV on ART / diagnosed PLHIV * 100",
                     "3rd 95 = virally suppressed PLHIV on ART / PLHIV on ART * 100",
+                ],
+                "source_precedence": [
+                    "Use official annual UNAIDS Philippines values for 1st-95 and 2nd-95 context whenever available.",
+                    "Overlay official SHIP/DOH quarterly national cascade checkpoints from 2023 Q2 onward as the observed surveillance series.",
+                    "Use WHO only as an external validation checkpoint when the official SHIP/DOH quarter is also present.",
                 ],
                 "construction": [
                     "Annual official context for the 1st and 2nd 95 comes from the UNAIDS Philippines annual dataset, filtered to the common 2015-2025 publication window.",
@@ -998,7 +1040,7 @@ class PublicationAssetBuilder:
                     "Quarterly points are kept separate from annual context because they represent different publication cadences and sometimes different reporting bases.",
                 ],
                 "caveats": [
-                    "The Philippines annual UNAIDS extract does not provide a matching annual third-95 series.",
+                    "The public annual UNAIDS Philippines extract contains a formal third-95 indicator field (PERCENT_ON_ART_VL_SUPPRESSED), but the values are blank for every available year.",
                     "Older official SHIP viral-load figures publish testing and suppression among those tested, which uses a different denominator from the third 95. Those figures are therefore not used as annual third-95 context in this board.",
                 ],
                 "reference_ids": ["unaids-dataset", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "who-2025-release"],
@@ -1009,8 +1051,18 @@ class PublicationAssetBuilder:
                 "title": "Yearly regional cascade explorer",
                 "question": "Which regions are closest to the 95-95-95 target, and how do they move year to year?",
                 "definition": "The yearly explorer compares diagnosis, treatment, and suppression coverage by region for one selected year, then shows the selected region's annual cascade history.",
+                "coverage_window": "Yearly regional cascade coverage currently spans 2024-2025. The selected-region comparison shows the same yearly window because earlier official region-level 95-95-95 tables were not found in the reviewed corpus.",
+                "estimation_policy": "No synthetic or fitted regional cascade percentages are injected into the publication figures. If an official region-level cascade table is absent for a year, the year remains unavailable in the explorer.",
                 "formulas": [
-                    "Mean gap to target = average of (95 - diagnosis), (95 - treatment), and (95 - suppression)",
+                    "Diagnosis coverage = diagnosed PLHIV / estimated PLHIV * 100, using the percentage published in the source region-level cascade table.",
+                    "Treatment coverage = PLHIV on ART / diagnosed PLHIV * 100, using the percentage published in the source region-level cascade table.",
+                    "Suppression coverage = virally suppressed PLHIV on ART / PLHIV on ART * 100, using the percentage published in the source region-level cascade table.",
+                    "Mean gap to target = average of (95 - diagnosis), (95 - treatment), and (95 - suppression).",
+                ],
+                "source_precedence": [
+                    "Use official SHIP regional care-cascade annex tables when all three stages are published for the year.",
+                    "Within a year, keep the latest quarter with complete diagnosis, treatment, and suppression percentages by region.",
+                    "Do not backfill pre-2024 regional cascade percentages when the source table is absent.",
                 ],
                 "construction": [
                     "For each region, metric, and year, the app selects the latest structured quarter in that year.",
@@ -1023,9 +1075,10 @@ class PublicationAssetBuilder:
                     "The explorer keeps the same 2015-2025 publication window used elsewhere, even when a specific regional series starts later.",
                 ],
                 "caveats": [
-                    "Structured region-level cascade coverage currently starts in 2024. Earlier region-by-region 95-95-95 history is not available in the normalized layer.",
+                    "Structured region-level cascade coverage currently starts in 2024 because the older official reports reviewed here do not publish a complete region-level 95-95-95 denominator table.",
+                    "Reviewed older official reports, including 2019 Q4, October 2021, and December 2022, publish national ART totals and facility lists but not a region-level treatment-outcome table that can support yearly regional cascade backfill.",
                 ],
-                "reference_ids": ["ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
+                "reference_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
             },
             {
                 "id": "anomaly_board",
@@ -1033,24 +1086,36 @@ class PublicationAssetBuilder:
                 "title": "Yearly outliers and treatment leakage explorer",
                 "question": "Which regions are above or below the expected cascade pattern, and where is treatment leakage concentrated?",
                 "definition": "Residuals compare observed regional coverage with the fitted regional relationship. Leakage focuses on loss from care: lost to follow-up plus not on treatment.",
+                "coverage_window": "Residuals are available for 2024-2025 because those are the years with region-level cascade percentages. Treatment leakage is available for 2023-2025 because 2023 can be backfilled from the year-end SHIP treatment-outcome table.",
+                "estimation_policy": "No synthetic residuals or synthetic treatment leakage values are injected. Residuals are computed only when observed region-level cascade percentages exist; leakage is shown only when an observed treatment-outcome table is available for the year.",
                 "formulas": [
                     "Treatment residual = observed treatment coverage - fitted treatment coverage from the diagnosis-to-treatment line",
                     "Suppression residual = observed suppression coverage - fitted suppression coverage from the treatment-to-suppression line",
+                    "Documented treatment leakage = lost to follow-up + other documented off treatment",
+                    "For 2024 onward, other documented off treatment = not on treatment from the structured treatment-outcome table",
+                    "For 2023, other documented off treatment = transout (overseas) + stopped from the official year-end treatment-outcome table",
+                ],
+                "source_precedence": [
+                    "Residuals use yearly regional cascade rows only where official region-level cascade tables exist.",
+                    "Leakage uses the structured treatment-outcome observations when they exist in the normalized layer.",
+                    "If 2023 has no structured leakage rows, backfill from the official 2023 year-end SHIP treatment-outcome table instead of inferring values.",
                 ],
                 "construction": [
                     "Residuals are recomputed inside each year using the regions available in that year.",
                     "Treatment leakage is restricted to loss from care: lost to follow-up plus not on treatment from the latest structured treatment-outcome snapshot inside each year.",
-                    "If a yearly snapshot does not include not-on-treatment counts, the chart shows the missing category explicitly rather than inventing values.",
+                    "If a yearly source uses older treatment-outcome categories, the chart harmonizes them as other documented off treatment and labels that distinction explicitly.",
                 ],
                 "harmonization": [
                     "The anomaly explorer is annual only. Each year represents the latest structured comparable quarter inside that year.",
                     "Residual labels are rewritten into plain English rather than internal cascade shorthand.",
                 ],
                 "caveats": [
-                    "Leakage is only comparable across years where structured treatment-outcome tables exist.",
+                    "Residuals are unavailable before 2024 because the older official reports reviewed here do not publish complete region-level cascade percentages.",
+                    "Leakage is only partially comparable across years because 2023 publishes transout/stopped while 2024 onward publishes not-on-treatment.",
                     "Residuals are descriptive diagnostics, not causal estimates.",
+                    "Older official reports reviewed for 2019 Q4, October 2021, and December 2022 do not support a defensible pre-2024 regional residual series because they lack a full region-level cascade denominator table.",
                 ],
-                "reference_ids": ["ship-2024-q2", "ship-2025-q4"],
+                "reference_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2023-q4", "ship-2024-q2", "ship-2025-q4"],
             },
             {
                 "id": "historical_board",
@@ -1058,6 +1123,19 @@ class PublicationAssetBuilder:
                 "title": "Long-run burden and exposure shift",
                 "question": "How has national HIV burden changed over time, and which long-run series have the strongest evidence coverage?",
                 "definition": "The historical board combines direct source extraction from surveillance reports with official annual international estimates.",
+                "coverage_window": "Published on a common 2015-2025 annual axis. Some underlying direct-extraction series begin before 2015, but the board uses a common presentation window to align with the cascade and key-population figures.",
+                "estimation_policy": "No historical interpolation is applied. If a year fails consistency checks or the source cannot be resolved, the year remains missing rather than being smoothed or inferred.",
+                "formulas": [
+                    "Cumulative reported HIV cases = latest annual end-of-year cumulative count extracted directly from the Philippines surveillance corpus.",
+                    "People living with HIV = official annual UNAIDS estimate for the Philippines.",
+                    "New HIV infections = official annual UNAIDS estimate for the Philippines.",
+                    "AIDS-related deaths = official annual UNAIDS estimate for the Philippines.",
+                ],
+                "source_precedence": [
+                    "Use official annual UNAIDS estimates for PLHIV, new HIV infections, and AIDS-related deaths.",
+                    "Use direct source extraction from the Philippines surveillance corpus for cumulative reported HIV cases where the official annual estimate is a different construct.",
+                    "Suppress extracted historical series that fail consistency checks or contain unresolvable OCR noise.",
+                ],
                 "construction": [
                     "Cumulative reported HIV cases are built from direct extraction of annual end-of-year surveillance values from the local corpus.",
                     "PLHIV, new HIV infections, and AIDS-related deaths use official annual UNAIDS Philippines values.",
@@ -1078,6 +1156,19 @@ class PublicationAssetBuilder:
                 "title": "Key population sentinel panels",
                 "question": "What does the current evidence base show for pregnant women, TGW, OFW, and youth-linked burden?",
                 "definition": "Each panel shows the annual latest structured value for that subgroup, with missing years kept visible rather than interpolated away.",
+                "coverage_window": "Published on a shared 2015-2025 axis. Underlying subgroup evidence windows differ: pregnant cumulative is strongest from 2017 onward, TGW cumulative from 2019 onward, OFW cumulative from 2010 onward, and youth share from 2015 onward.",
+                "estimation_policy": "No subgroup gaps are artificially filled. The figures keep years without defensible observed values blank so the evidence window for each subgroup remains explicit.",
+                "formulas": [
+                    "Pregnant women diagnosed (cumulative) = annual latest cumulative number of diagnosed women reported pregnant at diagnosis.",
+                    "TGW diagnosed (cumulative) = annual latest cumulative number of diagnosed transgender women in the structured series.",
+                    "OFW cumulative burden = annual latest cumulative number of reported overseas Filipino workers among diagnosed cases.",
+                    "Youth share of reported cases = annual latest percent of reported cases aged 15-24.",
+                ],
+                "source_precedence": [
+                    "Use structured national subgroup observations first when the normalized layer contains a defensible annual latest value.",
+                    "Backfill from direct source extraction in the local Philippines surveillance corpus when the normalized layer is missing a subgroup series.",
+                    "Keep gaps visible when neither structured observations nor direct extraction produce a defensible yearly value.",
+                ],
                 "construction": [
                     "Pregnant women diagnosed uses the annual latest cumulative value taken from quarterly surveillance rows.",
                     "TGW diagnosed uses the annual latest cumulative value from the surveillance series.",
@@ -1145,6 +1236,33 @@ class PublicationAssetBuilder:
                 "url": "https://drive.google.com/file/d/1DOo4eEzBnoamfdzt8Bmj78b8kRNEQqjz/view",
                 "used_in": ["national_cascade"],
                 "note": "Official 2023 Q4 checkpoint used in the quarterly national cascade.",
+            },
+            {
+                "id": "ship-2022-dec",
+                "title": "December 2022 HIV/AIDS & ART registry of the Philippines (HARP)",
+                "organization": "Department of Health / Epidemiology Bureau",
+                "kind": "Official monthly surveillance report reviewed for backfill feasibility",
+                "url": "https://drive.google.com/file/d/1GZawV3hka96kcGtesOWsAXWPipApDlk2/view",
+                "used_in": ["regional_ladder", "anomaly_board"],
+                "note": "Reviewed during regional treatment-history mining. Provides national PLHIV on ART context but no region-level treatment-outcome table usable for yearly regional backfill.",
+            },
+            {
+                "id": "ship-2021-oct",
+                "title": "October 2021 HIV/AIDS & ART registry of the Philippines (HARP)",
+                "organization": "Department of Health / Epidemiology Bureau",
+                "kind": "Official monthly surveillance report reviewed for backfill feasibility",
+                "url": "https://drive.google.com/file/d/1qnv2JBb_wZsO_QXtLPS1HkKtdbYLUPNF/view",
+                "used_in": ["regional_ladder", "anomaly_board"],
+                "note": "Reviewed during regional treatment-history mining. Provides national PLHIV on ART totals and case distribution, but no region-level treatment-outcome table usable for yearly regional backfill.",
+            },
+            {
+                "id": "ship-2019-q4",
+                "title": "October-December 2019 HIV/AIDS & ART registry of the Philippines (HARP)",
+                "organization": "Department of Health / Epidemiology Bureau",
+                "kind": "Official quarterly surveillance report reviewed for backfill feasibility",
+                "url": "https://drive.google.com/file/d/1XgUU5yRqmJO51WFoOt9RgOh4voZL-X-i/view",
+                "used_in": ["regional_ladder", "anomaly_board"],
+                "note": "Reviewed during regional treatment-history mining. The quarter-end report contains national ART context and treatment-hub listings, but not a region-level treatment-outcome table that can support yearly cascade backfill.",
             },
             {
                 "id": "ship-2024-q1",
@@ -1282,7 +1400,7 @@ class PublicationAssetBuilder:
         items.extend(local_items)
         groups = [
             {"title": "Official international datasets", "item_ids": ["unaids-dataset", "who-2025-release"]},
-            {"title": "Official Philippines surveillance reports", "item_ids": ["ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q1", "ship-2024-q2", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]},
+            {"title": "Official Philippines surveillance reports", "item_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q1", "ship-2024-q2", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]},
             {"title": "Local derived-series corpus", "item_ids": ["ship-local-corpus"]},
             {"title": "Dashboard design references", "item_ids": ["design-ahead", "design-owid", "design-unaids-inequalities"]},
             {"title": "Local corpus reports used in derived historical and subgroup series", "item_ids": [item["id"] for item in local_items]},
@@ -1337,6 +1455,106 @@ class PublicationAssetBuilder:
                     by_period[row["label"]] = row
             deduped[key] = [by_period[label] for label in sorted(by_period, key=_period_sort_value)]
         return deduped
+
+    def _extract_year_end_treatment_outcomes(self, filename_source_map: dict[str, str] | None = None) -> dict[int, list[dict]]:
+        latest_by_year: dict[int, dict] = {}
+        for path in sorted(self.processed_dir.glob("*.md")):
+            if path.name.startswith("_") or path.name.endswith(".markitdown.md"):
+                continue
+            period_label, year, month = _infer_period_from_filename(path.name)
+            if year not in {2022, 2023}:
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            rows = self._parse_treatment_outcome_table(text)
+            if not rows:
+                continue
+            sort_value = year * 100 + month
+            current = latest_by_year.get(year)
+            candidate = {
+                "year": year,
+                "period_label": period_label or f"{year}-12",
+                "sort_value": sort_value,
+                "filename": path.name,
+                "source_url": (filename_source_map or {}).get(path.name, ""),
+                "rows": rows,
+            }
+            if current is None or sort_value > current["sort_value"]:
+                latest_by_year[year] = candidate
+
+        extracted = {}
+        for year, payload in latest_by_year.items():
+            extracted[year] = [
+                {
+                    "region": region,
+                    "alive": values["alive"],
+                    "ltfu": values["ltfu"],
+                    "not_on_treatment": values["other_off_treatment"],
+                    "period_label": payload["period_label"],
+                    "filename": payload["filename"],
+                    "source_url": payload["source_url"],
+                    "sort_value": payload["sort_value"],
+                }
+                for region, values in sorted(payload["rows"].items())
+            ]
+        return extracted
+
+    def _parse_treatment_outcome_table(self, text: str) -> dict[str, dict]:
+        lines = [line.strip().replace("\u00a0", " ") for line in text.splitlines() if line.strip()]
+        start_index = None
+        for index, line in enumerate(lines):
+            if "treatment outcome" not in line.lower():
+                continue
+            for probe in range(index, min(index + 16, len(lines))):
+                normalized = re.sub(r"\s+", "", lines[probe]).lower()
+                if normalized.startswith("stopped"):
+                    start_index = probe + 1
+                    break
+            if start_index is not None:
+                break
+        if start_index is None:
+            return {}
+
+        rows: dict[str, dict] = {}
+        current_region = ""
+        values: list[float] = []
+
+        def finalize_region() -> None:
+            nonlocal current_region, values
+            if current_region and len(values) >= 2:
+                alive = float(values[0])
+                ltfu = float(values[1])
+                transout = float(values[2]) if len(values) >= 3 else 0.0
+                stopped = float(values[3]) if len(values) >= 4 else 0.0
+                rows[current_region] = {
+                    "alive": alive,
+                    "ltfu": ltfu,
+                    "other_off_treatment": transout + stopped,
+                }
+            current_region = ""
+            values = []
+
+        for line in lines[start_index:]:
+            lower = line.lower()
+            if lower.startswith("table 3:") or lower.startswith("tuberculosis") or lower.startswith("viral load") or lower.startswith("mortality"):
+                break
+            normalized_region = _format_region(re.sub(r"\s+", "", line.upper()))
+            if normalized_region in VALID_REGION_NAMES:
+                finalize_region()
+                current_region = normalized_region
+                continue
+            if not current_region:
+                continue
+            compact = re.sub(r"\s+", "", line).replace(",", "")
+            if compact in {"-", "--"}:
+                values.append(0.0)
+                continue
+            if re.fullmatch(r"\d+(?:\.\d+)?", compact):
+                numeric = _parse_numeric(compact)
+                if numeric is not None:
+                    values.append(float(numeric))
+                continue
+        finalize_region()
+        return rows
 
     def _extract_total_cases(self, text: str) -> float | None:
         lines = [line.strip() for line in text.splitlines() if line.strip()]
@@ -1600,7 +1818,10 @@ class PublicationAssetBuilder:
             blocks = [
                 ("Question", methodology.get("question", "")),
                 ("Definition", methodology.get("definition", "")),
+                ("Coverage window", methodology.get("coverage_window", "")),
+                ("Estimation and gap policy", methodology.get("estimation_policy", "")),
                 ("Formulas", "\n".join(f"- {item}" for item in methodology.get("formulas", []))),
+                ("Source precedence", "\n".join(f"- {item}" for item in methodology.get("source_precedence", []))),
                 ("Construction", "\n".join(f"- {item}" for item in methodology.get("construction", []))),
                 ("Harmonization", "\n".join(f"- {item}" for item in methodology.get("harmonization", []))),
                 ("Caveats", "\n".join(f"- {item}" for item in methodology.get("caveats", []))),
@@ -1632,7 +1853,11 @@ class PublicationAssetBuilder:
                 text_page.text(0.08, y, "References", fontsize=11.5, fontweight="bold", va="top")
                 y -= 0.028
                 for ref in relevant_refs:
-                    entry = f"- {ref['title']} ({ref['organization']}). {ref.get('url', '')}"
+                    entry = (
+                        f"- {ref['title']} | {ref['organization']} | {ref.get('kind', 'Reference')}.\n"
+                        f"  Role: {ref.get('note', '')}\n"
+                        f"  URL: {ref.get('url', '')}"
+                    )
                     wrapped = self._wrap_text(entry, width=96)
                     text_page.text(0.09, y, wrapped, fontsize=9.4, va="top", linespacing=1.4)
                     y -= 0.018 * (wrapped.count("\n") + 2)

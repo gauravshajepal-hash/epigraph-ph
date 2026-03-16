@@ -321,6 +321,71 @@
       color: var(--ink);
       line-height: 1.6;
     }
+    .formula-panel,
+    .source-panel {
+      margin-top: 16px;
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.62);
+      padding: 16px;
+    }
+    .formula-panel h4,
+    .source-panel h4 {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .formula-code {
+      margin: 0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(20, 35, 31, 0.92);
+      color: #f4f0e4;
+      font: 0.9rem/1.65 "IBM Plex Sans", sans-serif;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .source-table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      background: rgba(255, 255, 255, 0.58);
+    }
+    .source-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+    .source-table th,
+    .source-table td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(20, 35, 31, 0.08);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .source-table th {
+      background: rgba(20, 35, 31, 0.05);
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+    .source-table tr:last-child td {
+      border-bottom: 0;
+    }
+    .source-table a {
+      color: var(--accent-strong);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .source-table a:hover {
+      text-decoration: underline;
+    }
     .method-footer {
       display: flex;
       gap: 10px;
@@ -874,7 +939,7 @@
           </div>
           <span class="pill" id="methodology-pill">Loading</span>
         </div>
-        <p class="mini-note">Each section documents the question, formulas, harmonization rules, caveats, and source references for the corresponding publication figure. PDF reports include the same explanation plus the figure export.</p>
+        <p class="mini-note">Each section documents the figure question, exact formula block, coverage window, estimation policy, source precedence, and source table for the corresponding publication figure. The publication PDFs include the same methodological detail plus the vector figure export.</p>
         <div class="methodology-list" id="methodology-list"></div>
       </article>
     </section>
@@ -2225,14 +2290,20 @@
             </div>
             <span class="pill">${escapeHtml(section.id || "figure")}</span>
           </div>
-          <p class="mini-note"><strong>Question:</strong> ${escapeHtml(section.question || "")}</p>
-          <p class="mini-note"><strong>Definition:</strong> ${escapeHtml(section.definition || "")}</p>
           <div class="method-grid">
-            ${buildMethodBlock("Formulas", section.formulas)}
+            ${buildMethodRow("Question", section.question || "")}
+            ${buildMethodRow("Definition", section.definition || "")}
+            ${buildMethodRow("Coverage window", section.coverage_window || "")}
+            ${buildMethodRow("Estimation policy", section.estimation_policy || "")}
+          </div>
+          ${buildFormulaPanel(section.formulas)}
+          <div class="method-grid">
+            ${buildMethodBlock("Source precedence", section.source_precedence)}
             ${buildMethodBlock("Construction", section.construction)}
             ${buildMethodBlock("Harmonization", section.harmonization)}
             ${buildMethodBlock("Caveats", section.caveats)}
           </div>
+          ${buildSourcePanel(section.reference_ids || [])}
           <div class="method-footer">
             ${buildFigureActions(section.figure_key)}
             ${buildReferenceJumpActions(section.reference_ids || [])}
@@ -2323,6 +2394,65 @@
           <ul>
             ${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
+        </div>
+      `;
+    }
+
+    function buildMethodRow(label, value) {
+      if (!String(value || "").trim()) return "";
+      return `
+        <div class="method-row">
+          <div class="method-label">${escapeHtml(label)}</div>
+          <div class="method-value">${escapeHtml(value)}</div>
+        </div>
+      `;
+    }
+
+    function buildFormulaPanel(rows) {
+      const items = (rows || []).filter(Boolean);
+      if (!items.length) return "";
+      const content = items.map(item => item.trim()).join("\n");
+      return `
+        <div class="formula-panel">
+          <h4>Formula block</h4>
+          <pre class="formula-code"><code>${escapeHtml(content)}</code></pre>
+        </div>
+      `;
+    }
+
+    function buildSourcePanel(referenceIds) {
+      const ids = (referenceIds || []).filter(Boolean);
+      if (!ids.length) return "";
+      const referenceMap = new Map((state.bootstrap?.publication?.references?.items || []).map(item => [item.id, item]));
+      const refs = ids.map(id => referenceMap.get(id)).filter(Boolean);
+      if (!refs.length) return "";
+      return `
+        <div class="source-panel">
+          <h4>Source table</h4>
+          <div class="source-table-wrap">
+            <table class="source-table">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Organization</th>
+                  <th>Role in figure</th>
+                  <th>Type</th>
+                  <th>Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${refs.map(ref => `
+                  <tr>
+                    <td><strong>${escapeHtml(ref.title || ref.id)}</strong></td>
+                    <td>${escapeHtml(ref.organization || "Unknown organization")}</td>
+                    <td>${escapeHtml(ref.note || "")}</td>
+                    <td>${escapeHtml(ref.kind || "Reference")}</td>
+                    <td>${ref.url ? `<a href="${escapeAttribute(ref.url)}" target="_blank" rel="noopener noreferrer">Open source</a>` : "Local only"}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
     }
@@ -3547,7 +3677,7 @@
       if (actions) {
         actions.innerHTML = [
           buildFigureActions("anomaly_board"),
-          buildReferenceJumpActions(["ship-2024-q2", "ship-2025-q4"]),
+          buildReferenceJumpActions(["ship-2023-q4", "ship-2024-q2", "ship-2025-q4"]),
         ].filter(Boolean).join("");
       }
       if (!years.length) {
@@ -3572,7 +3702,10 @@
         mountChart("anomaly-residual-chart", buildResidualOption(residualRows, selectedYear));
       } else {
         disposeChart("anomaly-residual-chart");
-        document.getElementById("anomaly-residual-chart").innerHTML = `<div class="empty-state">No annual residual rows are available for ${escapeHtml(selectedYear)}.</div>`;
+        const message = Number(selectedYear) < 2024
+          ? `Residuals are unavailable for ${escapeHtml(selectedYear)} because official region-level cascade coverage starts in 2024.`
+          : `No annual residual rows are available for ${escapeHtml(selectedYear)}.`;
+        document.getElementById("anomaly-residual-chart").innerHTML = `<div class="empty-state">${message}</div>`;
       }
       if (leakageRows.length) {
         mountChart("anomaly-leakage-chart", buildLeakageOption(leakageRows, selectedYear));
@@ -3581,7 +3714,11 @@
         document.getElementById("anomaly-leakage-chart").innerHTML = `<div class="empty-state">No annual treatment-leakage snapshot is available for ${escapeHtml(selectedYear)}.</div>`;
       }
       document.getElementById("anomaly-residual-note").textContent =
-        residualRows.length ? `${selectedYear} residuals compare observed cascade progression with the fitted regional expectation.` : `No residual rows are available for ${selectedYear}.`;
+        residualRows.length
+          ? `${selectedYear} residuals compare observed cascade progression with the fitted regional expectation.`
+          : (Number(selectedYear) < 2024
+              ? `${selectedYear} has leakage history, but residuals remain unavailable because official region-level cascade coverage starts in 2024.`
+              : `No residual rows are available for ${selectedYear}.`);
       document.getElementById("anomaly-leakage-note").textContent =
         leakageRows.length ? summarizeLeakageYear(leakageRows, selectedYear) : `No treatment-leakage snapshot is available for ${selectedYear}.`;
     }
@@ -3661,7 +3798,7 @@
               <strong>${escapeHtml(row.region || "")}</strong><br>
               Alive on ART: ${formatNumber(row.alive)}<br>
               Lost to follow-up: ${formatNumber(row.ltfu)}<br>
-              Not on treatment: ${formatNumber(row.notOnTreatment)}${row.missingNotOnTreatment ? " (missing in source table)" : ""}<br>
+              ${escapeHtml(row.otherOffTreatmentLabel || "Other documented off treatment")}: ${formatNumber(row.notOnTreatment)}${row.isProxyOffTreatment ? " (harmonized from transout + stopped)" : ""}${row.missingNotOnTreatment ? " (missing in source table)" : ""}<br>
               Combined leakage: <strong>${formatNumber((Number(row.ltfu || 0) + Number(row.notOnTreatment || 0)))}</strong><br>
               Period: ${escapeHtml(row.periodLabel || year)}<br>
               File: ${escapeHtml(row.filename || "Unknown source")}${sourceUrl}
@@ -3682,7 +3819,7 @@
         },
         series: [
           buildLeakageSeries("Lost to follow-up", sorted, "ltfu", "#db6b2c"),
-          buildLeakageSeries("Not on treatment", sorted, "not_on_treatment", "#c89b1d"),
+          buildLeakageSeries("Other documented off treatment", sorted, "not_on_treatment", "#c89b1d"),
         ],
       };
     }
@@ -3700,6 +3837,8 @@
           alive: row.alive,
           ltfu: row.ltfu,
           notOnTreatment: row.not_on_treatment,
+          otherOffTreatmentLabel: row.other_off_treatment_label,
+          isProxyOffTreatment: row.is_proxy_off_treatment,
           sourceUrl: row.source_url,
           filename: row.filename,
           periodLabel: row.period_label,
@@ -3713,7 +3852,7 @@
       if (!sorted.length) return `No treatment-leakage rows are available for ${year}.`;
       const top = sorted[0];
       const total = Number(top.ltfu || 0) + Number(top.not_on_treatment || 0);
-      return `${formatRegionLabel(top.region)} has the largest measured loss-from-care burden in ${year}, with ${formatNumber(total)} combined lost-to-follow-up and not-on-treatment records.`;
+      return `${formatRegionLabel(top.region)} has the largest measured loss-from-care burden in ${year}, with ${formatNumber(total)} combined lost-to-follow-up and other documented off-treatment records.`;
     }
 
     function formatPercent(value, digits) {
