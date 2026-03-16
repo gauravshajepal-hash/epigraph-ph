@@ -205,6 +205,19 @@
     .publication-card {
       padding-bottom: 22px;
     }
+    .publication-shell-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.58;
+      max-width: 1080px;
+    }
+    .shell-headline {
+      font-family: "Fraunces", serif;
+      font-size: 1.08rem;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+    }
     .figure-actions {
       display: flex;
       gap: 10px;
@@ -276,6 +289,44 @@
       gap: 18px;
       margin-top: 8px;
     }
+    .explorer-stack {
+      display: grid;
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .fingerprint-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .fingerprint-stat {
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.62);
+      padding: 12px 14px;
+    }
+    .fingerprint-stat .label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+    .fingerprint-stat .value {
+      margin-top: 8px;
+      font-family: "Fraunces", serif;
+      font-size: 1.55rem;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .fingerprint-stat .note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
     .explorer-grid-single {
       grid-template-columns: 1fr;
     }
@@ -284,6 +335,35 @@
       display: grid;
       gap: 18px;
       margin-top: 18px;
+    }
+    .method-index {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .method-index a {
+      display: block;
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.58);
+      padding: 14px 16px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .method-index a:hover {
+      border-color: rgba(14, 124, 102, 0.24);
+      background: rgba(14, 124, 102, 0.06);
+    }
+    .method-index small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
     .method-card,
     .reference-group-card {
@@ -419,6 +499,27 @@
       color: var(--muted);
       font-size: 0.86rem;
       line-height: 1.6;
+    }
+    .experimental-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .experimental-list {
+      display: grid;
+      gap: 12px;
+      margin: 12px 0 0;
+      padding: 0;
+    }
+    .experimental-list li {
+      border: 1px solid rgba(20, 35, 31, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.58);
+      padding: 12px 14px;
+      color: var(--ink);
+      line-height: 1.55;
+      list-style: none;
     }
     .trend-periods { margin-top: 10px; color: var(--muted); font-size: 0.78rem; display: flex; justify-content: space-between; gap: 10px; }
     .series-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px; }
@@ -779,11 +880,11 @@
     @media (max-width: 760px) {
       .shell { padding: 18px 14px 42px; }
       .hero { padding: 18px 16px 16px; }
-      .grid.kpis, .grid.columns-2, .filter-panel { grid-template-columns: 1fr; }
+      .grid.kpis, .grid.columns-2, .filter-panel, .experimental-grid { grid-template-columns: 1fr; }
       .hero-meta { min-width: 0; width: 100%; }
       .meta-pill { text-align: left; }
       .trend-grid { grid-template-columns: 1fr; }
-      .brief-grid, .goal-stat-grid, .method-row, .atlas-grid, .atlas-stat-strip, .mini-grid, .duo-grid, .explorer-grid, .method-grid { grid-template-columns: 1fr; }
+      .brief-grid, .goal-stat-grid, .method-row, .atlas-grid, .atlas-stat-strip, .mini-grid, .duo-grid, .explorer-grid, .method-grid, .fingerprint-summary { grid-template-columns: 1fr; }
       .chart-host { height: 300px; }
       .chart-host.scatter, .chart-host.tall { height: 340px; }
       .chart-host.mini { height: 220px; }
@@ -809,6 +910,7 @@
         <button class="nav-button is-active" data-view="overview" onclick="switchView('overview')">Overview</button>
         <button class="nav-button" data-view="explorer" onclick="switchView('explorer')">Explorer</button>
         <button class="nav-button" data-view="methods" onclick="switchView('methods')">Methods &amp; Sources</button>
+        <button class="nav-button" data-view="experimental" onclick="switchView('experimental')">Experimental estimates</button>
       </div>
       <div class="status-banner" id="status-banner"></div>
     </header>
@@ -821,11 +923,11 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">National Cascade</div>
-              <h2>95-95-95 national goals</h2>
+              <div class="shell-headline">Official target board and quarterly cascade</div>
             </div>
             <span class="pill" id="national-cascade-pill">Loading</span>
           </div>
-          <p class="mini-note">Grey marks show official published context, while the highlighted line shows official quarterly surveillance. The third 95 is plotted from official quarterly SHIP/WHO reporting because UNAIDS does not publish a matching annual Philippines series.</p>
+          <p class="publication-shell-note">Annual UNAIDS context and quarterly SHIP/WHO surveillance are separated visually. The board keeps the official third-95 limitation explicit rather than smoothing it away.</p>
           <div class="figure-actions" id="publication-national-cascade-actions"></div>
           <div class="publication-figure" id="publication-national-cascade"></div>
           <div class="atlas-note" id="publication-national-cascade-note"></div>
@@ -835,11 +937,11 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">Regional Inequality</div>
-              <h2>Regional cascade inequality</h2>
+              <div class="shell-headline">Observed yearly regional stage matrix</div>
             </div>
             <span class="pill" id="regional-atlas-pill">Loading</span>
           </div>
-          <p class="mini-note">Fixed publication figure. The matrix compares regional coverage across the three cascade stages for the latest observed yearly regional snapshot, with gap-to-target context built into the figure.</p>
+          <p class="publication-shell-note">The publication matrix is the cross-sectional regional view. It keeps only observed yearly coverage and encodes distance to the 95 target without reverting to the old ladder chart.</p>
           <div class="figure-actions" id="publication-regional-ladder-actions"></div>
           <div class="publication-figure" id="publication-regional-ladder"></div>
           <div class="atlas-note" id="publication-regional-ladder-note"></div>
@@ -849,11 +951,11 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">Anomalies</div>
-              <h2>Performance and treatment leakage</h2>
+              <div class="shell-headline">Performance versus burden</div>
             </div>
             <span class="signal-tag" id="surprise-pill">Loading</span>
           </div>
-          <p class="mini-note">Fixed publication figure. Regions are positioned by how far they sit above or below the fitted cascade expectation and by the burden of documented leakage from care.</p>
+          <p class="publication-shell-note">Underperformance and treatment leakage are treated as one decision problem. The publication board shows both the deviation from expected cascade performance and the measured burden of loss from care.</p>
           <div class="figure-actions" id="publication-anomaly-board-actions"></div>
           <div class="publication-figure" id="publication-anomaly-board"></div>
           <div class="atlas-note" id="publication-anomaly-board-note"></div>
@@ -863,11 +965,11 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">Historical View</div>
-              <h2>Long-run burden and exposure shift</h2>
+              <div class="shell-headline">National burden and annual context</div>
             </div>
             <span class="pill" id="historical-atlas-pill">Loading</span>
           </div>
-          <p class="mini-note">Historical panels combine direct surveillance series with official UNAIDS annual estimates. The goal is a defensible long-run view rather than a dense mixed-source chart wall.</p>
+          <p class="publication-shell-note">Only the strongest historical series remain in the Overview. Weak or sparse panels were removed so the annual burden story stays readable and defensible.</p>
           <div class="figure-actions" id="publication-historical-board-actions"></div>
           <div class="publication-figure" id="publication-historical-board"></div>
           <div class="atlas-note" id="publication-historical-board-note"></div>
@@ -877,11 +979,11 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">Key Populations</div>
-              <h2>Sentinel groups</h2>
+              <div class="shell-headline">Sentinel subgroups with observed windows</div>
             </div>
             <span class="pill" id="population-outcomes-pill">Loading</span>
           </div>
-          <p class="mini-note">Pregnant women, TGW, OFW, and youth-linked signals shown on a common 2015 to 2025 x-axis. Years with no observed values stay explicitly shaded rather than being filled in.</p>
+          <p class="publication-shell-note">The sentinel board keeps subgroup windows explicit. Missing years remain visible as missing rather than being interpolated into a fake continuous series.</p>
           <div class="figure-actions" id="publication-key-populations-actions"></div>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
@@ -900,7 +1002,7 @@
             </div>
             <span class="pill" id="regional-explorer-pill">Loading</span>
           </div>
-          <p class="mini-note">Observed yearly regional cascade only. The matrix compares regions for one year, the selected-region view shows stage change over time, and the bump chart shows how rank moves for one selected stage.</p>
+          <p class="mini-note">Observed yearly regional cascade only. Use the matrix for cross-sectional comparison, the fingerprint for one region over time, and the bump chart for rank movement on a selected stage.</p>
           <div class="figure-actions" id="regional-explorer-actions"></div>
           <div class="control-row">
             <div class="control-group">
@@ -928,9 +1030,10 @@
               <div class="atlas-note" id="regional-year-note"></div>
             </div>
             <div class="atlas-card">
-              <h3>Selected region over time</h3>
-              <p class="analytic-subtitle">A compact yearly fingerprint for one region, showing stage-specific movement, gaps to target, and the latest source period.</p>
-              <div class="chart-host tall" id="regional-history-chart"></div>
+              <h3>Selected region fingerprint</h3>
+              <p class="analytic-subtitle">Current values, gap to target, year-over-year movement, and the latest source report for the selected region.</p>
+              <div class="fingerprint-summary" id="regional-history-kpis"></div>
+              <div class="chart-host" id="regional-history-chart"></div>
               <div class="atlas-note" id="regional-history-note"></div>
             </div>
           </div>
@@ -958,6 +1061,7 @@
               <select id="anomaly-year-select"></select>
             </div>
           </div>
+          <div class="fingerprint-summary" id="anomaly-summary"></div>
           <div class="atlas-card">
             <h3>Performance versus burden quadrant</h3>
             <p class="analytic-subtitle">Hover points to inspect residual stage, leakage burden, and source references for the selected year.</p>
@@ -978,6 +1082,7 @@
           <span class="pill" id="methodology-pill">Loading</span>
         </div>
         <p class="mini-note">Each section documents the figure question, exact formula block, coverage window, estimation policy, source precedence, and source table for the corresponding publication figure. The publication PDFs include the same methodological detail plus the vector figure export.</p>
+        <div class="method-index" id="method-index"></div>
         <div class="methodology-list" id="methodology-list"></div>
       </article>
       <article class="card">
@@ -990,6 +1095,39 @@
         </div>
         <p class="mini-note">This is the source inventory behind the current figures. It includes official international datasets, official Philippine surveillance reports, and the local source reports used for directly extracted derived series.</p>
         <div class="reference-groups" id="reference-groups"></div>
+      </article>
+    </section>
+
+    <section class="section" id="experimental-section">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="eyebrow">Experimental estimates</div>
+            <h2>Observed-only atlas, synthetic layer withheld</h2>
+          </div>
+          <span class="signal-tag" id="experimental-pill">Observed only</span>
+        </div>
+        <p class="mini-note">This tab is reserved for estimated regional backfill. No synthetic values are published into the current atlas. Estimated series will only appear here once they are constrained by official national totals and clearly marked as modeled rather than observed.</p>
+        <div class="experimental-grid">
+          <article class="atlas-card">
+            <h3>Current status</h3>
+            <p class="analytic-subtitle">The official atlas remains observed-only. Regional observed yearly coverage currently starts in 2024 for cascade coverage and in 2023 for yearly leakage.</p>
+            <ul class="experimental-list">
+              <li><strong>Not published:</strong> synthetic pre-2024 regional cascade values</li>
+              <li><strong>Not published:</strong> uncertainty ribbons or modeled regional trajectories</li>
+              <li><strong>Why:</strong> older official region-level denominators remain incomplete, so injecting estimates into the official atlas would weaken the evidence standard</li>
+            </ul>
+          </article>
+          <article class="atlas-card">
+            <h3>Planned model guardrails</h3>
+            <p class="analytic-subtitle">When this layer is turned on, it will remain separate from the official overview and explorer.</p>
+            <ul class="experimental-list">
+              <li><strong>Model family:</strong> yearly hierarchical partial-pooling fit with region intercepts and slopes</li>
+              <li><strong>Constraint:</strong> estimates must remain coherent with official national totals and observed regional anchors</li>
+              <li><strong>Display policy:</strong> dashed estimated lines, shaded uncertainty, and explicit “Estimated, not observed” labels on every figure</li>
+            </ul>
+          </article>
+        </div>
       </article>
     </section>
   </div>
@@ -1028,8 +1166,10 @@
         renderOverview();
         renderMethodologySection();
         renderReferencesSection();
+        renderExperimentalSection();
         setupRegionalExplorer();
         setupAnomalyExplorer();
+        applyInitialViewFromLocation();
 
         setStatus(
           state.mode === "local"
@@ -1104,6 +1244,15 @@
     function getNormalizedBasePath() {
       const path = window.location.pathname || "";
       return path.includes("/apps_script/") ? "../data/normalized" : "./data/normalized";
+    }
+
+    function applyInitialViewFromLocation() {
+      const search = new URLSearchParams(window.location.search || "");
+      const requested = String(search.get("view") || "").toLowerCase();
+      const allowed = new Set(["overview", "explorer", "methods", "experimental"]);
+      if (allowed.has(requested)) {
+        switchView(requested);
+      }
     }
 
     function runAppsScript(methodName, payload) {
@@ -2313,13 +2462,24 @@
       const sections = state.bootstrap?.publication?.methodology?.sections || [];
       document.getElementById("methodology-pill").textContent = `${formatNumber(sections.length)} figure methods`;
       const container = document.getElementById("methodology-list");
+      const methodIndex = document.getElementById("method-index");
       if (!sections.length) {
+        if (methodIndex) methodIndex.innerHTML = "";
         container.innerHTML = `<div class="empty-state">No methodology payload was exported.</div>`;
         return;
       }
 
+      if (methodIndex) {
+        methodIndex.innerHTML = sections.map(section => `
+          <a href="#method-${escapeAttribute(section.id || section.figure_key || "figure")}">
+            ${escapeHtml(section.title || section.id || "Figure")}
+            <small>${escapeHtml(section.coverage_window || "Coverage window unavailable")}</small>
+          </a>
+        `).join("");
+      }
+
       container.innerHTML = sections.map(section => `
-        <article class="method-card">
+        <article class="method-card" id="method-${escapeAttribute(section.id || section.figure_key || "figure")}">
           <div class="card-header">
             <div>
               <div class="eyebrow">Figure methodology</div>
@@ -2347,6 +2507,20 @@
           </div>
         </article>
       `).join("");
+    }
+
+    function renderExperimentalSection() {
+      const regionalYears = (state.bootstrap?.publication?.series?.regional_yearly?.years || []).map(String);
+      const anomalyYears = (state.bootstrap?.publication?.series?.anomaly_yearly?.years || []).map(String);
+      const pill = document.getElementById("experimental-pill");
+      if (!pill) return;
+      if (!regionalYears.length && !anomalyYears.length) {
+        pill.textContent = "No yearly anchors";
+        return;
+      }
+      const regionalWindow = regionalYears.length ? `${regionalYears[0]}-${regionalYears[regionalYears.length - 1]} regional` : "No regional";
+      const anomalyWindow = anomalyYears.length ? `${anomalyYears[0]}-${anomalyYears[anomalyYears.length - 1]} anomaly` : "No anomaly";
+      pill.textContent = `${regionalWindow} / ${anomalyWindow}`;
     }
 
     function renderReferencesSection() {
@@ -3281,6 +3455,8 @@
       document.getElementById("overview-section").innerHTML = `<div class="error-state">${escapeHtml(message)}</div>`;
       document.getElementById("explorer-section").innerHTML = "";
       document.getElementById("methods-section").innerHTML = "";
+      const experimental = document.getElementById("experimental-section");
+      if (experimental) experimental.innerHTML = "";
     }
 
     function setStatus(message, isError) {
@@ -3519,9 +3695,11 @@
 
       if ((history.cascade || []).length) {
         mountChart("regional-history-chart", buildRegionFingerprintOption(selectedRegion, history.cascade || []));
+        document.getElementById("regional-history-kpis").innerHTML = buildRegionFingerprintSummary(selectedRegion, history.cascade || []);
       } else {
         disposeChart("regional-history-chart");
         document.getElementById("regional-history-chart").innerHTML = `<div class="empty-state">No annual cascade history is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
+        document.getElementById("regional-history-kpis").innerHTML = "";
       }
 
       if ((regional.years || []).length) {
@@ -3668,8 +3846,7 @@
 
       return {
         animation: false,
-        grid: { top: 26, right: 110, bottom: 42, left: 58, containLabel: true },
-        legend: { top: 0, textStyle: { color: "#50615d", fontSize: 12 } },
+        grid: { top: 18, right: 118, bottom: 42, left: 58, containLabel: true },
         tooltip: {
           trigger: "axis",
           confine: true,
@@ -3687,6 +3864,7 @@
           data: xAxis,
           axisLabel: { color: "#50615d" },
           axisTick: { show: false },
+          axisLine: { lineStyle: { color: "rgba(20,35,31,0.18)" } },
         },
         yAxis: {
           type: "value",
@@ -3694,6 +3872,7 @@
           max: 100,
           axisLabel: { color: "#50615d", formatter: value => `${Math.round(value)}%` },
           splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
+          axisLine: { show: false },
         },
         series: series.concat([{
           type: "line",
@@ -3707,6 +3886,29 @@
           },
         }]),
       };
+    }
+
+    function buildRegionFingerprintSummary(region, rows) {
+      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      if (!yearlyRows.length) return "";
+      const latest = yearlyRows[yearlyRows.length - 1];
+      const previous = yearlyRows.length > 1 ? yearlyRows[yearlyRows.length - 2] : null;
+      const stageKeys = ["diagnosis", "treatment", "suppression"];
+      return stageKeys.map(key => {
+        const meta = getCascadeStageMeta(key);
+        const latestValue = Number(latest[key] || 0);
+        const previousValue = previous ? Number(previous[key] || 0) : null;
+        const delta = previousValue === null ? "first observed year" : `${formatSigned(latestValue - previousValue, 0)} pts vs ${previous.year}`;
+        const latestPeriod = latest[`${key}_period`] || String(latest.year || "");
+        return `
+          <div class="fingerprint-stat">
+            <div class="label">${escapeHtml(meta.label)}</div>
+            <div class="value" style="color:${escapeAttribute(meta.color)}">${escapeHtml(formatPercent(latestValue, 0))}</div>
+            <div class="note">Gap to 95: ${escapeHtml(formatPercent(Math.max(95 - latestValue, 0), 0))} · ${escapeHtml(delta)}</div>
+            <div class="note">Latest source period: ${escapeHtml(latestPeriod)}</div>
+          </div>
+        `;
+      }).join("");
     }
 
     function summarizeRegionHistory(region, rows) {
@@ -3886,6 +4088,7 @@
       const selectedYear = String(document.getElementById("anomaly-year-select")?.value || series.default_year || "");
       const residualRows = series.residuals_by_year?.[selectedYear] || [];
       const leakageRows = series.leakage_by_year?.[selectedYear] || [];
+      document.getElementById("anomaly-summary").innerHTML = buildAnomalySummaryCards(residualRows, leakageRows, selectedYear);
       if (residualRows.length && leakageRows.length) {
         mountChart("anomaly-quadrant-chart", buildAnomalyQuadrantOption(residualRows, leakageRows, selectedYear));
       } else {
@@ -4025,6 +4228,45 @@
       const topLeak = [...leakageRows].sort((a, b) => (Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)))[0];
       const loss = topLeak ? Number(topLeak.ltfu || 0) + Number(topLeak.not_on_treatment || 0) : 0;
       return `${year} shows ${formatRegionLabel(strongestPositive?.region || "no region")} furthest above pattern on ${String(strongestPositive?.stage || "").toLowerCase()}, ${formatRegionLabel(strongestNegative?.region || "no region")} furthest below pattern, and ${formatRegionLabel(topLeak?.region || "no region")} with the largest documented loss-from-care burden (${formatNumber(loss)}).`;
+    }
+
+    function buildAnomalySummaryCards(residualRows, leakageRows, year) {
+      if (!residualRows.length || !leakageRows.length) {
+        return `
+          <div class="fingerprint-stat">
+            <div class="label">Coverage status</div>
+            <div class="value">Unavailable</div>
+            <div class="note">Residuals and yearly leakage must both exist for ${escapeHtml(year)} before a merged anomaly board can be shown.</div>
+          </div>
+        `;
+      }
+      const strongestPositive = [...residualRows].sort((a, b) => Number(b.value || 0) - Number(a.value || 0))[0];
+      const strongestNegative = [...residualRows].sort((a, b) => Number(a.value || 0) - Number(b.value || 0))[0];
+      const topLeak = [...leakageRows].sort((a, b) => (Number(b.ltfu || 0) + Number(b.not_on_treatment || 0)) - (Number(a.ltfu || 0) + Number(a.not_on_treatment || 0)))[0];
+      const cards = [
+        {
+          label: "Above expected",
+          value: formatRegionLabel(strongestPositive?.region || "n/a"),
+          note: `${String(strongestPositive?.stage || "").toLowerCase()} ${formatSigned(strongestPositive?.value, 1)} pts`,
+        },
+        {
+          label: "Below expected",
+          value: formatRegionLabel(strongestNegative?.region || "n/a"),
+          note: `${String(strongestNegative?.stage || "").toLowerCase()} ${formatSigned(strongestNegative?.value, 1)} pts`,
+        },
+        {
+          label: "Largest leakage burden",
+          value: formatRegionLabel(topLeak?.region || "n/a"),
+          note: `${formatNumber(Number(topLeak?.ltfu || 0) + Number(topLeak?.not_on_treatment || 0))} off care`,
+        },
+      ];
+      return cards.map(card => `
+        <div class="fingerprint-stat">
+          <div class="label">${escapeHtml(card.label)}</div>
+          <div class="value">${escapeHtml(card.value)}</div>
+          <div class="note">${escapeHtml(card.note)}</div>
+        </div>
+      `).join("");
     }
 
     function formatPercent(value, digits) {
