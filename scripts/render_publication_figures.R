@@ -99,20 +99,6 @@ build_national_cascade <- function(data) {
     "third_95" = "Suppressed"
   )
 
-  quarterly <- bind_rows(lapply(data$rows, function(row) {
-    if (length(row$points) == 0) return(NULL)
-    tibble(
-      stage = stage_map[[row$series_id]],
-      period = vapply(row$points, `[[`, "", "period"),
-      x = vapply(row$points, function(point) quarter_to_decimal(point$period), numeric(1)),
-      value = as.numeric(vapply(row$points, `[[`, 0, "value")),
-      latest_period = row$latest_period,
-      latest_value = as.numeric(row$latest_value),
-      gap = as.numeric(row$gap_to_target)
-    )
-  }))
-  quarterly$stage <- factor(quarterly$stage, levels = c("Diagnosed", "On ART", "Suppressed"))
-
   annual <- bind_rows(lapply(data$rows, function(row) {
     if (length(row$official_annual) == 0) return(NULL)
     tibble(
@@ -139,7 +125,15 @@ build_national_cascade <- function(data) {
     vapply(data$rows, `[[`, "", "series_id")
   )
 
-  estimated_plhiv <- latest_counts[["first_95"]] / (metrics$latest_value[metrics$stage == "Diagnosed"] / 100)
+  annual_estimated <- NULL
+  if (!is.null(data$estimated_points) && length(data$estimated_points)) {
+    annual_estimated <- as.numeric(data$estimated_points[[length(data$estimated_points)]][["value"]])
+  }
+  estimated_plhiv <- if (!is.null(annual_estimated) && is.finite(annual_estimated)) {
+    annual_estimated
+  } else {
+    latest_counts[["first_95"]] / (metrics$latest_value[metrics$stage == "Diagnosed"] / 100)
+  }
   diagnosed <- latest_counts[["first_95"]]
   on_art <- latest_counts[["second_95"]]
   suppressed <- latest_counts[["third_95"]]
@@ -149,8 +143,7 @@ build_national_cascade <- function(data) {
       anchor = stage,
       target = 95,
       card_value = sprintf("%.0f%%", latest_value),
-      period_label = latest_period,
-      gap_label = sprintf("Gap %.0f points", gap),
+      context_label = sprintf("%s · gap %.0f pts", latest_period, gap),
       card_xmin = 0,
       card_xmax = 100
     )
@@ -161,10 +154,9 @@ build_national_cascade <- function(data) {
     geom_segment(aes(x = 0, xend = latest_value, yend = anchor, colour = stage), linewidth = 9.5, lineend = "round") +
     geom_point(aes(x = latest_value, fill = stage), shape = 21, size = 6.2, stroke = 1.25, colour = "#0c1629") +
     geom_vline(xintercept = 95, linetype = "22", linewidth = 0.7, colour = "#f0a030") +
-    geom_text(aes(x = 2, y = anchor, label = card_value, colour = stage), hjust = 0, vjust = 1.95, size = 7.2, fontface = "bold", family = "serif") +
-    geom_text(aes(x = 2, y = anchor, label = period_label), hjust = 0, vjust = 0.5, size = 3.6, colour = "#a0b0c0") +
-    geom_text(aes(x = 2, y = anchor, label = gap_label), hjust = 0, vjust = -0.75, size = 3.5, colour = "#7889a0") +
-    annotate("text", x = 95, y = 3.45, label = "95 target", hjust = 1.05, size = 3.6, colour = "#f0a030", fontface = "bold") +
+    geom_text(aes(x = 2, y = anchor, label = card_value, colour = stage), hjust = 0, vjust = 1.55, size = 7.2, fontface = "bold", family = "serif") +
+    geom_text(aes(x = 2, y = anchor, label = context_label), hjust = 0, vjust = -0.15, size = 3.55, colour = "#8f9ba8") +
+    annotate("text", x = 95, y = 3.45, label = "95 target", hjust = 1.05, size = 3.5, colour = "#f0a030", fontface = "bold") +
     facet_wrap(~stage, nrow = 1) +
     scale_colour_manual(values = stage_palette) +
     scale_fill_manual(values = stage_palette) +
@@ -187,26 +179,24 @@ build_national_cascade <- function(data) {
       axis.ticks.y = element_blank()
     )
 
-  latest_quarterly <- quarterly %>%
+  latest_annual <- annual %>%
     group_by(stage) %>%
     arrange(desc(x)) %>%
     slice_head(n = 1) %>%
     ungroup()
 
-  latest_quarterly$label <- c("Diagnosed", "On ART", "Suppressed")
+  latest_annual$label <- c("Diagnosed", "On ART", "Suppressed")
 
   timeline <- ggplot() +
     geom_hline(yintercept = 95, linetype = "22", linewidth = 0.6, colour = "#f0a030") +
-    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 0.9, alpha = 0.18, linetype = "22", na.rm = TRUE) +
-    geom_point(data = annual, aes(x = x, y = value), shape = 21, size = 2.5, stroke = 1.0, fill = panel_color, colour = "#7889a0", alpha = 0.95, na.rm = TRUE) +
-    geom_line(data = quarterly, aes(x = x, y = value, colour = stage, group = stage), linewidth = 2.2, na.rm = TRUE) +
-    geom_point(data = quarterly, aes(x = x, y = value, fill = stage), shape = 21, size = 3.2, stroke = 0.9, colour = "#0c1629", na.rm = TRUE) +
+    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 2.5, na.rm = TRUE) +
+    geom_point(data = annual, aes(x = x, y = value, fill = stage), shape = 21, size = 3.8, stroke = 1.0, colour = "#0c1629", na.rm = TRUE) +
     ggrepel::geom_text_repel(
-      data = latest_quarterly,
+      data = latest_annual,
       aes(x = x, y = value, label = sprintf("%s  %.0f%%", label, value), colour = stage),
       direction = "y",
       hjust = 0,
-      nudge_x = 0.32,
+      nudge_x = 0.28,
       size = 4.0,
       fontface = "bold",
       min.segment.length = 0,
@@ -217,13 +207,13 @@ build_national_cascade <- function(data) {
     scale_colour_manual(values = stage_palette) +
     scale_fill_manual(values = stage_palette) +
     scale_x_continuous(
-      limits = c(2015, 2026.4),
-      breaks = c(2015, 2018, 2020, 2023.25, 2025.75),
-      labels = c("2015", "2018", "2020", "2023 Q2", "2025 Q4")
+      limits = c(2018, 2025.55),
+      breaks = 2018:2025,
+      labels = as.character(2018:2025)
     ) +
-    scale_y_continuous(limits = c(25, 100), labels = label_percent(scale = 1), breaks = c(30, 40, 50, 60, 70, 80, 90, 95, 100)) +
+    scale_y_continuous(limits = c(0, 100), labels = label_percent(scale = 1), breaks = c(0, 25, 50, 75, 95, 100)) +
     labs(
-      title = "Observed trajectory",
+      title = "Observed year-end trajectory",
       x = NULL,
       y = "Coverage"
     ) +
@@ -231,58 +221,47 @@ build_national_cascade <- function(data) {
     theme(legend.position = "none") +
     guides(fill = "none", colour = "none")
 
-  waterfall <- tibble(
-    step = factor(
-      c("Estimated PLHIV", "Undiagnosed", "Not on ART", "Not suppressed", "Suppressed"),
-      levels = c("Estimated PLHIV", "Undiagnosed", "Not on ART", "Not suppressed", "Suppressed")
+  count_df <- tibble(
+    stage = factor(
+      c("Estimated PLHIV", "Diagnosed PLHIV", "PLHIV on ART", "Virally suppressed"),
+      levels = c("Estimated PLHIV", "Diagnosed PLHIV", "PLHIV on ART", "Virally suppressed")
     ),
-    xmin = c(0.65, 1.65, 2.65, 3.65, 4.65),
-    xmax = c(1.35, 2.35, 3.35, 4.35, 5.35),
-    start = c(0, diagnosed, on_art, suppressed, 0),
-    end = c(estimated_plhiv, estimated_plhiv, diagnosed, on_art, suppressed),
-      fill_key = c("Estimated PLHIV", "Undiagnosed", "Off ART", "Not suppressed", "Suppressed"),
-      label = c(
-        label_number(scale_cut = cut_short_scale())(estimated_plhiv),
-        paste0("-", label_number(scale_cut = cut_short_scale())(estimated_plhiv - diagnosed)),
-        paste0("-", label_number(scale_cut = cut_short_scale())(diagnosed - on_art)),
-        paste0("-", label_number(scale_cut = cut_short_scale())(on_art - suppressed)),
-      paste0(label_number(scale_cut = cut_short_scale())(suppressed), "\n", round(suppressed / estimated_plhiv * 100), "% retained")
+    value = c(estimated_plhiv, diagnosed, on_art, suppressed),
+    pct = c(100, diagnosed / estimated_plhiv * 100, on_art / estimated_plhiv * 100, suppressed / estimated_plhiv * 100),
+    fill_key = c("Estimated PLHIV", "Diagnosed", "On ART", "Suppressed"),
+    label = c(
+      label_number(scale_cut = cut_short_scale())(estimated_plhiv),
+      paste0(label_number(scale_cut = cut_short_scale())(diagnosed), " · ", round(diagnosed / estimated_plhiv * 100), "%"),
+      paste0(label_number(scale_cut = cut_short_scale())(on_art), " · ", round(on_art / estimated_plhiv * 100), "%"),
+      paste0(label_number(scale_cut = cut_short_scale())(suppressed), " · ", round(suppressed / estimated_plhiv * 100), "%")
     )
-  ) %>%
-    mutate(ymin = pmin(start, end), ymax = pmax(start, end))
-
-  connectors <- tibble(
-    x = c(1.35, 2.35, 3.35, 4.35),
-    xend = c(1.65, 2.65, 3.65, 4.65),
-    y = c(estimated_plhiv, diagnosed, on_art, suppressed),
-    yend = c(estimated_plhiv, diagnosed, on_art, suppressed)
   )
 
-  waterfall_plot <- ggplot(waterfall) +
-      geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill_key), colour = "#0c1629", linewidth = 0.8) +
-      geom_segment(data = connectors, aes(x = x, xend = xend, y = y, yend = yend), linewidth = 0.75, colour = "#1e2f4c") +
-      geom_text(aes(x = (xmin + xmax) / 2, y = ymax + estimated_plhiv * 0.025, label = label), size = 3.8, fontface = "bold", colour = "#e0e6f0") +
-      scale_fill_manual(values = c("Estimated PLHIV" = "#435d8a", "Undiagnosed" = "#f0a030", "Off ART" = "#e63946", "Not suppressed" = "#c4561b", "Suppressed" = "#2d9cdb")) +
-      scale_x_continuous(breaks = 1:5, labels = levels(waterfall$step), expand = expansion(mult = c(0.04, 0.04))) +
-      scale_y_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.14))) +
-      labs(
-        title = "Latest cascade losses in people",
-        x = NULL,
-        y = NULL
-      ) +
+  count_plot <- ggplot(count_df, aes(x = value, y = stage, fill = fill_key)) +
+    geom_col(width = 0.62, colour = "#0c1629", linewidth = 0.9) +
+    geom_text(aes(label = label), hjust = -0.06, size = 3.6, colour = "#e0e6f0", fontface = "bold") +
+    scale_fill_manual(values = c(
+      "Estimated PLHIV" = "#435d8a",
+      "Diagnosed" = "#61d85a",
+      "On ART" = "#2d9cdb",
+      "Suppressed" = "#00d4aa"
+    )) +
+    scale_x_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.18))) +
+    labs(
+      title = "2025 cascade stage counts",
+      x = "People",
+      y = NULL
+    ) +
     compact_theme(11.5) +
     theme(
       legend.position = "none",
-      axis.text.x = element_text(face = "bold")
+      axis.text.y = element_text(face = "bold")
     )
 
     top_row <- bullet
-    bottom_row <- timeline | waterfall_plot + plot_layout(widths = c(2.1, 1.1))
-    (top_row / bottom_row) + plot_layout(heights = c(0.82, 1.28)) +
-      plot_annotation(
-        title = "National 95-95-95 board, Philippines",
-        subtitle = "Three views of the same endpoint: current target position, observed trajectory, and the latest cascade losses in people."
-      ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
+    bottom_row <- timeline | count_plot + plot_layout(widths = c(2.55, 1.02))
+    (top_row / bottom_row) + plot_layout(heights = c(0.64, 1.36)) &
+      theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_regional_matrix <- function(data) {
@@ -296,16 +275,12 @@ build_regional_matrix <- function(data) {
     pivot_longer(-region, names_to = "stage", values_to = "value") %>%
     mutate(stage = recode(stage, diagnosis = "Diagnosed", treatment = "On ART", suppression = "Suppressed"))
 
-  gap_df <- rows %>%
-    transmute(region, mean_gap = as.numeric(mean_gap)) %>%
-    mutate(region = factor(region, levels = levels(rows$region)))
-
   heatmap <- ggplot(matrix_df, aes(x = stage, y = region, fill = value)) +
-    geom_tile(colour = "#0c1629", linewidth = 1.2, width = 0.96, height = 0.94) +
+    geom_tile(colour = "#101d33", linewidth = 0.9, width = 0.98, height = 0.92) +
     geom_text(aes(label = sprintf("%.0f%%", value)), size = 4.3, colour = "#ffffff", fontface = "bold") +
     scale_fill_gradientn(
-      colours = c("#202c46", "#3e5784", "#5b9cf5", "#2d9cdb"),
-      limits = c(35, 95),
+      colours = c("#162035", "#21415e", "#256f8b", "#65c79a"),
+      limits = c(30, 95),
       labels = label_percent(scale = 1)
     ) +
     labs(
@@ -322,32 +297,8 @@ build_regional_matrix <- function(data) {
       legend.key.width = grid::unit(1.8, "cm")
     )
 
-  gaps <- ggplot(gap_df, aes(x = mean_gap, y = region)) +
-    geom_segment(aes(x = 0, xend = mean_gap, yend = region), linewidth = 1.35, colour = "#1e2f4c") +
-    geom_point(size = 4.0, colour = "#e63946") +
-    geom_text(aes(label = sprintf("%.1f", mean_gap)), hjust = -0.16, size = 4.0, colour = "#e0e6f0") +
-    scale_x_continuous(expand = expansion(mult = c(0, 0.24))) +
-    labs(
-      title = "Gap to 95",
-      x = "Percentage points below target",
-      y = NULL
-    ) +
-    compact_theme(12) +
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      legend.position = "none",
-      panel.grid.major.y = element_blank()
-    )
-
-  closest_region <- as.character(rows$region[length(levels(rows$region))])
-  widest_gap_region <- as.character(rows$region[1])
-
-  (heatmap | gaps) + plot_layout(widths = c(2.45, 1.05)) +
-      plot_annotation(
-        title = "Regional stage matrix, latest yearly snapshot",
-        subtitle = paste0(closest_region, " is currently closest to the combined 95-95-95 target. ", widest_gap_region, " has the widest average gap.")
-      ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
+  heatmap &
+    theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_regional_fingerprint_board <- function(data) {
@@ -472,8 +423,6 @@ build_regional_fingerprint_board <- function(data) {
     scale_fill_manual(values = stage_palette) +
     scale_y_continuous(limits = c(24, 100), breaks = c(30, 40, 50, 60, 70, 80, 90, 95, 100), labels = label_percent(scale = 1)) +
     labs(
-      title = paste0("Regional fingerprint board  ", latest_year),
-      subtitle = "Three exemplar regions are shown using observed yearly diagnosis, treatment, and suppression coverage. Labels above points show current values; labels below show year-over-year change.",
       x = NULL,
       y = "Coverage"
     ) +
@@ -488,21 +437,21 @@ build_regional_fingerprint_board <- function(data) {
 
 build_anomaly_board <- function(data) {
   perf <- bind_rows(lapply(data$performance_burden_rows, as_tibble))
-  leak <- bind_rows(lapply(data$leakage_rows, as_tibble))
-  if (!nrow(perf) || !nrow(leak)) return(NULL)
+  if (!nrow(perf)) return(NULL)
 
   perf <- perf %>%
     mutate(
       leakage_total = leakage_burden,
+      leakage_rate = ifelse((alive + leakage_total) > 0, leakage_total / (alive + leakage_total) * 100, NA_real_),
       sign = ifelse(residual >= 0, "Above expected", "Below expected"),
       stage = factor(stage, levels = c("Treatment after diagnosis", "Suppression after treatment"))
     )
 
   label_df <- perf %>%
-    arrange(desc(abs(residual) + leakage_total / max(leakage_total, na.rm = TRUE) * 4)) %>%
-    slice_head(n = min(8, nrow(perf)))
+    arrange(desc(abs(residual) + leakage_total / max(leakage_total, na.rm = TRUE) * 3)) %>%
+    slice_head(n = min(5, nrow(perf)))
 
-  quad <- ggplot(perf, aes(x = residual, y = leakage_burden)) +
+  quad <- ggplot(perf, aes(x = residual, y = leakage_rate)) +
     geom_vline(xintercept = 0, linewidth = 0.7, colour = "#7889a0") +
     geom_point(aes(size = leakage_total, fill = stage, colour = sign), shape = 21, stroke = 1.0, alpha = 0.94) +
     ggrepel::geom_text_repel(
@@ -516,13 +465,13 @@ build_anomaly_board <- function(data) {
     ) +
     scale_fill_manual(values = c("Treatment after diagnosis" = "#2d9cdb", "Suppression after treatment" = "#e63946")) +
     scale_colour_manual(values = c("Above expected" = "#5b9cf5", "Below expected" = "#f0a030")) +
-    scale_size_continuous(range = c(5, 18), labels = label_number(scale_cut = cut_short_scale())) +
+    scale_size_continuous(range = c(4.5, 14), labels = label_number(scale_cut = cut_short_scale())) +
       scale_x_continuous(labels = function(x) sprintf("%+.0f", x)) +
-      scale_y_continuous(trans = "sqrt", labels = label_number(scale_cut = cut_short_scale())) +
+      scale_y_continuous(limits = c(0, NA), labels = label_percent(scale = 1)) +
       labs(
         title = "Performance versus burden quadrant",
         x = "Residual from expected cascade performance (percentage points)",
-        y = paste0("Loss from care burden (", data$period_label, ", square-root scale)"),
+        y = paste0("Loss-from-care rate (", data$period_label, ")"),
         size = "Loss from care",
         fill = "Cascade break",
         colour = "Direction"
@@ -530,31 +479,8 @@ build_anomaly_board <- function(data) {
       epi_theme(12) +
       theme(legend.position = "bottom")
 
-  leak_long <- leak %>%
-    transmute(
-      region,
-      `Lost to follow-up` = ltfu,
-      `Not on treatment` = not_on_treatment
-    ) %>%
-    pivot_longer(-region, names_to = "component", values_to = "value") %>%
-    mutate(region = factor(region, levels = rev(leak$region)))
-
-  leak_plot <- ggplot(leak_long, aes(x = value, y = region, fill = component)) +
-    geom_col(width = 0.7, position = "stack") +
-      scale_fill_manual(values = c("Lost to follow-up" = "#e63946", "Not on treatment" = "#f0a030")) +
-      scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
-      labs(
-        title = "Largest leakage burdens",
-        x = NULL,
-        y = NULL
-      ) +
-      compact_theme(12)
-
-  (quad | leak_plot) + plot_layout(widths = c(1.7, 1.15)) +
-    plot_annotation(
-      title = "Performance versus treatment burden",
-      subtitle = "The quadrant identifies regions that underperform the fitted cascade pattern, while the ranked bars show where loss from care is concentrated."
-    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
+  quad &
+    theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_historical_board <- function(data) {
@@ -580,11 +506,8 @@ build_historical_board <- function(data) {
         compact_theme(12)
   })
 
-  wrap_plots(plots, ncol = 2) +
-    plot_annotation(
-      title = "Long-run burden indicators, Philippines",
-      subtitle = "Observed annual values only. Missing years remain blank; no interpolation is applied."
-    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
+  wrap_plots(plots, ncol = 2) &
+    theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_key_population_board <- function(data) {
@@ -615,11 +538,8 @@ build_key_population_board <- function(data) {
     p
   })
 
-  wrap_plots(plots, ncol = 2) +
-    plot_annotation(
-      title = "Key population sentinel panels, Philippines",
-      subtitle = "Observed annual values on a shared 2015-2025 window. Missing years remain visible as gaps."
-    ) & theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
+  wrap_plots(plots, ncol = 2) &
+    theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 render_safe <- function(builder, basename, width, height) {

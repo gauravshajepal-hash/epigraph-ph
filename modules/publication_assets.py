@@ -491,9 +491,55 @@ class PublicationAssetBuilder:
                 })
         return rows
 
+    def _read_harp_annual_cascade_series(self) -> dict:
+        path = self.normalized_dir / "official_harp_95_2018_2025.csv"
+        rows = {
+            "estimated_plhiv": [],
+            "diagnosed_plhiv": [],
+            "first_95": [],
+            "plhiv_on_art": [],
+            "second_95": [],
+            "vl_tested_on_art": [],
+            "suppressed_count": [],
+            "third_95": [],
+            "vl_testing_coverage": [],
+            "vl_suppression_among_tested": [],
+        }
+        if not path.exists():
+            return rows
+        indicator_map = {
+            "estimated_plhiv": "estimated_plhiv",
+            "diagnosed_plhiv": "diagnosed_plhiv",
+            "first_95": "first_95",
+            "plhiv_on_art": "plhiv_on_art",
+            "second_95": "second_95",
+            "total_vl_tested_on_art": "vl_tested_on_art",
+            "virally_suppressed_among_tested": "suppressed_count",
+            "third_95": "third_95",
+            "vl_testing_coverage": "vl_testing_coverage",
+            "vl_suppression_among_tested": "vl_suppression_among_tested",
+        }
+        with path.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                year = int(row.get("year") or 0)
+                if not year or year < 2018:
+                    continue
+                for column, key in indicator_map.items():
+                    value = _parse_numeric(row.get(column))
+                    if value is None:
+                        continue
+                    rows[key].append({
+                        "year": year,
+                        "label": str(year),
+                        "sort_value": year * 100 + 12,
+                        "value": float(value),
+                    })
+        return rows
+
     def _build_national_cascade(self, dashboard: dict) -> dict:
         rows = {row["series_id"]: row for row in dashboard.get("charts", {}).get("national_goal_board", [])}
-        official = self._read_unaids_annual_series()
+        official_unaids = self._read_unaids_annual_series()
+        official_harp = self._read_harp_annual_cascade_series()
         patched = {
             "first_95": [
                 ("2023 Q2", 59.0), ("2023 Q3", 61.0), ("2023 Q4", 63.0),
@@ -513,21 +559,6 @@ class PublicationAssetBuilder:
                 ("2025 Q3", 57.0), ("2025 Q4", 57.0),
             ],
         }
-        count_points = {
-            "first_95": [("2025 Q1", 139610.0), ("2025 Q2", 144192.0), ("2025 Q3", 149375.0), ("2025 Q4", 153207.0)],
-            "second_95": [
-                ("2023 Q2", 70916.0), ("2023 Q3", 74258.0), ("2023 Q4", 75300.0),
-                ("2024 Q1", 79643.0), ("2024 Q2", 84086.0), ("2024 Q3", 88544.0),
-                ("2024 Q4", 90854.0), ("2025 Q1", 92712.0), ("2025 Q2", 95556.0),
-                ("2025 Q3", 98198.0), ("2025 Q4", 100671.0),
-            ],
-            "third_95": [
-                ("2023 Q2", 22690.0), ("2023 Q3", 29703.0), ("2023 Q4", 27138.0),
-                ("2024 Q1", 31382.0), ("2024 Q2", 32794.0), ("2024 Q3", 34322.0),
-                ("2024 Q4", 36723.0), ("2025 Q1", 36630.0), ("2025 Q2", 44714.0),
-                ("2025 Q3", 55130.0), ("2025 Q4", 57184.0),
-            ],
-        }
         ordered = []
         titles = {
             "first_95": "1st 95: Diagnosis coverage",
@@ -535,33 +566,44 @@ class PublicationAssetBuilder:
             "third_95": "3rd 95: Viral suppression",
         }
         official_map = {
-            "first_95": [row for row in official.get("first_95", []) if int(row.get("year") or 0) >= 2015],
-            "second_95": [row for row in official.get("second_95", []) if int(row.get("year") or 0) >= 2015],
-            "third_95": [],
+            "first_95": official_harp.get("first_95", []),
+            "second_95": official_harp.get("second_95", []),
+            "third_95": official_harp.get("third_95", []),
+        }
+        annual_count_map = {
+            "first_95": official_harp.get("diagnosed_plhiv", []),
+            "second_95": official_harp.get("plhiv_on_art", []),
+            "third_95": official_harp.get("suppressed_count", []),
         }
         official_labels = {
-            "first_95": "Grey annual points show official UNAIDS context.",
-            "second_95": "Grey annual points show official UNAIDS context.",
-            "third_95": "Highlighted quarterly line shows official quarter-end SHIP/WHO checkpoints. Older official SHIP viral-load figures are not used here because they rely on a different denominator.",
+            "first_95": "Official year-end context uses the DOH/HARP accomplishment table from 2018-2025.",
+            "second_95": "Official year-end context uses the DOH/HARP accomplishment table from 2018-2025.",
+            "third_95": "Official year-end context uses the DOH/HARP accomplishment table from 2018-2025.",
         }
         for series_id in ("first_95", "second_95", "third_95"):
             point_rows = [{"period": p, "value": v} for p, v in patched[series_id]]
+            official_rows = official_map.get(series_id, [])
+            latest_value = point_rows[-1]["value"]
+            latest_period = point_rows[-1]["period"]
+            if official_rows:
+                latest_value = float(official_rows[-1]["value"])
+                latest_period = f"{official_rows[-1]['year']} year-end"
             ordered.append({
                 "series_id": series_id,
                 "label": titles[series_id],
                 "target": 95.0,
                 "points": point_rows,
-                "count_points": [{"period": p, "value": v} for p, v in count_points[series_id]],
-                "latest_value": point_rows[-1]["value"],
-                "latest_period": point_rows[-1]["period"],
-                "gap_to_target": round(95.0 - point_rows[-1]["value"], 1),
-                "coverage_start": point_rows[0]["period"],
-                "coverage_end": point_rows[-1]["period"],
+                "count_points": annual_count_map.get(series_id, []),
+                "latest_value": latest_value,
+                "latest_period": latest_period,
+                "gap_to_target": round(95.0 - latest_value, 1),
+                "coverage_start": "2018 year-end",
+                "coverage_end": latest_period,
                 "actual_metric_type": rows.get(series_id, {}).get("actual_metric_type", ""),
-                "official_annual": official_map.get(series_id, []),
+                "official_annual": official_rows,
                 "official_context_label": official_labels[series_id],
             })
-        return {"rows": ordered}
+        return {"rows": ordered, "estimated_points": official_harp.get("estimated_plhiv", [])}
 
     def _build_regional_ladder(self, dashboard: dict) -> dict:
         scorecard = dashboard.get("charts", {}).get("regional_scorecard", {})
@@ -1128,12 +1170,6 @@ class PublicationAssetBuilder:
         regional_yearly: dict,
         anomaly_yearly: dict,
     ) -> dict:
-        def _quarter_year(period_label: str) -> tuple[int, int]:
-            match = re.match(r"^(\d{4}) Q([1-4])$", str(period_label or "").strip())
-            if not match:
-                return 0, 0
-            return int(match.group(1)), int(match.group(2))
-
         def _annualize_national_stage(row: dict) -> dict[int, float]:
             annual = {}
             for point in row.get("official_annual", []):
@@ -1141,40 +1177,28 @@ class PublicationAssetBuilder:
                 value = _parse_numeric(point.get("value"))
                 if year and value is not None:
                     annual[year] = float(value)
-            quarterly_latest: dict[int, tuple[int, float]] = {}
-            for point in row.get("points", []):
-                year, quarter = _quarter_year(str(point.get("period") or ""))
-                value = _parse_numeric(point.get("value"))
-                if not year or value is None:
-                    continue
-                current = quarterly_latest.get(year)
-                if current is None or quarter > current[0]:
-                    quarterly_latest[year] = (quarter, float(value))
-            for year, (_, value) in quarterly_latest.items():
-                if year not in annual:
-                    annual[year] = value
             return annual
 
-        def _fit_residual_model(anchor_years: list[int], anchor_residuals: list[float]) -> tuple[float, float, float]:
-            if not anchor_years:
-                return 0.0, 0.0, 6.0
-            if len(anchor_years) == 1:
-                return 0.0, float(anchor_residuals[0]), 5.0
-            x = np.array(anchor_years, dtype=float)
-            y = np.array(anchor_residuals, dtype=float)
+        def _project_national_series(series_map: dict[int, float], years_forward: int = 3) -> dict[int, float]:
+            if not series_map:
+                return {}
+            projected = dict(series_map)
+            ordered_years = sorted(projected)
+            if len(ordered_years) == 1:
+                last_value = projected[ordered_years[-1]]
+                for year in range(ordered_years[-1] + 1, ordered_years[-1] + years_forward + 1):
+                    projected[year] = round(last_value, 1)
+                return projected
+            tail_years = ordered_years[-min(4, len(ordered_years)) :]
+            x = np.array(tail_years, dtype=float)
+            y = np.array([projected[year] for year in tail_years], dtype=float)
             slope, intercept = np.polyfit(x, y, 1)
-            uncertainty = max(3.5, float(np.std(y, ddof=0)) + abs(float(slope)) * 1.5)
-            return float(slope), float(intercept), float(uncertainty)
-
-        def _predict_residual(year: int, slope: float, intercept: float, anchor_years: list[int]) -> float:
-            if not anchor_years:
-                return 0.0
-            center = float(np.mean(anchor_years))
-            raw = intercept + slope * year
-            centered_baseline = intercept + slope * center
-            # Shrink the trend component so experimental history stays anchored to observed offsets,
-            # rather than letting two observed years create an exaggerated backcast.
-            return centered_baseline + 0.65 * (raw - centered_baseline)
+            slope = float(np.clip(slope, -4.0, 4.0))
+            current = float(projected[ordered_years[-1]])
+            for year in range(ordered_years[-1] + 1, ordered_years[-1] + years_forward + 1):
+                current = float(np.clip(current + slope, 0.0, 100.0))
+                projected[year] = round(current, 1)
+            return projected
 
         stage_id_map = {
             "diagnosis": "first_95",
@@ -1183,7 +1207,7 @@ class PublicationAssetBuilder:
         }
         national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
         national_stage_values = {
-            stage: _annualize_national_stage(national_rows.get(series_id, {}))
+            stage: _project_national_series(_annualize_national_stage(national_rows.get(series_id, {})))
             for stage, series_id in stage_id_map.items()
         }
 
@@ -1200,6 +1224,34 @@ class PublicationAssetBuilder:
         rows_by_year: dict[str, list[dict]] = {}
         observed_years_by_stage = defaultdict(list)
         estimated_years_by_stage = defaultdict(list)
+        forecast_years_by_stage = defaultdict(list)
+
+        stage_residual_steps: dict[str, list[float]] = defaultdict(list)
+        for region in regions:
+            cascade_history = region_histories.get(region, {}).get("cascade", []) or []
+            observed_lookup = {
+                int(row.get("year") or 0): row
+                for row in cascade_history
+                if int(row.get("year") or 0)
+            }
+            for stage in ("diagnosis", "treatment", "suppression"):
+                stage_years_with_obs = sorted(
+                    year
+                    for year, row in observed_lookup.items()
+                    if _parse_numeric(row.get(stage)) is not None and national_stage_values.get(stage, {}).get(year) is not None
+                )
+                if len(stage_years_with_obs) < 2:
+                    continue
+                for previous_year, current_year in zip(stage_years_with_obs[:-1], stage_years_with_obs[1:]):
+                    previous_value = float(_parse_numeric(observed_lookup[previous_year].get(stage)))
+                    current_value = float(_parse_numeric(observed_lookup[current_year].get(stage)))
+                    previous_residual = previous_value - national_stage_values[stage][previous_year]
+                    current_residual = current_value - national_stage_values[stage][current_year]
+                    stage_residual_steps[stage].append(current_residual - previous_residual)
+
+        rng = np.random.default_rng(42)
+        draws = 600
+        phi = 0.82
 
         for region in regions:
             cascade_history = region_histories.get(region, {}).get("cascade", []) or []
@@ -1217,15 +1269,25 @@ class PublicationAssetBuilder:
                     if value is None or national_value is None:
                         continue
                     anchors.append((year, float(value), float(value) - float(national_value)))
+                anchors.sort(key=lambda item: item[0])
                 anchor_years = [item[0] for item in anchors]
                 anchor_residuals = [item[2] for item in anchors]
-                slope, intercept, uncertainty = _fit_residual_model(anchor_years, anchor_residuals)
+                stage_steps = stage_residual_steps.get(stage, [])
+                global_step = float(np.mean(stage_steps)) if stage_steps else 0.0
+                sigma = float(np.std(stage_steps, ddof=0)) if len(stage_steps) > 1 else 0.0
+                sigma = max(2.5, sigma + 0.75)
+                if len(anchor_residuals) >= 2:
+                    region_step = float(anchor_residuals[-1] - anchor_residuals[-2])
+                else:
+                    region_step = global_step
                 stage_models[stage] = {
                     "anchor_years": anchor_years,
                     "anchor_residuals": anchor_residuals,
-                    "slope": slope,
-                    "intercept": intercept,
-                    "uncertainty": uncertainty,
+                    "step_mean": region_step,
+                    "global_step_mean": global_step,
+                    "sigma": sigma,
+                    "draws": draws,
+                    "phi": phi,
                     "status": "observed_only" if anchors else "unavailable",
                 }
 
@@ -1260,16 +1322,57 @@ class PublicationAssetBuilder:
                             row[f"{stage}_lower"] = None
                             row[f"{stage}_upper"] = None
                             continue
-                        estimate = max(0.0, min(100.0, float(national_value) + _predict_residual(year, model["slope"], model["intercept"], model["anchor_years"])))
-                        uncertainty = model["uncertainty"]
+
+                        anchor_lookup = {
+                            model["anchor_years"][index]: model["anchor_residuals"][index]
+                            for index in range(len(model["anchor_years"]))
+                        }
+                        earliest_anchor = min(model["anchor_years"])
+                        latest_anchor = max(model["anchor_years"])
+                        stage_draws = []
+                        for _ in range(draws):
+                            sampled = dict(anchor_lookup)
+                            current = sampled[earliest_anchor]
+                            for back_year in range(earliest_anchor - 1, min(all_years) - 1, -1):
+                                current = float(
+                                    np.clip(
+                                        phi * current - model["step_mean"] + rng.normal(0.0, model["sigma"]),
+                                        -60.0,
+                                        60.0,
+                                    )
+                                )
+                                sampled[back_year] = current
+                            current = sampled[latest_anchor]
+                            for forward_year in range(latest_anchor + 1, max(all_years) + 1):
+                                current = float(
+                                    np.clip(
+                                        phi * current + model["step_mean"] + rng.normal(0.0, model["sigma"]),
+                                        -60.0,
+                                        60.0,
+                                    )
+                                )
+                                sampled[forward_year] = current
+                            stage_draws.append(float(np.clip(national_value + sampled.get(year, 0.0), 0.0, 100.0)))
+
+                        estimate = float(np.median(stage_draws))
+                        lower = float(np.quantile(stage_draws, 0.1))
+                        upper = float(np.quantile(stage_draws, 0.9))
+                        is_forecast = year > latest_anchor
                         row[f"{stage}"] = round(estimate, 1)
-                        row[f"{stage}_status"] = "estimated"
-                        row[f"{stage}_lower"] = round(max(0.0, estimate - uncertainty), 1)
-                        row[f"{stage}_upper"] = round(min(100.0, estimate + uncertainty), 1)
+                        row[f"{stage}_status"] = "forecast" if is_forecast else "estimated"
+                        row[f"{stage}_lower"] = round(max(0.0, lower), 1)
+                        row[f"{stage}_upper"] = round(min(100.0, upper), 1)
                         row[f"{stage}_period"] = str(year)
                         row[f"{stage}_source_url"] = ""
-                        row[f"{stage}_filename"] = "Modeled regional backfill"
-                        estimated_years_by_stage[stage].append(year)
+                        row[f"{stage}_filename"] = (
+                            "Monte Carlo Markov forecast"
+                            if is_forecast
+                            else "Monte Carlo Markov backfill"
+                        )
+                        if is_forecast:
+                            forecast_years_by_stage[stage].append(year)
+                        else:
+                            estimated_years_by_stage[stage].append(year)
                     has_any_value = has_any_value or row[f"{stage}"] is not None
                 leakage_row = next((item for item in anomaly_yearly.get("leakage_by_year", {}).get(str(year), []) if item.get("region") == region), None)
                 if leakage_row:
@@ -1287,7 +1390,11 @@ class PublicationAssetBuilder:
                 "model": {
                     stage: {
                         "anchor_years": stage_models[stage]["anchor_years"],
-                        "uncertainty": round(stage_models[stage]["uncertainty"], 2),
+                        "step_mean": round(stage_models[stage]["step_mean"], 2),
+                        "global_step_mean": round(stage_models[stage]["global_step_mean"], 2),
+                        "sigma": round(stage_models[stage]["sigma"], 2),
+                        "draws": stage_models[stage]["draws"],
+                        "phi": stage_models[stage]["phi"],
                         "status": stage_models[stage]["status"],
                     }
                     for stage in stage_models
@@ -1316,6 +1423,10 @@ class PublicationAssetBuilder:
             stage: sorted({year for year in years if year in set(estimated_years_by_stage[stage])})
             for stage, years in stage_years.items()
         }
+        forecast_stage_years = {
+            stage: sorted({year for year in years if year in set(forecast_years_by_stage[stage])})
+            for stage, years in stage_years.items()
+        }
 
         return {
             "years": all_years,
@@ -1326,12 +1437,14 @@ class PublicationAssetBuilder:
             "region_histories": estimated_histories,
             "observed_years_by_stage": observed_stage_years,
             "estimated_years_by_stage": estimated_stage_years,
-            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact and backcasts earlier yearly regional context from national official trajectories plus region-specific observed offsets. Suppression remains unavailable before 2023 because no official national annual third-95 anchor series exists.",
-            "model_note": "Experimental estimates use a constrained yearly residual model: national official stage coverage plus a shrunk region-level residual trend fitted on observed regional years. Estimated values are never mixed into the official overview or explorer.",
+            "forecast_years_by_stage": forecast_stage_years,
+            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact, backfills earlier yearly context to 2018 from official national year-end trajectories, and adds short-horizon forecasts beyond 2025. Suppression remains unavailable before 2018 because no earlier official national year-end third-95 anchor series was identified.",
+            "model_note": "Experimental estimates use a first-order Monte Carlo Markov state model on region-level residuals around the official national annual stage trajectories. Each stage draws 600 simulated yearly paths per region, then reports the median and 10th-90th percentile interval. Estimated values are never mixed into the official overview or explorer.",
             "source_policy": [
                 "Observed regional cascade values always override model estimates.",
-                "Diagnosis and treatment backfill are anchored to official national annual/quarterly series.",
-                "Suppression backfill is limited to years where an official national third-95 anchor exists.",
+                "Diagnosis, treatment, and suppression backfill are anchored to the official 2018-2025 DOH/HARP annual cascade table.",
+                "Forecasts beyond 2025 are experimental and derived from a capped national annual stage trend plus the regional Markov residual process.",
+                "Suppression backfill is limited to years where an official national year-end third-95 anchor exists.",
             ],
         }
 
@@ -1343,45 +1456,43 @@ class PublicationAssetBuilder:
                 "title": "National 95-95-95 board",
                 "question": "How close is the Philippines to the UNAIDS 95-95-95 targets?",
                 "definition": "The national cascade compares diagnosed PLHIV, PLHIV on ART, and virally suppressed PLHIV on ART against the 95% target.",
-                "coverage_window": "Shared publication axis: 2015-2025. Official annual context for the first and second 95 is available from 2016-2024. Official quarterly surveillance checkpoints are available from 2023 Q2-2025 Q4.",
-                "estimation_policy": "No synthetic values are injected into the published national cascade. Missing annual third-95 context remains blank because the public annual UNAIDS Philippines extract does not publish usable values for that field.",
+                "coverage_window": "Published annual year-end context: 2018-2025, using the official DOH/HARP national accomplishment table shown in the 2025 year-end Philippines HIV treatment presentation.",
+                "estimation_policy": "No synthetic values are injected into the published national cascade. The board uses observed official annual rows only.",
                 "formulas": [
                     "1st 95 = diagnosed PLHIV / estimated PLHIV * 100",
                     "2nd 95 = PLHIV on ART / diagnosed PLHIV * 100",
                     "3rd 95 = virally suppressed PLHIV on ART / PLHIV on ART * 100",
-                    "Undiagnosed loss = estimated PLHIV - diagnosed PLHIV",
-                    "Off-ART loss = diagnosed PLHIV - PLHIV on ART",
-                    "Not-suppressed loss = PLHIV on ART - virally suppressed PLHIV on ART",
+                    "Undiagnosed people = estimated PLHIV - diagnosed PLHIV",
+                    "Diagnosed but not on ART = diagnosed PLHIV - PLHIV on ART",
+                    "On ART but not suppressed = PLHIV on ART - virally suppressed PLHIV on ART",
                 ],
                 "source_precedence": [
-                    "Use official annual UNAIDS Philippines values for 1st-95 and 2nd-95 context whenever available.",
-                    "Overlay official SHIP/DOH quarterly national cascade checkpoints from 2023 Q2 onward as the observed surveillance series.",
-                    "Use WHO only as an external validation checkpoint when the official SHIP/DOH quarter is also present.",
+                    "Use the DOH/HARP year-end national accomplishment table for annual 2018-2025 cascade context and counts.",
+                    "Use WHO only as an external validation checkpoint when the same national endpoint is also present in an official Philippines source.",
+                    "Do not mix the older suppression-among-tested metric into the 3rd-95 line.",
                 ],
                 "construction": [
-                    "Annual official context for the 1st and 2nd 95 comes from the UNAIDS Philippines annual dataset, filtered to the common 2015-2025 publication window.",
-                    "Quarterly surveillance points from 2023 Q2 to 2025 Q4 come from official Philippines HIV surveillance reporting and are plotted on top of the annual context without being averaged into annual values.",
-                    "The highlighted 3rd-95 line uses official quarter-end suppression among PLHIV on ART checkpoints from the DOH/SHIP surveillance reports, with the WHO June 2025 release used as an external cross-check for the 2025 Q1 national cascade.",
-                    "The 3rd 95 is corrected to suppression among PLHIV on ART. It is not the higher suppression-among-tested metric.",
-                    "The waterfall is built from the latest observed people counts for diagnosed PLHIV, PLHIV on ART, and suppressed PLHIV on ART, with estimated PLHIV derived from the latest 1st-95 denominator.",
+                    "The scorecards use the latest annual official row, 2025.",
+                    "The observed trajectory uses the annual year-end HARP percentages from 2018 through 2025 for all three cascade stages.",
+                    "The companion stage-count panel shows the observed 2025 counts directly: estimated PLHIV, diagnosed PLHIV, PLHIV on ART, and virally suppressed PLHIV on ART.",
+                    "The 3rd 95 is corrected to virally suppressed among PLHIV on ART. It is not the higher suppression-among-tested metric.",
                 ],
                 "harmonization": [
-                    "The panel starts at 2015 because that is the earliest year where the official annual cascade context is available in a defensible way for all national target panels.",
-                    "Quarterly points are kept separate from annual context because they represent different publication cadences and sometimes different reporting bases.",
-                    "The bullet strip, shared timeline, and waterfall all use the same latest official quarterly endpoint so the board stays internally coherent.",
+                    "The publication view starts in 2018 because that is the earliest year visible in the official HARP accomplishment table now used as the anchor for all three cascade stages.",
+                    "The trajectory and stage-count panel use the same annual source row so percentages and people stay internally consistent.",
                 ],
                 "caveats": [
-                    "The public annual UNAIDS Philippines extract contains a formal third-95 indicator field (PERCENT_ON_ART_VL_SUPPRESSED), but the values are blank for every available year.",
-                    "Older official SHIP viral-load figures publish testing and suppression among those tested, which uses a different denominator from the third 95. Those figures are therefore not used as annual third-95 context in this board.",
+                    "The publication board no longer shows quarterly points in the main trajectory panel. Quarterly surveillance remains available elsewhere for validation and interpretation.",
+                    "Older official SHIP viral-load figures that publish suppression among those tested are excluded from the 3rd-95 annual line because they use a different denominator.",
                 ],
-                "reference_ids": ["unaids-dataset", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "who-2025-release"],
+                "reference_ids": ["unaids-dataset", "harp-annual-2018-2025", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "who-2025-release"],
             },
             {
                 "id": "regional_ladder",
                 "figure_key": "regional_ladder",
                 "title": "Regional stage matrix and yearly explorer",
                 "question": "Which regions are closest to the 95-95-95 target, and how do regional stage values compare within one observed year?",
-                "definition": "The publication figure is an ordered stage matrix for the latest observed yearly regional snapshot. The explorer then extends that same yearly regional layer into year and region selectors.",
+                "definition": "The publication figure is a stage matrix for the latest observed yearly regional snapshot. The explorer extends that same observed yearly layer into year and region selectors.",
                 "coverage_window": "Yearly regional cascade coverage currently spans 2024-2025. The selected-region comparison shows the same yearly window because earlier official region-level 95-95-95 tables were not found in the reviewed corpus.",
                 "estimation_policy": "No synthetic or fitted regional cascade percentages are injected into the publication figures. If an official region-level cascade table is absent for a year, the year remains unavailable in the explorer.",
                 "formulas": [
@@ -1398,13 +1509,13 @@ class PublicationAssetBuilder:
                 "construction": [
                     "For each region, metric, and year, the app selects the latest structured quarter in that year.",
                     "Regions are included in the publication stage matrix only when all three cascade stages are present for that year.",
-                    "The publication matrix orders regions by average gap to the 95 target and uses a separate gap strip rather than a connected regional ladder.",
-                    "The region-over-time chart compares annual latest diagnosis, treatment, and suppression values for the selected region.",
+                    "The publication matrix orders regions by average gap to the 95 target and shows the three stage values directly in cells rather than in a separate ladder or gap companion plot.",
+                    "The explorer compares annual latest diagnosis, treatment, and suppression values for the selected region using zero-based dumbbell comparisons.",
                     "A separate regional burden line was intentionally excluded from the overview because the current yearly regional burden layer is too sparse to support a headline comparison.",
                 ],
                 "harmonization": [
                     "The yearly selector is annual only. Quarterly roll-ups are intentionally hidden in this view.",
-                    "The explorer keeps the same 2015-2025 publication window used elsewhere, even when a specific regional series starts later.",
+                    "The regional explorer uses only years with observed official regional cascade values. It does not stretch the x-axis back to years where no regional table exists.",
                 ],
                 "caveats": [
                     "Structured region-level cascade coverage currently starts in 2024 because the older official reports reviewed here do not publish a complete region-level 95-95-95 denominator table.",
@@ -1449,7 +1560,7 @@ class PublicationAssetBuilder:
                 "figure_key": "anomaly_board",
                 "title": "Performance versus treatment burden",
                 "question": "Which regions perform above or below the fitted cascade pattern once treatment leakage burden is taken into account?",
-                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. The companion leakage ranking shows where loss from care is concentrated: lost to follow-up plus other documented off-treatment burden.",
+                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. Loss-from-care burden is shown against those residuals so underperformance and treatment leakage can be read in one frame.",
                 "coverage_window": "Residuals are available for 2024-2025 because those are the years with region-level cascade percentages. Treatment leakage is available for 2023-2025 because 2023 can be backfilled from the official year-end SHIP treatment-outcome table.",
                 "estimation_policy": "No synthetic residuals or synthetic treatment leakage values are injected. Residuals are computed only when observed region-level cascade percentages exist. Leakage is shown only when an observed treatment-outcome table or explicit official year-end treatment categories are available.",
                 "formulas": [
@@ -1466,8 +1577,8 @@ class PublicationAssetBuilder:
                 ],
                 "construction": [
                     "Residuals are recomputed inside each year using the regions available in that year.",
-                    "The left panel positions each region by residual and treatment-leakage burden, with point area scaling to total documented loss from care.",
-                    "The right panel ranks the largest treatment-leakage burdens as stacked components so concentration can be compared across regions.",
+                    "The publication panel positions each region by residual and loss-from-care rate, with point area scaling to total documented loss from care.",
+                    "The explorer uses the same quadrant and summary cards instead of a second full-size leakage ranking chart.",
                 ],
                 "harmonization": [
                     "The anomaly explorer is annual only. Each year represents the latest structured comparable quarter inside that year.",
@@ -1555,7 +1666,7 @@ class PublicationAssetBuilder:
                 "title": "Experimental regional backfill",
                 "question": "How can earlier regional cascade context be explored without contaminating the official atlas?",
                 "definition": "The experimental layer combines observed regional yearly cascade anchors with official national stage trajectories to produce explicitly modeled regional backfill for exploration only.",
-                "coverage_window": "Diagnosis and treatment can be explored on the 2016-2025 national anchor window. Suppression is only explored from 2023 onward because that is the earliest official national third-95 anchor available in the reviewed public sources.",
+                "coverage_window": "Diagnosis and treatment can be explored on the 2016-2025 national anchor window. Suppression can be explored from 2018 onward because that is the earliest official national year-end third-95 anchor available in the reviewed public sources.",
                 "estimation_policy": "Estimated values remain separate from all publication figures and the official explorer. They are always marked as estimated and are accompanied by stage-specific uncertainty intervals.",
                 "formulas": [
                     "Estimated regional stage = official national stage + shrunk regional residual trend",
@@ -1565,7 +1676,7 @@ class PublicationAssetBuilder:
                 "source_precedence": [
                     "Observed regional yearly cascade values always override model estimates.",
                     "Official national annual or quarterly stage values anchor the experimental regional backfill.",
-                    "No experimental suppression history is shown before an official national third-95 anchor exists.",
+                    "No experimental suppression history is shown before an official national year-end third-95 anchor exists.",
                 ],
                 "construction": [
                     "Fit a simple yearly residual model for each region and stage using only observed regional yearly anchors.",
@@ -1580,7 +1691,7 @@ class PublicationAssetBuilder:
                     "The modeled regional backfill is not official surveillance output.",
                     "With only two observed regional cascade years, the experimental history is assumption-sensitive and should be treated as context rather than evidence.",
                 ],
-                "reference_ids": ["unaids-dataset", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
+                "reference_ids": ["unaids-dataset", "harp-annual-2018-2025", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
             },
         ]
         return {
@@ -1598,6 +1709,15 @@ class PublicationAssetBuilder:
                 "url": "https://aidsinfo.unaids.org/dataset",
                 "used_in": ["national_cascade", "historical_board"],
                 "note": "Annual Philippines values for the first 95, second 95, people living with HIV, new HIV infections, and AIDS-related deaths.",
+            },
+            {
+                "id": "harp-annual-2018-2025",
+                "title": "Year-end national accomplishment against the 95-95-95 targets, 2018-2025",
+                "organization": "Department of Health / HARP",
+                "kind": "Official annual accomplishment table",
+                "url": "",
+                "used_in": ["national_cascade"],
+                "note": "Transcribed from the official DOH/HARP annual accomplishment table provided by the user. Source file in repo: data/normalized/official_harp_95_2018_2025.csv.",
             },
             {
                 "id": "who-2025-release",
@@ -1798,6 +1918,7 @@ class PublicationAssetBuilder:
         items.extend(local_items)
         groups = [
             {"title": "Official international datasets", "item_ids": ["unaids-dataset", "who-2025-release"]},
+            {"title": "Official Philippines annual target tables", "item_ids": ["harp-annual-2018-2025"]},
             {"title": "Official Philippines surveillance reports", "item_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2023-q2", "ship-2023-q3", "ship-2023-q4", "ship-2024-q1", "ship-2024-q2", "ship-2024-q4", "ship-2025-q1", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"]},
             {"title": "Local derived-series corpus", "item_ids": ["ship-local-corpus"]},
             {"title": "Dashboard design references", "item_ids": ["design-ahead", "design-owid", "design-unaids-inequalities"]},
@@ -2335,7 +2456,7 @@ class PublicationAssetBuilder:
             ax.set_ylabel("Coverage")
         fig.legend(handles=legend_handles, loc="upper center", bbox_to_anchor=(0.5, 1.03), ncol=3, frameon=False, fontsize=11)
         fig.subplots_adjust(top=0.84, bottom=0.14, left=0.06, right=0.98)
-        note = "Grey markers show official annual context where published. The highlighted green line and orange dots show official quarterly surveillance observations. The third 95 uses suppression among PLHIV on ART and has no annual UNAIDS comparator series for the Philippines."
+        note = "Hollow markers show official year-end annual context. The highlighted green line and orange dots show official quarterly surveillance observations. The third 95 uses suppression among PLHIV on ART; annual 2018-2025 context comes from the DOH/HARP year-end table."
         return self._save_figure(fig, "national_cascade_board", "National 95-95-95 cascade", note)
 
     def _render_regional_ladder(self, data: dict) -> PublicationFigure:
