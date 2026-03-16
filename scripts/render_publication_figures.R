@@ -350,6 +350,139 @@ build_regional_matrix <- function(data) {
       )
 }
 
+build_regional_fingerprint_board <- function(data) {
+  years <- sort(as.integer(unlist(data$years)))
+  if (!length(years)) return(NULL)
+  latest_year <- max(years, na.rm = TRUE)
+  latest_rows <- bind_rows(lapply(data$rows_by_year[[as.character(latest_year)]], as_tibble))
+  if (!nrow(latest_rows)) return(NULL)
+
+  latest_rows <- latest_rows %>%
+    mutate(mean_gap = as.numeric(mean_gap))
+
+  latest_burden <- function(region) {
+    burden_rows <- bind_rows(lapply(data$region_histories[[region]]$burden, as_tibble))
+    if (!nrow(burden_rows)) return(0)
+    burden_rows <- burden_rows %>%
+      mutate(
+        year = as.integer(year),
+        burden = as.numeric(ltfu) + as.numeric(not_on_treatment)
+      ) %>%
+      arrange(year)
+    tail(burden_rows$burden, 1)
+  }
+
+  best_region <- latest_rows %>% arrange(mean_gap) %>% slice(1) %>% pull(region)
+  worst_region <- latest_rows %>% arrange(desc(mean_gap)) %>% slice(1) %>% pull(region)
+  burden_region <- latest_rows %>%
+    mutate(latest_burden = vapply(region, latest_burden, numeric(1))) %>%
+    arrange(desc(latest_burden)) %>%
+    slice(1) %>%
+    pull(region)
+
+  chosen_regions <- unique(c(best_region, burden_region, worst_region))
+  if (!length(chosen_regions)) return(NULL)
+
+  cascade_rows <- bind_rows(lapply(chosen_regions, function(region) {
+    history <- bind_rows(lapply(data$region_histories[[region]]$cascade, as_tibble))
+    if (!nrow(history)) return(NULL)
+    history <- history %>%
+      mutate(year = as.integer(year)) %>%
+      arrange(year)
+    latest <- history %>% slice_tail(n = 1)
+    previous <- if (nrow(history) > 1) history %>% slice_tail(n = 2) %>% slice_head(n = 1) else NULL
+    tibble(
+      region = region,
+      year = latest$year,
+      stage = c("Diagnosed", "On ART", "Suppressed"),
+      value = c(as.numeric(latest$diagnosis), as.numeric(latest$treatment), as.numeric(latest$suppression)),
+      delta = c(
+        if (!is.null(previous)) as.numeric(latest$diagnosis) - as.numeric(previous$diagnosis) else NA_real_,
+        if (!is.null(previous)) as.numeric(latest$treatment) - as.numeric(previous$treatment) else NA_real_,
+        if (!is.null(previous)) as.numeric(latest$suppression) - as.numeric(previous$suppression) else NA_real_
+      ),
+      gap = c(
+        95 - as.numeric(latest$diagnosis),
+        95 - as.numeric(latest$treatment),
+        95 - as.numeric(latest$suppression)
+      )
+    )
+  }))
+  if (!nrow(cascade_rows)) return(NULL)
+
+  role_labels <- c(
+    setNames("Closest to target", best_region),
+    setNames("Largest leakage burden", burden_region),
+    setNames("Widest gap", worst_region)
+  )
+  cascade_rows <- cascade_rows %>%
+    mutate(
+      stage = factor(stage, levels = c("Diagnosed", "On ART", "Suppressed")),
+      role = unname(role_labels[region]),
+      region_panel = paste0(region, "\n", role)
+    )
+
+  summary_rows <- cascade_rows %>%
+    group_by(region, role, region_panel) %>%
+    summarise(
+      mean_gap = mean(gap, na.rm = TRUE),
+      max_value = max(value, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      burden = vapply(region, latest_burden, numeric(1)),
+      summary_label = sprintf("Mean gap %.1f pts\nLeakage burden %s", mean_gap, label_number(scale_cut = cut_short_scale())(burden))
+    )
+
+  ggplot(cascade_rows, aes(x = stage, y = value, colour = stage, group = 1)) +
+    geom_hline(yintercept = 95, linewidth = 0.7, linetype = "22", colour = "#b45521") +
+    geom_col(aes(fill = stage), alpha = 0.18, width = 0.56, colour = NA) +
+    geom_line(linewidth = 1.2, colour = "#7b8e88", show.legend = FALSE) +
+    geom_point(size = 4.3, stroke = 1.0, fill = "white", shape = 21) +
+    geom_text(
+      aes(label = sprintf("%.0f%%", value)),
+      nudge_y = 4.0,
+      size = 4.0,
+      fontface = "bold",
+      colour = "#17302a",
+      show.legend = FALSE
+    ) +
+    geom_text(
+      data = cascade_rows %>% filter(!is.na(delta)),
+      aes(label = sprintf("%+.0f", delta)),
+      nudge_y = -6.8,
+      size = 3.4,
+      colour = "#6a7a75",
+      show.legend = FALSE
+    ) +
+    geom_text(
+      data = summary_rows,
+      aes(x = 2.85, y = 26.5, label = summary_label),
+      hjust = 1,
+      vjust = 0,
+      inherit.aes = FALSE,
+      size = 3.6,
+      colour = "#4c5f59"
+    ) +
+    facet_wrap(~region_panel, nrow = 1) +
+    scale_colour_manual(values = stage_palette) +
+    scale_fill_manual(values = stage_palette) +
+    scale_y_continuous(limits = c(24, 100), breaks = c(30, 40, 50, 60, 70, 80, 90, 95, 100), labels = label_percent(scale = 1)) +
+    labs(
+      title = paste0("Regional fingerprint board  ", latest_year),
+      subtitle = "Three exemplar regions are shown using observed yearly diagnosis, treatment, and suppression coverage. Labels above points show current values; labels below show year-over-year change.",
+      x = NULL,
+      y = "Coverage"
+    ) +
+    epi_theme(12) +
+    theme(
+      legend.position = "top",
+      strip.text = element_text(size = 15, lineheight = 1.05),
+      axis.text.x = element_text(face = "bold", size = 12),
+      panel.grid.major.x = element_blank()
+    )
+}
+
 build_anomaly_board <- function(data) {
   perf <- bind_rows(lapply(data$performance_burden_rows, as_tibble))
   leak <- bind_rows(lapply(data$leakage_rows, as_tibble))
@@ -499,6 +632,7 @@ render_safe <- function(builder, basename, width, height) {
 
 render_safe(function() build_national_cascade(series$national_cascade), "national_cascade_board", 15.5, 8.6)
 render_safe(function() build_regional_matrix(series$regional_ladder), "regional_stage_matrix", 15.5, 8.8)
+render_safe(function() build_regional_fingerprint_board(series$regional_yearly), "regional_fingerprint_board", 15.5, 7.6)
 render_safe(function() build_anomaly_board(series$anomalies), "anomaly_board", 15.5, 8.3)
 render_safe(function() build_historical_board(series$historical), "historical_board", 15.5, 9.0)
 render_safe(function() build_key_population_board(series$key_populations), "key_populations_board", 15.5, 9.2)

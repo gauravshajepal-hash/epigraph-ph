@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
       --ink: #14231f;
@@ -950,6 +951,20 @@
         <article class="card publication-card">
           <div class="card-header">
             <div>
+              <div class="eyebrow">Regional Fingerprints</div>
+              <div class="shell-headline">Three exemplar regions at the latest observed year</div>
+            </div>
+            <span class="pill" id="regional-fingerprint-pill">Loading</span>
+          </div>
+          <p class="publication-shell-note">This publication board focuses on three analytically distinct regions: closest to target, highest leakage burden, and widest gap. It complements the yearly matrix with a more narrative regional comparison.</p>
+          <div class="figure-actions" id="publication-regional-fingerprint-board-actions"></div>
+          <div class="publication-figure" id="publication-regional-fingerprint-board"></div>
+          <div class="atlas-note" id="publication-regional-fingerprint-board-note"></div>
+        </article>
+
+        <article class="card publication-card">
+          <div class="card-header">
+            <div>
               <div class="eyebrow">Anomalies</div>
               <div class="shell-headline">Performance versus burden</div>
             </div>
@@ -1103,27 +1118,39 @@
         <div class="card-header">
           <div>
             <div class="eyebrow">Experimental estimates</div>
-            <h2>Observed-only atlas, synthetic layer withheld</h2>
+            <h2>Estimated regional backfill</h2>
           </div>
           <span class="signal-tag" id="experimental-pill">Observed only</span>
         </div>
-        <p class="mini-note">This tab is reserved for estimated regional backfill. No synthetic values are published into the current atlas. Estimated series will only appear here once they are constrained by official national totals and clearly marked as modeled rather than observed.</p>
+        <p class="mini-note">This layer remains separate from the official atlas. Observed regional values remain solid; modeled earlier values are dashed and wrapped in uncertainty bands. Use it for exploration, not for headline reporting.</p>
+        <div class="control-row">
+          <div class="control-group">
+            <label for="experimental-region-select">Region</label>
+            <select id="experimental-region-select"></select>
+          </div>
+          <div class="control-group">
+            <label for="experimental-stage-select">Stage</label>
+            <select id="experimental-stage-select">
+              <option value="diagnosis">Diagnosed</option>
+              <option value="treatment">On ART</option>
+              <option value="suppression">Suppressed</option>
+            </select>
+          </div>
+        </div>
         <div class="experimental-grid">
           <article class="atlas-card">
-            <h3>Current status</h3>
-            <p class="analytic-subtitle">The official atlas remains observed-only. Regional observed yearly coverage currently starts in 2024 for cascade coverage and in 2023 for yearly leakage.</p>
-            <ul class="experimental-list">
-              <li><strong>Not published:</strong> synthetic pre-2024 regional cascade values</li>
-              <li><strong>Not published:</strong> uncertainty ribbons or modeled regional trajectories</li>
-              <li><strong>Why:</strong> older official region-level denominators remain incomplete, so injecting estimates into the official atlas would weaken the evidence standard</li>
-            </ul>
+            <h3>Observed versus estimated history</h3>
+            <p class="analytic-subtitle">The chart keeps observed anchors visible and adds yearly modeled context only where official national stage anchors exist for that stage.</p>
+            <div class="chart-host tall" id="experimental-chart"></div>
+            <div class="atlas-note" id="experimental-chart-note"></div>
           </article>
           <article class="atlas-card">
-            <h3>Planned model guardrails</h3>
-            <p class="analytic-subtitle">When this layer is turned on, it will remain separate from the official overview and explorer.</p>
+            <h3>Model guardrails and source policy</h3>
+            <p class="analytic-subtitle">Observed rows always override estimates. The model is anchored to official national stage trajectories and is shown here with explicit uncertainty.</p>
+            <div class="fingerprint-summary" id="experimental-summary"></div>
             <ul class="experimental-list">
-              <li><strong>Model family:</strong> yearly hierarchical partial-pooling fit with region intercepts and slopes</li>
-              <li><strong>Constraint:</strong> estimates must remain coherent with official national totals and observed regional anchors</li>
+              <li><strong>Model family:</strong> yearly residual backcast anchored to official national stage coverage</li>
+              <li><strong>Constraint:</strong> diagnosis and treatment estimates must stay coherent with official national annual or quarterly anchors; suppression is limited to years with official national third-95 anchors</li>
               <li><strong>Display policy:</strong> dashed estimated lines, shaded uncertainty, and explicit “Estimated, not observed” labels on every figure</li>
             </ul>
           </article>
@@ -1141,6 +1168,7 @@
       localReviewQueue: [],
       observationIndex: {},
       charts: {},
+      plotlyCharts: {},
       activeView: "overview",
     };
 
@@ -1149,6 +1177,12 @@
       Object.values(state.charts || {}).forEach(chart => {
         if (chart && typeof chart.resize === "function") {
           chart.resize();
+        }
+      });
+      Object.entries(state.plotlyCharts || {}).forEach(([id]) => {
+        const target = document.getElementById(id);
+        if (target && window.Plotly && typeof window.Plotly.Plots?.resize === "function") {
+          window.Plotly.Plots.resize(target);
         }
       });
     });
@@ -1169,6 +1203,7 @@
         renderExperimentalSection();
         setupRegionalExplorer();
         setupAnomalyExplorer();
+        setupExperimentalExplorer();
         applyInitialViewFromLocation();
 
         setStatus(
@@ -1364,6 +1399,47 @@
       const chart = echarts.init(target, null, { renderer: "svg" });
       chart.setOption(option, true);
       state.charts[id] = chart;
+    }
+
+    function disposePlotlyChart(id) {
+      if (window.Plotly && state.plotlyCharts[id]) {
+        const target = document.getElementById(id);
+        if (target) {
+          window.Plotly.purge(target);
+        }
+      }
+      delete state.plotlyCharts[id];
+    }
+
+    function mountPlotlyChart(id, spec) {
+      const target = document.getElementById(id);
+      if (!target) return;
+      disposePlotlyChart(id);
+      if (!window.Plotly) {
+        target.innerHTML = `<div class="empty-state">Interactive chart engine unavailable.</div>`;
+        return;
+      }
+      target.innerHTML = "";
+      const data = spec?.data || [];
+      const layout = {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { t: 28, r: 18, b: 48, l: 72 },
+        font: { family: "IBM Plex Sans, sans-serif", color: "#304641", size: 13 },
+        hoverlabel: {
+          bgcolor: "rgba(255,250,242,0.98)",
+          bordercolor: "rgba(20,35,31,0.12)",
+          font: { family: "IBM Plex Sans, sans-serif", color: "#14231f", size: 13 },
+        },
+        ...spec?.layout,
+      };
+      const config = {
+        responsive: true,
+        displayModeBar: false,
+        ...spec?.config,
+      };
+      window.Plotly.newPlot(target, data, layout, config);
+      state.plotlyCharts[id] = true;
     }
 
     function buildLineChartOption(points, unit, config) {
@@ -2453,6 +2529,7 @@
     function renderOverview() {
       renderNationalCascade();
       renderRegionalAtlas();
+      renderRegionalFingerprintOverview();
       renderSurprisingFindings();
       renderHistoricalAtlas();
       renderPopulationOutcomes();
@@ -2510,17 +2587,260 @@
     }
 
     function renderExperimentalSection() {
-      const regionalYears = (state.bootstrap?.publication?.series?.regional_yearly?.years || []).map(String);
-      const anomalyYears = (state.bootstrap?.publication?.series?.anomaly_yearly?.years || []).map(String);
+      const experimental = state.bootstrap?.publication?.series?.experimental_regional || {};
+      const allYears = (experimental.years || []).map(String);
+      const observedByStage = experimental.observed_years_by_stage || {};
+      const estimatedByStage = experimental.estimated_years_by_stage || {};
       const pill = document.getElementById("experimental-pill");
       if (!pill) return;
-      if (!regionalYears.length && !anomalyYears.length) {
-        pill.textContent = "No yearly anchors";
+      if (!allYears.length) {
+        pill.textContent = "No experimental layer";
         return;
       }
-      const regionalWindow = regionalYears.length ? `${regionalYears[0]}-${regionalYears[regionalYears.length - 1]} regional` : "No regional";
-      const anomalyWindow = anomalyYears.length ? `${anomalyYears[0]}-${anomalyYears[anomalyYears.length - 1]} anomaly` : "No anomaly";
-      pill.textContent = `${regionalWindow} / ${anomalyWindow}`;
+      const observedStart = Math.min(...Object.values(observedByStage).flat().map(Number).filter(Number.isFinite));
+      const observedEnd = Math.max(...Object.values(observedByStage).flat().map(Number).filter(Number.isFinite));
+      const estimatedStart = Math.min(...Object.values(estimatedByStage).flat().map(Number).filter(Number.isFinite));
+      const estimatedEnd = Math.max(...Object.values(estimatedByStage).flat().map(Number).filter(Number.isFinite));
+      const observedWindow = Number.isFinite(observedStart) ? `${observedStart}-${observedEnd} observed` : "No observed";
+      const estimatedWindow = Number.isFinite(estimatedStart) ? `${estimatedStart}-${estimatedEnd} estimated` : "No estimates";
+      pill.textContent = `${observedWindow} / ${estimatedWindow}`;
+    }
+
+    function setupExperimentalExplorer() {
+      const experimental = state.bootstrap?.publication?.series?.experimental_regional || {};
+      const regions = experimental.regions || [];
+      const years = experimental.years || [];
+      const regionSelect = document.getElementById("experimental-region-select");
+      const stageSelect = document.getElementById("experimental-stage-select");
+      if (!regionSelect || !stageSelect) return;
+
+      if (!regions.length || !years.length) {
+        const target = document.getElementById("experimental-chart");
+        if (target) target.innerHTML = `<div class="empty-state">No modeled regional backfill was exported.</div>`;
+        const summary = document.getElementById("experimental-summary");
+        if (summary) summary.innerHTML = "";
+        return;
+      }
+
+      regionSelect.innerHTML = regions
+        .map(region => `<option value="${escapeAttribute(region)}">${escapeHtml(formatRegionLabel(region))}</option>`)
+        .join("");
+      regionSelect.value = regions.includes(experimental.default_region) ? experimental.default_region : regions[0];
+      if (!stageSelect.value) {
+        stageSelect.value = "treatment";
+      }
+
+      regionSelect.addEventListener("change", renderExperimentalExplorer);
+      stageSelect.addEventListener("change", renderExperimentalExplorer);
+      renderExperimentalExplorer();
+    }
+
+    function renderExperimentalExplorer() {
+      const experimental = state.bootstrap?.publication?.series?.experimental_regional || {};
+      const region = String(document.getElementById("experimental-region-select")?.value || experimental.default_region || "");
+      const stageKey = String(document.getElementById("experimental-stage-select")?.value || "treatment");
+      const history = experimental.region_histories?.[region]?.cascade || [];
+      const chartTarget = document.getElementById("experimental-chart");
+      const noteTarget = document.getElementById("experimental-chart-note");
+      const summaryTarget = document.getElementById("experimental-summary");
+
+      if (!history.length) {
+        disposePlotlyChart("experimental-chart");
+        if (chartTarget) chartTarget.innerHTML = `<div class="empty-state">No modeled history is available yet for ${escapeHtml(formatRegionLabel(region))}.</div>`;
+        if (noteTarget) noteTarget.textContent = "No experimental yearly history was exported for the selected region.";
+        if (summaryTarget) summaryTarget.innerHTML = "";
+        return;
+      }
+
+      mountPlotlyChart("experimental-chart", buildExperimentalHistoryOption(region, stageKey, history, experimental));
+      if (summaryTarget) {
+        summaryTarget.innerHTML = buildExperimentalSummary(region, stageKey, history, experimental);
+      }
+      if (noteTarget) {
+        noteTarget.textContent = buildExperimentalNote(region, stageKey, history, experimental);
+      }
+    }
+
+    function buildExperimentalHistoryOption(region, stageKey, history, experimental) {
+      const meta = getCascadeStageMeta(stageKey);
+      const rows = [...(history || [])]
+        .filter(row => Number.isFinite(Number(row?.[stageKey])))
+        .sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      const observedRows = rows.filter(row => row[`${stageKey}_status`] === "observed");
+      const estimatedRows = rows.filter(row => row[`${stageKey}_status`] === "estimated");
+      const years = rows.map(row => Number(row.year || 0));
+      const yValues = rows.map(row => Number(row?.[stageKey] ?? null)).filter(Number.isFinite);
+      const minValue = yValues.length ? Math.max(0, Math.floor(Math.min(...yValues) - 6)) : 0;
+      const maxValue = yValues.length ? Math.min(100, Math.ceil(Math.max(...yValues) + 6)) : 100;
+
+      const data = [];
+      if (estimatedRows.length) {
+        data.push({
+          type: "scatter",
+          mode: "lines",
+          x: estimatedRows.map(row => Number(row.year || 0)),
+          y: estimatedRows.map(row => Number(row[`${stageKey}_upper`] ?? null)),
+          line: { color: "rgba(91,123,213,0)" },
+          hoverinfo: "skip",
+          showlegend: false,
+        });
+        data.push({
+          type: "scatter",
+          mode: "lines",
+          x: estimatedRows.map(row => Number(row.year || 0)),
+          y: estimatedRows.map(row => Number(row[`${stageKey}_lower`] ?? null)),
+          line: { color: "rgba(91,123,213,0)" },
+          fill: "tonexty",
+          fillcolor: "rgba(91,123,213,0.14)",
+          hoverinfo: "skip",
+          name: "Estimated range",
+        });
+        data.push({
+          type: "scatter",
+          mode: "lines+markers",
+          name: "Estimated",
+          x: estimatedRows.map(row => Number(row.year || 0)),
+          y: estimatedRows.map(row => Number(row?.[stageKey] ?? null)),
+          customdata: estimatedRows.map(row => [
+            row[`${stageKey}_period`] || row.year,
+            row[`${stageKey}_filename`] || "Modeled regional backfill",
+            row[`${stageKey}_lower`] ?? null,
+            row[`${stageKey}_upper`] ?? null,
+          ]),
+          line: { color: meta.color, width: 3, dash: "dash" },
+          marker: { color: meta.color, size: 9, symbol: "diamond", line: { color: "#fffaf0", width: 1.3 } },
+          hovertemplate:
+            `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
+            `${escapeHtml(meta.label)} estimate<br>` +
+            "Year: %{x}<br>" +
+            "Coverage: <b>%{y:.1f}%</b><br>" +
+            "Model window: %{customdata[0]}<br>" +
+            "Uncertainty: %{customdata[2]:.1f}% to %{customdata[3]:.1f}%<br>" +
+            "Source note: %{customdata[1]}<extra></extra>",
+        });
+      }
+      if (observedRows.length) {
+        data.push({
+          type: "scatter",
+          mode: "lines+markers",
+          name: "Observed",
+          x: observedRows.map(row => Number(row.year || 0)),
+          y: observedRows.map(row => Number(row?.[stageKey] ?? null)),
+          customdata: observedRows.map(row => [
+            row[`${stageKey}_period`] || row.year,
+            row[`${stageKey}_filename`] || "Unknown source",
+            row[`${stageKey}_source_url`] || "",
+          ]),
+          line: { color: meta.color, width: 4 },
+          marker: { color: meta.color, size: 10, symbol: "circle", line: { color: "#fffaf0", width: 1.5 } },
+          hovertemplate:
+            `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
+            `${escapeHtml(meta.label)} observed<br>` +
+            "Year: %{x}<br>" +
+            "Coverage: <b>%{y:.1f}%</b><br>" +
+            "Source period: %{customdata[0]}<br>" +
+            "File: %{customdata[1]}<extra></extra>",
+        });
+      }
+
+      return {
+        data,
+        layout: {
+          margin: { t: 24, r: 24, b: 52, l: 64 },
+          xaxis: {
+            type: "linear",
+            tickmode: "array",
+            tickvals: years,
+            ticktext: years.map(String),
+            tickfont: { color: "#50615d", size: 13 },
+            showgrid: false,
+            zeroline: false,
+            fixedrange: true,
+          },
+          yaxis: {
+            range: [minValue, maxValue],
+            ticksuffix: "%",
+            tickfont: { color: "#50615d", size: 13 },
+            gridcolor: "rgba(20,35,31,0.10)",
+            griddash: "dash",
+            zeroline: false,
+            fixedrange: true,
+          },
+          legend: {
+            orientation: "h",
+            y: 1.16,
+            x: 0,
+            font: { size: 13 },
+          },
+          shapes: [{
+            type: "line",
+            x0: Math.min(...years) - 0.2,
+            x1: Math.max(...years) + 0.2,
+            y0: 95,
+            y1: 95,
+            line: { color: "rgba(196,86,27,0.72)", width: 1.5, dash: "dash" },
+          }],
+          annotations: [{
+            x: 1,
+            y: 95,
+            xref: "paper",
+            yref: "y",
+            text: "95% target",
+            showarrow: false,
+            xanchor: "right",
+            yanchor: "bottom",
+            font: { size: 12, color: "#9b3324" },
+          }],
+        },
+      };
+    }
+
+    function buildExperimentalSummary(region, stageKey, history, experimental) {
+      const meta = getCascadeStageMeta(stageKey);
+      const rows = [...(history || [])]
+        .filter(row => Number.isFinite(Number(row?.[stageKey])))
+        .sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      const observedRows = rows.filter(row => row[`${stageKey}_status`] === "observed");
+      const estimatedRows = rows.filter(row => row[`${stageKey}_status`] === "estimated");
+      const latestObserved = observedRows.length ? observedRows[observedRows.length - 1] : null;
+      const earliestEstimated = estimatedRows.length ? estimatedRows[0] : null;
+      const model = experimental.region_histories?.[region]?.model?.[stageKey] || {};
+      const cards = [
+        {
+          label: `${meta.label} observed window`,
+          value: observedRows.length ? `${observedRows[0].year}-${observedRows[observedRows.length - 1].year}` : "none",
+          note: latestObserved ? `Latest observed ${formatPercent(latestObserved[stageKey], 1)} in ${latestObserved.year}` : "No observed anchor for this stage.",
+        },
+        {
+          label: `${meta.label} estimated window`,
+          value: estimatedRows.length ? `${estimatedRows[0].year}-${estimatedRows[estimatedRows.length - 1].year}` : "none",
+          note: earliestEstimated ? `Earliest estimate ${formatPercent(earliestEstimated[stageKey], 1)} in ${earliestEstimated.year}` : "No estimated values exported.",
+        },
+        {
+          label: "Model anchors",
+          value: (model.anchor_years || []).length ? (model.anchor_years || []).join(", ") : "none",
+          note: `Uncertainty band +/- ${formatPercent(model.uncertainty || 0, 1)}`,
+        },
+      ];
+      return cards.map(card => `
+        <div class="fingerprint-stat">
+          <div class="label">${escapeHtml(card.label)}</div>
+          <div class="value">${escapeHtml(card.value)}</div>
+          <div class="note">${escapeHtml(card.note)}</div>
+        </div>
+      `).join("");
+    }
+
+    function buildExperimentalNote(region, stageKey, history, experimental) {
+      const meta = getCascadeStageMeta(stageKey);
+      const rows = [...(history || [])]
+        .filter(row => Number.isFinite(Number(row?.[stageKey])))
+        .sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
+      const observedYears = rows.filter(row => row[`${stageKey}_status`] === "observed").map(row => row.year);
+      const estimatedYears = rows.filter(row => row[`${stageKey}_status`] === "estimated").map(row => row.year);
+      const observedWindow = observedYears.length ? `${observedYears[0]}-${observedYears[observedYears.length - 1]}` : "none";
+      const estimatedWindow = estimatedYears.length ? `${estimatedYears[0]}-${estimatedYears[estimatedYears.length - 1]}` : "none";
+      return `${formatRegionLabel(region)} ${meta.label.toLowerCase()} history uses observed years ${observedWindow} and estimated years ${estimatedWindow}. ${experimental.coverage_note || ""} ${experimental.model_note || ""}`.trim();
     }
 
     function renderReferencesSection() {
@@ -3583,6 +3903,26 @@
         `${formatRegionLabel(leader.region)} closest / ${formatRegionLabel(laggard.region)} furthest`;
     }
 
+    function renderRegionalFingerprintOverview() {
+      const yearly = state.bootstrap?.publication?.series?.regional_yearly || {};
+      const rows = yearly.rows_by_year?.[String(Math.max(...(yearly.years || [0])))] || [];
+      renderPublicationFigure(
+        "publication-regional-fingerprint-board",
+        "regional_fingerprint_board",
+        "publication-regional-fingerprint-board-note",
+        "No regional fingerprint figure is available."
+      );
+      if (!rows.length) {
+        document.getElementById("regional-fingerprint-pill").textContent = "unavailable";
+        return;
+      }
+      const sorted = [...rows].sort((a, b) => Number(a.mean_gap || 999) - Number(b.mean_gap || 999));
+      const best = sorted[0];
+      const worst = sorted[sorted.length - 1];
+      document.getElementById("regional-fingerprint-pill").textContent =
+        `${formatRegionLabel(best.region)} closest / ${formatRegionLabel(worst.region)} widest gap`;
+    }
+
     function renderSurprisingFindings() {
       const anomalies = state.bootstrap?.publication?.series?.anomalies || {};
       renderPublicationFigure(
@@ -3687,25 +4027,25 @@
       const history = regional.region_histories?.[selectedRegion] || { cascade: [] };
 
       if (rows.length) {
-        mountChart("regional-year-chart", buildRegionalMatrixOption(rows, selectedYear, selectedRegion));
+        mountPlotlyChart("regional-year-chart", buildRegionalMatrixOption(rows, selectedYear, selectedRegion));
       } else {
-        disposeChart("regional-year-chart");
+        disposePlotlyChart("regional-year-chart");
         document.getElementById("regional-year-chart").innerHTML = `<div class="empty-state">No annual regional matrix rows are available for ${escapeHtml(selectedYear)}.</div>`;
       }
 
       if ((history.cascade || []).length) {
-        mountChart("regional-history-chart", buildRegionFingerprintOption(selectedRegion, history.cascade || []));
+        mountPlotlyChart("regional-history-chart", buildRegionFingerprintOption(selectedRegion, history.cascade || []));
         document.getElementById("regional-history-kpis").innerHTML = buildRegionFingerprintSummary(selectedRegion, history.cascade || []);
       } else {
-        disposeChart("regional-history-chart");
+        disposePlotlyChart("regional-history-chart");
         document.getElementById("regional-history-chart").innerHTML = `<div class="empty-state">No annual cascade history is available yet for ${escapeHtml(formatRegionLabel(selectedRegion))}.</div>`;
         document.getElementById("regional-history-kpis").innerHTML = "";
       }
 
       if ((regional.years || []).length) {
-        mountChart("regional-rank-chart", buildRegionalRankOption(regional, selectedStage, selectedRegion));
+        mountPlotlyChart("regional-rank-chart", buildRegionalRankOption(regional, selectedStage, selectedRegion));
       } else {
-        disposeChart("regional-rank-chart");
+        disposePlotlyChart("regional-rank-chart");
         document.getElementById("regional-rank-chart").innerHTML = `<div class="empty-state">No yearly regional rank view is available.</div>`;
       }
 
@@ -3719,172 +4059,154 @@
     function buildRegionalMatrixOption(rows, year, selectedRegion) {
       const stageKeys = ["diagnosis", "treatment", "suppression"];
       const sorted = [...(rows || [])].sort((a, b) => Number(a.mean_gap || 999) - Number(b.mean_gap || 999));
-      const yLabels = sorted.map(row => formatRegionLabel(row.region));
+      const yLabels = sorted.map(row => row.region === selectedRegion ? `● ${formatRegionLabel(row.region)}` : formatRegionLabel(row.region));
       const xLabels = stageKeys.map(key => getCascadeStageMeta(key).label);
-      const selectedLabel = formatRegionLabel(selectedRegion);
-      const heatmapRows = [];
-
-      sorted.forEach((row, rowIndex) => {
-        stageKeys.forEach((key, columnIndex) => {
-          const meta = getCascadeStageMeta(key);
-          const value = Number(row[key] || 0);
-          heatmapRows.push({
-            value: [columnIndex, rowIndex, value],
-            rawValue: value,
-            region: formatRegionLabel(row.region),
-            stage: meta.label,
-            period: row[`${key}_period`] || `${year}`,
-            sourceUrl: row[`${key}_source_url`] || "",
-            filename: row[`${key}_filename`] || "",
-            itemStyle: row.region === selectedRegion
-              ? { borderColor: meta.color, borderWidth: 2.5 }
-              : { borderColor: "rgba(255,250,240,0.95)", borderWidth: 1.5 },
-          });
-        });
-      });
+      const z = sorted.map(row => stageKeys.map(key => Number(row[key] ?? null)));
+      const text = sorted.map(row => stageKeys.map(key => {
+        const value = Number(row[key] ?? null);
+        return Number.isFinite(value) ? `${Math.round(value)}%` : "";
+      }));
+      const custom = sorted.map(row => stageKeys.map(key => ([
+        formatRegionLabel(row.region),
+        getCascadeStageMeta(key).label,
+        row[`${key}_period`] || `${year}`,
+        row[`${key}_filename`] || "Unknown source",
+        row[`${key}_source_url`] || "",
+      ])));
 
       return {
-        animation: false,
-        grid: { top: 28, right: 20, bottom: 24, left: 150, containLabel: true },
-        tooltip: {
-          trigger: "item",
-          confine: true,
-          borderColor: "rgba(20,35,31,0.12)",
-          backgroundColor: "rgba(255,250,242,0.98)",
-          textStyle: { color: "#14231f", fontFamily: "IBM Plex Sans" },
-          formatter: params => {
-            const data = params?.data || {};
-            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
-            return `
-              <strong>${escapeHtml(data.region || "")}</strong><br>
-              ${escapeHtml(data.stage || "")}: <strong>${formatPercent(data.rawValue, 0)}</strong><br>
-              Source period: ${escapeHtml(data.period || year)}<br>
-              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
-            `;
-          },
-        },
-        xAxis: {
-          type: "category",
-          data: xLabels,
-          axisLabel: { color: "#50615d", fontWeight: 700, fontSize: 12 },
-          axisTick: { show: false },
-          axisLine: { show: false },
-        },
-        yAxis: {
-          type: "category",
-          data: yLabels,
-          axisLabel: {
-            color: "#50615d",
-            fontSize: 12,
-            formatter: value => value === selectedLabel ? `{selected|${value}}` : value,
-            rich: {
-              selected: { color: "#14231f", fontWeight: 700 },
-            },
-          },
-          axisTick: { show: false },
-          axisLine: { show: false },
-        },
-        visualMap: {
-          min: 30,
-          max: 100,
-          show: false,
-          inRange: {
-            color: ["#f5efe5", "#ead4ad", "#c7dacb", "#7cb9a9", "#0f7c66"],
-          },
-        },
-        series: [{
+        data: [{
           type: "heatmap",
-          data: heatmapRows,
-          label: {
-            show: true,
-            color: "#14231f",
-            fontWeight: 700,
-            fontSize: 11,
-            formatter: params => `${Math.round(Number(params?.data?.rawValue || 0))}%`,
-          },
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowColor: "rgba(20,35,31,0.18)",
-            },
-          },
+          x: xLabels,
+          y: yLabels,
+          z,
+          text,
+          texttemplate: "%{text}",
+          textfont: { color: "#14231f", size: 12, family: "IBM Plex Sans, sans-serif" },
+          customdata: custom,
+          zmin: 30,
+          zmax: 100,
+          colorscale: [
+            [0.0, "#f5efe5"],
+            [0.22, "#ead4ad"],
+            [0.52, "#c7dacb"],
+            [0.78, "#7cb9a9"],
+            [1.0, "#0f7c66"],
+          ],
+          xgap: 6,
+          ygap: 6,
+          hovertemplate:
+            "<b>%{customdata[0]}</b><br>" +
+            "%{customdata[1]}: <b>%{z:.0f}%</b><br>" +
+            "Source period: %{customdata[2]}<br>" +
+            "File: %{customdata[3]}<extra></extra>",
+          showscale: false,
         }],
+        layout: {
+          margin: { t: 34, r: 18, b: 34, l: 170 },
+          xaxis: {
+            side: "top",
+            tickfont: { color: "#50615d", size: 13 },
+            showgrid: false,
+            zeroline: false,
+            fixedrange: true,
+          },
+          yaxis: {
+            autorange: "reversed",
+            tickfont: { color: "#50615d", size: 13 },
+            showgrid: false,
+            zeroline: false,
+            fixedrange: true,
+          },
+          annotations: [{
+            x: 1.02,
+            y: 1.13,
+            xref: "paper",
+            yref: "paper",
+            text: `Selected: ${escapeHtml(formatRegionLabel(selectedRegion))}`,
+            showarrow: false,
+            font: { size: 12, color: "#50615d" },
+            xanchor: "right",
+          }],
+        },
       };
     }
 
     function buildRegionFingerprintOption(region, rows) {
       const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
-      const xAxis = yearlyRows.map(row => String(row.year));
       const stageKeys = ["diagnosis", "treatment", "suppression"];
-      const series = stageKeys.map(key => {
+      const traces = stageKeys.map(key => {
         const meta = getCascadeStageMeta(key);
         return {
+          type: "scatter",
+          mode: "lines+markers",
           name: meta.label,
-          type: "line",
-          connectNulls: false,
-          symbol: meta.symbol,
-          symbolSize: 9,
-          smooth: false,
-          lineStyle: { color: meta.color, width: 3 },
-          itemStyle: { color: meta.color, borderColor: "#fffaf0", borderWidth: 1.5 },
-          endLabel: {
-            show: true,
-            color: meta.color,
-            formatter: params => `${meta.label} ${formatPercent(params.value, 0)}`,
-            fontWeight: 700,
-          },
-          labelLayout: { moveOverlap: "shiftY" },
-          data: yearlyRows.map(row => ({
-            value: Number(row[key] || 0),
-            year: row.year,
-            period: row[`${key}_period`] || `${row.year}`,
-            sourceUrl: row[`${key}_source_url`] || "",
-            filename: row[`${key}_filename`] || "",
-          })),
+          x: yearlyRows.map(row => Number(row.year || 0)),
+          y: yearlyRows.map(row => Number(row[key] ?? null)),
+          customdata: yearlyRows.map(row => [
+            row[`${key}_period`] || `${row.year}`,
+            row[`${key}_filename`] || "Unknown source",
+            row[`${key}_source_url`] || "",
+          ]),
+          line: { color: meta.color, width: 3.5 },
+          marker: { color: meta.color, size: 10, line: { color: "#fffaf0", width: 1.5 } },
+          hovertemplate:
+            `<b>${escapeHtml(meta.label)}</b><br>` +
+            "Year: %{x}<br>" +
+            "Coverage: <b>%{y:.0f}%</b><br>" +
+            "Source period: %{customdata[0]}<br>" +
+            "File: %{customdata[1]}<extra></extra>",
         };
       });
 
       return {
-        animation: false,
-        grid: { top: 18, right: 118, bottom: 42, left: 58, containLabel: true },
-        tooltip: {
-          trigger: "axis",
-          confine: true,
-          formatter: params => {
-            const header = `<strong>${escapeHtml(formatRegionLabel(region))}</strong><br>${escapeHtml(params?.[0]?.axisValue || "")}`;
-            const lines = (params || []).map(item => {
-              const sourceUrl = item.data?.sourceUrl ? `<br><a href="${escapeAttribute(item.data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
-              return `${escapeHtml(item.seriesName)}: <strong>${formatPercent(item.data?.value, 0)}</strong><br>Source period: ${escapeHtml(item.data?.period || item.axisValue)}<br>File: ${escapeHtml(item.data?.filename || "Unknown source")}${sourceUrl}`;
-            });
-            return `${header}<br><br>${lines.join("<br><br>")}`;
+        data: traces,
+        layout: {
+          margin: { t: 22, r: 24, b: 48, l: 62 },
+          xaxis: {
+            type: "linear",
+            tickmode: "array",
+            tickvals: yearlyRows.map(row => Number(row.year || 0)),
+            ticktext: yearlyRows.map(row => String(row.year || "")),
+            tickfont: { color: "#50615d", size: 13 },
+            showgrid: false,
+            fixedrange: true,
           },
-        },
-        xAxis: {
-          type: "category",
-          data: xAxis,
-          axisLabel: { color: "#50615d" },
-          axisTick: { show: false },
-          axisLine: { lineStyle: { color: "rgba(20,35,31,0.18)" } },
-        },
-        yAxis: {
-          type: "value",
-          min: 30,
-          max: 100,
-          axisLabel: { color: "#50615d", formatter: value => `${Math.round(value)}%` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          axisLine: { show: false },
-        },
-        series: series.concat([{
-          type: "line",
-          data: [],
-          markLine: {
-            symbol: "none",
-            silent: true,
-            label: { formatter: "95% target", color: "#9b3324", fontWeight: 700 },
-            lineStyle: { color: "rgba(196,86,27,0.75)", width: 1.5, type: "dashed" },
-            data: [{ yAxis: 95 }],
+          yaxis: {
+            range: [30, 100],
+            ticksuffix: "%",
+            tickfont: { color: "#50615d", size: 13 },
+            gridcolor: "rgba(20,35,31,0.10)",
+            griddash: "dash",
+            zeroline: false,
+            fixedrange: true,
           },
-        }]),
+          legend: {
+            orientation: "h",
+            y: 1.16,
+            x: 0,
+            font: { size: 13 },
+          },
+          shapes: [{
+            type: "line",
+            x0: Math.min(...yearlyRows.map(row => Number(row.year || 0))) - 0.2,
+            x1: Math.max(...yearlyRows.map(row => Number(row.year || 0))) + 0.2,
+            y0: 95,
+            y1: 95,
+            line: { color: "rgba(196,86,27,0.75)", width: 1.6, dash: "dash" },
+          }],
+          annotations: [{
+            x: 1,
+            y: 95,
+            xref: "paper",
+            yref: "y",
+            text: "95% target",
+            showarrow: false,
+            xanchor: "right",
+            yanchor: "bottom",
+            font: { size: 12, color: "#9b3324" },
+          }],
+        },
       };
     }
 
@@ -3953,81 +4275,65 @@
       });
 
       return {
-        animation: false,
-        grid: { top: 26, right: 90, bottom: 44, left: 58, containLabel: true },
-        tooltip: {
-          trigger: "item",
-          confine: true,
-          formatter: params => {
-            const data = params?.data;
-            if (!data) return "";
-            const sourceUrl = data.sourceUrl ? `<br><a href="${escapeAttribute(data.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source PDF</a>` : "";
-            return `
-              <strong>${escapeHtml(data.region || "")}</strong><br>
-              ${escapeHtml(stageMeta.label)} rank: <strong>#${escapeHtml(String(data.rank || "-"))}</strong><br>
-              Coverage: ${formatPercent(data.coverage, 0)}<br>
-              Source period: ${escapeHtml(data.period || data.year || "")}<br>
-              File: ${escapeHtml(data.filename || "Unknown source")}${sourceUrl}
-            `;
-          },
-        },
-        xAxis: {
-          type: "category",
-          data: years,
-          axisLabel: { color: "#50615d" },
-          axisTick: { show: false },
-        },
-        yAxis: {
-          type: "value",
-          min: 1,
-          max: Math.max(regions.length, 1),
-          inverse: true,
-          axisLabel: { color: "#50615d", formatter: value => `#${Math.round(value)}` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          name: "Rank (1 = highest)",
-          nameTextStyle: { color: "#50615d", fontWeight: 700, padding: [0, 0, 8, 0] },
-        },
-        series: regions.map(region => {
+        data: regions.map(region => {
           const isSelected = region === selectedRegion;
+          const points = years.map(year => {
+            const entry = rankLookup?.[year]?.[region];
+            return entry ? {
+              x: Number(year),
+              y: entry.rank,
+              coverage: entry.value,
+              period: entry.period,
+              filename: entry.filename,
+              region: formatRegionLabel(region),
+            } : null;
+          }).filter(Boolean);
           return {
+            type: "scatter",
+            mode: isSelected ? "lines+markers+text" : "lines",
             name: formatRegionLabel(region),
-            type: "line",
-            connectNulls: false,
-            symbol: "circle",
-            symbolSize: isSelected ? 10 : 6,
-            showSymbol: isSelected,
-            lineStyle: {
-              color: isSelected ? stageMeta.color : "rgba(80,97,93,0.18)",
-              width: isSelected ? 4 : 1.8,
+            x: points.map(point => point.x),
+            y: points.map(point => point.y),
+            customdata: points.map(point => [point.region, point.coverage, point.period, point.filename]),
+            text: isSelected ? points.map((point, index) => index === points.length - 1 ? point.region : "") : [],
+            textposition: "middle right",
+            line: {
+              color: isSelected ? stageMeta.color : "rgba(80,97,93,0.20)",
+              width: isSelected ? 4.5 : 1.8,
             },
-            itemStyle: {
-              color: isSelected ? stageMeta.color : "rgba(80,97,93,0.28)",
-              borderColor: "#fffaf0",
-              borderWidth: 1.25,
-            },
-            endLabel: {
-              show: isSelected,
-              color: stageMeta.color,
-              formatter: formatRegionLabel(region),
-              fontWeight: 700,
-            },
-            labelLayout: { moveOverlap: "shiftY" },
-            emphasis: { focus: isSelected ? "series" : "none" },
-            data: years.map(year => {
-              const entry = rankLookup?.[year]?.[region];
-              return entry ? {
-                value: entry.rank,
-                region: formatRegionLabel(region),
-                year,
-                rank: entry.rank,
-                coverage: entry.value,
-                period: entry.period,
-                sourceUrl: entry.sourceUrl,
-                filename: entry.filename,
-              } : null;
-            }),
+            marker: isSelected ? { color: stageMeta.color, size: 9, line: { color: "#fffaf0", width: 1.4 } } : { color: "rgba(80,97,93,0.20)", size: 5 },
+            hovertemplate:
+              "<b>%{customdata[0]}</b><br>" +
+              `${escapeHtml(stageMeta.label)} rank: <b>#%{y}</b><br>` +
+              "Coverage: %{customdata[1]:.0f}%<br>" +
+              "Source period: %{customdata[2]}<br>" +
+              "File: %{customdata[3]}<extra></extra>",
           };
         }),
+        layout: {
+          margin: { t: 26, r: 78, b: 46, l: 58 },
+          xaxis: {
+            type: "linear",
+            tickmode: "array",
+            tickvals: years.map(year => Number(year)),
+            ticktext: years,
+            tickfont: { color: "#50615d", size: 13 },
+            showgrid: false,
+            zeroline: false,
+            fixedrange: true,
+          },
+          yaxis: {
+            range: [Math.max(regions.length + 0.5, 2), 0.5],
+            tickprefix: "#",
+            dtick: 1,
+            tickfont: { color: "#50615d", size: 13 },
+            gridcolor: "rgba(20,35,31,0.10)",
+            griddash: "dash",
+            zeroline: false,
+            fixedrange: true,
+          },
+          showlegend: false,
+        },
       };
     }
 
@@ -4090,9 +4396,9 @@
       const leakageRows = series.leakage_by_year?.[selectedYear] || [];
       document.getElementById("anomaly-summary").innerHTML = buildAnomalySummaryCards(residualRows, leakageRows, selectedYear);
       if (residualRows.length && leakageRows.length) {
-        mountChart("anomaly-quadrant-chart", buildAnomalyQuadrantOption(residualRows, leakageRows, selectedYear));
+        mountPlotlyChart("anomaly-quadrant-chart", buildAnomalyQuadrantOption(residualRows, leakageRows, selectedYear));
       } else {
-        disposeChart("anomaly-quadrant-chart");
+        disposePlotlyChart("anomaly-quadrant-chart");
         document.getElementById("anomaly-quadrant-chart").innerHTML = `<div class="empty-state">A merged yearly anomaly view is unavailable for ${escapeHtml(selectedYear)}.</div>`;
       }
       document.getElementById("anomaly-quadrant-note").textContent = summarizeAnomalyYear(residualRows, leakageRows, selectedYear);
@@ -4148,74 +4454,84 @@
       const maxLeakageRate = Math.max(...merged.map(row => row.leakageRate), 10);
       const maxBurden = Math.max(...merged.map(row => row.burden), 1);
 
+      const sizeref = maxBurden > 0 ? (2.0 * maxBurden) / (34 ** 2) : 1;
       return {
-        animation: false,
-        grid: { top: 20, right: 24, bottom: 54, left: 64, containLabel: true },
-        tooltip: {
-          trigger: "item",
-          confine: true,
-          formatter: params => {
-            const data = params?.data || {};
-            const residualLink = data.residualSourceUrl ? `<br><a href="${escapeAttribute(data.residualSourceUrl)}" target="_blank" rel="noopener noreferrer">Residual source PDF</a>` : "";
-            const leakageLink = data.leakageSourceUrl ? `<br><a href="${escapeAttribute(data.leakageSourceUrl)}" target="_blank" rel="noopener noreferrer">Leakage source PDF</a>` : "";
-            return `
-              <strong>${escapeHtml(data.region || "")}</strong><br>
-              Strongest stage signal: ${escapeHtml(String(data.stage || "").toLowerCase())}<br>
-              Residual: <strong>${formatSigned(data.residual, 1)} points</strong><br>
-              Observed vs expected: ${formatPercent(data.observed, 1)} vs ${formatPercent(data.expected, 1)}<br>
-              Leakage rate: <strong>${formatPercent(data.leakageRate, 1)}</strong><br>
-              Leakage burden: ${formatNumber(data.burden)}<br>
-              Alive / LTFU / off treatment: ${formatNumber(data.alive)} / ${formatNumber(data.ltfu)} / ${formatNumber(data.offTreatment)}<br>
-              Residual period: ${escapeHtml(data.residualPeriod || year)}<br>
-              Leakage period: ${escapeHtml(data.leakagePeriod || year)}<br>
-              Residual file: ${escapeHtml(data.residualFile || "Unknown source")}${residualLink}<br>
-              Leakage file: ${escapeHtml(data.leakageFile || "Unknown source")}${leakageLink}
-            `;
-          },
-        },
-        xAxis: {
-          type: "value",
-          min: -residualBound,
-          max: residualBound,
-          axisLabel: { color: "#50615d", formatter: value => `${Number(value).toFixed(0)}` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          name: "Residual versus expected cascade performance (points)",
-          nameTextStyle: { color: "#50615d", fontWeight: 700, padding: [16, 0, 0, 0] },
-        },
-        yAxis: {
-          type: "value",
-          min: 0,
-          max: Math.ceil((maxLeakageRate + 2) / 5) * 5,
-          axisLabel: { color: "#50615d", formatter: value => `${Math.round(value)}%` },
-          splitLine: { lineStyle: { color: "rgba(20,35,31,0.10)", type: "dashed" } },
-          name: "Loss-from-care rate",
-          nameTextStyle: { color: "#50615d", fontWeight: 700, padding: [0, 0, 10, 0] },
-        },
-        series: [{
+        data: [{
           type: "scatter",
-          data: merged.map(row => ({
-            value: [row.residual, row.leakageRate, row.burden],
-            ...row,
-            symbol: getCascadeStageMeta(String(row.stage || "").toLowerCase()).symbol,
-            symbolSize: 14 + (Math.sqrt(row.burden / maxBurden) * 28),
-            itemStyle: { color: row.residual >= 0 ? "#0f7c66" : "#c4561b" },
-            label: topLabels.has(row.region)
-              ? { show: true, formatter: row.region, color: "#14231f", fontWeight: 700, position: "top" }
-              : { show: false },
-          })),
-          emphasis: {
-            itemStyle: {
-              borderColor: "#14231f",
-              borderWidth: 1.5,
-            },
+          mode: "markers+text",
+          x: merged.map(row => row.residual),
+          y: merged.map(row => row.leakageRate),
+          text: merged.map(row => topLabels.has(row.region) ? row.region : ""),
+          textposition: "top center",
+          customdata: merged.map(row => [
+            row.region,
+            row.stage,
+            row.observed,
+            row.expected,
+            row.burden,
+            row.alive,
+            row.ltfu,
+            row.offTreatment,
+            row.residualPeriod,
+            row.leakagePeriod,
+            row.residualFile || "Unknown source",
+            row.leakageFile || "Unknown source",
+          ]),
+          marker: {
+            size: merged.map(row => row.burden),
+            sizemode: "area",
+            sizeref,
+            sizemin: 10,
+            color: merged.map(row => row.residual >= 0 ? "#0f7c66" : "#c4561b"),
+            line: { color: "#fffaf0", width: 1.3 },
+            opacity: 0.88,
           },
-          markLine: {
-            symbol: "none",
-            silent: true,
-            lineStyle: { color: "rgba(20,35,31,0.18)", type: "dashed" },
-            data: [{ xAxis: 0 }],
-          },
+          hovertemplate:
+            "<b>%{customdata[0]}</b><br>" +
+            "Strongest stage signal: %{customdata[1]}<br>" +
+            "Residual: <b>%{x:.1f} points</b><br>" +
+            "Observed vs expected: %{customdata[2]:.1f}% vs %{customdata[3]:.1f}%<br>" +
+            "Leakage rate: <b>%{y:.1f}%</b><br>" +
+            "Leakage burden: %{customdata[4]:,.0f}<br>" +
+            "Alive / LTFU / off treatment: %{customdata[5]:,.0f} / %{customdata[6]:,.0f} / %{customdata[7]:,.0f}<br>" +
+            "Residual period: %{customdata[8]}<br>" +
+            "Leakage period: %{customdata[9]}<br>" +
+            "Residual file: %{customdata[10]}<br>" +
+            "Leakage file: %{customdata[11]}<extra></extra>",
         }],
+        layout: {
+          margin: { t: 20, r: 24, b: 54, l: 68 },
+          xaxis: {
+            range: [-residualBound, residualBound],
+            title: { text: "Residual versus expected cascade performance (points)", font: { size: 13, color: "#50615d" } },
+            tickfont: { color: "#50615d", size: 13 },
+            gridcolor: "rgba(20,35,31,0.10)",
+            griddash: "dash",
+            zeroline: false,
+            fixedrange: true,
+          },
+          yaxis: {
+            range: [0, Math.ceil((maxLeakageRate + 2) / 5) * 5],
+            ticksuffix: "%",
+            title: { text: "Loss-from-care rate", font: { size: 13, color: "#50615d" } },
+            tickfont: { color: "#50615d", size: 13 },
+            gridcolor: "rgba(20,35,31,0.10)",
+            griddash: "dash",
+            zeroline: false,
+            fixedrange: true,
+          },
+          shapes: [{
+            type: "line",
+            x0: 0,
+            x1: 0,
+            y0: 0,
+            y1: 1,
+            xref: "x",
+            yref: "paper",
+            line: { color: "rgba(20,35,31,0.18)", width: 1.3, dash: "dash" },
+          }],
+          showlegend: false,
+        },
       };
     }
 

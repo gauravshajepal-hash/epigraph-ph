@@ -268,8 +268,8 @@
 <circle cx='495.55' cy='468.30' r='4.05' style='stroke-width: 1.28; stroke: #FFFFFF; fill: #DB6B2C;' />
 <circle cx='505.36' cy='468.30' r='4.05' style='stroke-width: 1.28; stroke: #FFFFFF; fill: #DB6B2C;' />
 <line x1='507.24' y1='451.88' x2='505.97' y2='453.71' style='stroke-width: 1.07; stroke: #5B74D6;' />
-<line x1='509.95' y1='434.39' x2='506.25' y2='436.85' style='stroke-width: 1.07; stroke: #16886F;' />
-<line x1='504.28' y1='471.34' x2='505.00' y2='469.30' style='stroke-width: 1.07; stroke: #DB6B2C;' />
+<line x1='509.96' y1='434.39' x2='506.25' y2='436.85' style='stroke-width: 1.07; stroke: #16886F;' />
+<line x1='504.28' y1='471.35' x2='505.00' y2='469.30' style='stroke-width: 1.07; stroke: #DB6B2C;' />
 <text x='463.79' y='450.08' style='font-size: 11.38px; font-weight: bold;fill: #5B74D6; font-family: "Arial";' textLength='87.25px' lengthAdjust='spacingAndGlyphs'>Diagnosed  61%</text>
 <text x='479.10' y='432.59' style='font-size: 11.38px; font-weight: bold;fill: #16886F; font-family: "Arial";' textLength='71.00px' lengthAdjust='spacingAndGlyphs'>On ART  66%</text>
 <text x='457.15' y='481.29' style='font-size: 11.38px; font-weight: bold;fill: #DB6B2C; font-family: "Arial";' textLength='94.22px' lengthAdjust='spacingAndGlyphs'>Suppressed  57%</text>

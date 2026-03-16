@@ -317,6 +317,11 @@ class PublicationAssetBuilder:
             observations,
             filename_source_map,
         )
+        series["experimental_regional"] = self._build_experimental_regional_series(
+            series["national_cascade"],
+            series["regional_yearly"],
+            series["anomaly_yearly"],
+        )
         methodology = self._build_methodology(series)
         references = self._build_references(series)
         r_figures = self._render_r_publication_figures(series)
@@ -324,6 +329,7 @@ class PublicationAssetBuilder:
         figures = {
             "national_cascade": r_figures.get("national_cascade") or self._render_national_cascade(series["national_cascade"]),
             "regional_ladder": r_figures.get("regional_ladder") or self._render_regional_ladder(series["regional_ladder"]),
+            "regional_fingerprint_board": r_figures.get("regional_fingerprint_board") or self._render_regional_fingerprint_board(series["regional_yearly"]),
             "anomaly_board": r_figures.get("anomaly_board") or self._render_anomaly_board(series["anomalies"]),
             "historical_board": r_figures.get("historical_board") or self._render_historical_board(series["historical"]),
             "key_populations_board": r_figures.get("key_populations_board") or self._render_key_population_board(series["key_populations"]),
@@ -424,6 +430,7 @@ class PublicationAssetBuilder:
         configs = {
             "national_cascade": ("national_cascade_board", "National 95-95-95 board", "The board combines a target-position bullet strip, a shared 2015-2025 timeline, and a latest-cascade waterfall in people."),
             "regional_ladder": ("regional_stage_matrix", "Regional stage matrix", "The publication figure is an ordered regional stage matrix with a companion gap strip for the latest observed yearly snapshot."),
+            "regional_fingerprint_board": ("regional_fingerprint_board", "Regional fingerprint board", "The publication figure compares a small set of exemplar regions using observed yearly cascade values, target gaps, and year-over-year movement."),
             "anomaly_board": ("anomaly_board", "Performance versus treatment burden", "The publication figure pairs a performance-versus-burden quadrant with the ranked treatment-leakage distribution."),
             "historical_board": ("historical_board", "Historical burden indicators", "Historical panels are rendered from observed annual values only. No interpolation is applied across missing years."),
             "key_populations_board": ("key_populations_board", "Key population sentinel panels", "Key-population series use a shared 2015-2025 presentation window while keeping gaps visible where no defensible observed value exists."),
@@ -1122,6 +1129,219 @@ class PublicationAssetBuilder:
             "coverage_note": "Residuals are available where regional cascade coverage exists. Treatment leakage uses the latest official treatment-outcome snapshot inside each year, with 2023 backfilled from the year-end SHIP table.",
         }
 
+    def _build_experimental_regional_series(
+        self,
+        national_cascade: dict,
+        regional_yearly: dict,
+        anomaly_yearly: dict,
+    ) -> dict:
+        def _quarter_year(period_label: str) -> tuple[int, int]:
+            match = re.match(r"^(\d{4}) Q([1-4])$", str(period_label or "").strip())
+            if not match:
+                return 0, 0
+            return int(match.group(1)), int(match.group(2))
+
+        def _annualize_national_stage(row: dict) -> dict[int, float]:
+            annual = {}
+            for point in row.get("official_annual", []):
+                year = int(point.get("year") or 0)
+                value = _parse_numeric(point.get("value"))
+                if year and value is not None:
+                    annual[year] = float(value)
+            quarterly_latest: dict[int, tuple[int, float]] = {}
+            for point in row.get("points", []):
+                year, quarter = _quarter_year(str(point.get("period") or ""))
+                value = _parse_numeric(point.get("value"))
+                if not year or value is None:
+                    continue
+                current = quarterly_latest.get(year)
+                if current is None or quarter > current[0]:
+                    quarterly_latest[year] = (quarter, float(value))
+            for year, (_, value) in quarterly_latest.items():
+                if year not in annual:
+                    annual[year] = value
+            return annual
+
+        def _fit_residual_model(anchor_years: list[int], anchor_residuals: list[float]) -> tuple[float, float, float]:
+            if not anchor_years:
+                return 0.0, 0.0, 6.0
+            if len(anchor_years) == 1:
+                return 0.0, float(anchor_residuals[0]), 5.0
+            x = np.array(anchor_years, dtype=float)
+            y = np.array(anchor_residuals, dtype=float)
+            slope, intercept = np.polyfit(x, y, 1)
+            uncertainty = max(3.5, float(np.std(y, ddof=0)) + abs(float(slope)) * 1.5)
+            return float(slope), float(intercept), float(uncertainty)
+
+        def _predict_residual(year: int, slope: float, intercept: float, anchor_years: list[int]) -> float:
+            if not anchor_years:
+                return 0.0
+            center = float(np.mean(anchor_years))
+            raw = intercept + slope * year
+            centered_baseline = intercept + slope * center
+            # Shrink the trend component so experimental history stays anchored to observed offsets,
+            # rather than letting two observed years create an exaggerated backcast.
+            return centered_baseline + 0.65 * (raw - centered_baseline)
+
+        stage_id_map = {
+            "diagnosis": "first_95",
+            "treatment": "second_95",
+            "suppression": "third_95",
+        }
+        national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
+        national_stage_values = {
+            stage: _annualize_national_stage(national_rows.get(series_id, {}))
+            for stage, series_id in stage_id_map.items()
+        }
+
+        region_histories = regional_yearly.get("region_histories", {}) or {}
+        regions = regional_yearly.get("regions", []) or sorted(region_histories)
+        stage_years = {
+            stage: sorted(values.keys())
+            for stage, values in national_stage_values.items()
+            if values
+        }
+        all_years = sorted({year for years in stage_years.values() for year in years})
+
+        estimated_histories: dict[str, dict] = {}
+        rows_by_year: dict[str, list[dict]] = {}
+        observed_years_by_stage = defaultdict(list)
+        estimated_years_by_stage = defaultdict(list)
+
+        for region in regions:
+            cascade_history = region_histories.get(region, {}).get("cascade", []) or []
+            observed_lookup = {
+                int(row.get("year") or 0): row
+                for row in cascade_history
+                if int(row.get("year") or 0)
+            }
+            stage_models = {}
+            for stage in ("diagnosis", "treatment", "suppression"):
+                anchors = []
+                for year, row in observed_lookup.items():
+                    value = _parse_numeric(row.get(stage))
+                    national_value = national_stage_values.get(stage, {}).get(year)
+                    if value is None or national_value is None:
+                        continue
+                    anchors.append((year, float(value), float(value) - float(national_value)))
+                anchor_years = [item[0] for item in anchors]
+                anchor_residuals = [item[2] for item in anchors]
+                slope, intercept, uncertainty = _fit_residual_model(anchor_years, anchor_residuals)
+                stage_models[stage] = {
+                    "anchor_years": anchor_years,
+                    "anchor_residuals": anchor_residuals,
+                    "slope": slope,
+                    "intercept": intercept,
+                    "uncertainty": uncertainty,
+                    "status": "observed_only" if anchors else "unavailable",
+                }
+
+            region_rows = []
+            for year in all_years:
+                row = {"year": year, "region": region}
+                has_any_value = False
+                observed_row = observed_lookup.get(year)
+                for stage in ("diagnosis", "treatment", "suppression"):
+                    national_value = national_stage_values.get(stage, {}).get(year)
+                    if national_value is None:
+                        row[f"{stage}"] = None
+                        row[f"{stage}_status"] = "missing"
+                        row[f"{stage}_lower"] = None
+                        row[f"{stage}_upper"] = None
+                        continue
+                    observed_value = _parse_numeric((observed_row or {}).get(stage))
+                    if observed_value is not None:
+                        row[f"{stage}"] = float(observed_value)
+                        row[f"{stage}_status"] = "observed"
+                        row[f"{stage}_lower"] = float(observed_value)
+                        row[f"{stage}_upper"] = float(observed_value)
+                        row[f"{stage}_period"] = (observed_row or {}).get(f"{stage}_period", str(year))
+                        row[f"{stage}_source_url"] = (observed_row or {}).get(f"{stage}_source_url", "")
+                        row[f"{stage}_filename"] = (observed_row or {}).get(f"{stage}_filename", "")
+                        observed_years_by_stage[stage].append(year)
+                    else:
+                        model = stage_models[stage]
+                        if not model["anchor_years"]:
+                            row[f"{stage}"] = None
+                            row[f"{stage}_status"] = "missing"
+                            row[f"{stage}_lower"] = None
+                            row[f"{stage}_upper"] = None
+                            continue
+                        estimate = max(0.0, min(100.0, float(national_value) + _predict_residual(year, model["slope"], model["intercept"], model["anchor_years"])))
+                        uncertainty = model["uncertainty"]
+                        row[f"{stage}"] = round(estimate, 1)
+                        row[f"{stage}_status"] = "estimated"
+                        row[f"{stage}_lower"] = round(max(0.0, estimate - uncertainty), 1)
+                        row[f"{stage}_upper"] = round(min(100.0, estimate + uncertainty), 1)
+                        row[f"{stage}_period"] = str(year)
+                        row[f"{stage}_source_url"] = ""
+                        row[f"{stage}_filename"] = "Modeled regional backfill"
+                        estimated_years_by_stage[stage].append(year)
+                    has_any_value = has_any_value or row[f"{stage}"] is not None
+                leakage_row = next((item for item in anomaly_yearly.get("leakage_by_year", {}).get(str(year), []) if item.get("region") == region), None)
+                if leakage_row:
+                    row["leakage_burden"] = float(leakage_row.get("ltfu", 0.0)) + float(leakage_row.get("not_on_treatment", 0.0))
+                    row["leakage_status"] = "observed"
+                else:
+                    row["leakage_burden"] = None
+                    row["leakage_status"] = "missing"
+                if has_any_value:
+                    region_rows.append(row)
+                    rows_by_year.setdefault(str(year), []).append(row)
+
+            estimated_histories[region] = {
+                "cascade": region_rows,
+                "model": {
+                    stage: {
+                        "anchor_years": stage_models[stage]["anchor_years"],
+                        "uncertainty": round(stage_models[stage]["uncertainty"], 2),
+                        "status": stage_models[stage]["status"],
+                    }
+                    for stage in stage_models
+                },
+            }
+
+        for year, rows in rows_by_year.items():
+            rows.sort(
+                key=lambda row: (
+                    -1 if row.get("diagnosis_status") == "observed" and row.get("treatment_status") == "observed" and row.get("suppression_status") == "observed" else 0,
+                    (
+                        (95 - float(row["diagnosis"])) if row.get("diagnosis") is not None else 95
+                    ) + (
+                        (95 - float(row["treatment"])) if row.get("treatment") is not None else 95
+                    ) + (
+                        (95 - float(row["suppression"])) if row.get("suppression") is not None else 95
+                    ),
+                )
+            )
+
+        observed_stage_years = {
+            stage: sorted({year for year in years if year in set(observed_years_by_stage[stage])})
+            for stage, years in stage_years.items()
+        }
+        estimated_stage_years = {
+            stage: sorted({year for year in years if year in set(estimated_years_by_stage[stage])})
+            for stage, years in stage_years.items()
+        }
+
+        return {
+            "years": all_years,
+            "default_year": max(all_years, default=None),
+            "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
+            "rows_by_year": rows_by_year,
+            "regions": regions,
+            "region_histories": estimated_histories,
+            "observed_years_by_stage": observed_stage_years,
+            "estimated_years_by_stage": estimated_stage_years,
+            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact and backcasts earlier yearly regional context from national official trajectories plus region-specific observed offsets. Suppression remains unavailable before 2023 because no official national annual third-95 anchor series exists.",
+            "model_note": "Experimental estimates use a constrained yearly residual model: national official stage coverage plus a shrunk region-level residual trend fitted on observed regional years. Estimated values are never mixed into the official overview or explorer.",
+            "source_policy": [
+                "Observed regional cascade values always override model estimates.",
+                "Diagnosis and treatment backfill are anchored to official national annual/quarterly series.",
+                "Suppression backfill is limited to years where an official national third-95 anchor exists.",
+            ],
+        }
+
     def _build_methodology(self, series: dict) -> dict:
         sections = [
             {
@@ -1198,6 +1418,38 @@ class PublicationAssetBuilder:
                     "Reviewed older official reports, including 2019 Q4, October 2021, and December 2022, publish national ART totals and facility lists but not a region-level treatment-outcome table that can support yearly regional cascade backfill.",
                 ],
                 "reference_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
+            },
+            {
+                "id": "regional_fingerprint_board",
+                "figure_key": "regional_fingerprint_board",
+                "title": "Regional fingerprint board",
+                "question": "How do the most informative regions differ in cascade shape and year-over-year movement?",
+                "definition": "The fingerprint board summarizes a small set of exemplar regions using their yearly diagnosis, treatment, and suppression coverage, current gap to target, and year-over-year change.",
+                "coverage_window": "Observed yearly regional cascade currently spans 2024-2025. The board uses observed-only regional values from that window.",
+                "estimation_policy": "No synthetic values are injected into the fingerprint board. It is derived entirely from observed yearly regional cascade rows.",
+                "formulas": [
+                    "Stage gap = 95 - observed regional stage coverage",
+                    "Year-over-year delta = current yearly stage coverage - previous yearly stage coverage",
+                    "Exemplar regions = lowest mean gap, highest mean gap, and highest observed regional burden among fully observed yearly cascade rows",
+                ],
+                "source_precedence": [
+                    "Use the same observed yearly regional cascade rows that feed the publication stage matrix and the explorer.",
+                    "If a region has only one observed year, show the current value without a yearly change estimate.",
+                ],
+                "construction": [
+                    "Select a small set of exemplar regions so the publication overview can show how cascade shape differs without turning back into a crowded regional ladder.",
+                    "Render diagnosis, treatment, and suppression on the same 0-100 scale for each exemplar region.",
+                    "Annotate the current yearly endpoint, the gap to 95, and the year-over-year delta using only observed yearly rows.",
+                ],
+                "harmonization": [
+                    "Stage colors match the national cascade board and the regional stage matrix.",
+                    "The fingerprint board remains publication-only and does not inherit any modeled values from the experimental layer.",
+                ],
+                "caveats": [
+                    "This board is illustrative rather than exhaustive. It highlights a few regions to make the regional story legible at overview scale.",
+                    "The board does not claim pre-2024 observed regional cascade coverage because the reviewed official corpus does not support that claim.",
+                ],
+                "reference_ids": ["ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "design-ahead"],
             },
             {
                 "id": "anomaly_board",
@@ -1303,6 +1555,39 @@ class PublicationAssetBuilder:
                     "Different subgroup panels have different evidence windows. A common x-axis does not imply continuous coverage.",
                 ],
                 "reference_ids": ["ship-local-corpus"],
+            },
+            {
+                "id": "experimental_regional",
+                "figure_key": "",
+                "title": "Experimental regional backfill",
+                "question": "How can earlier regional cascade context be explored without contaminating the official atlas?",
+                "definition": "The experimental layer combines observed regional yearly cascade anchors with official national stage trajectories to produce explicitly modeled regional backfill for exploration only.",
+                "coverage_window": "Diagnosis and treatment can be explored on the 2016-2025 national anchor window. Suppression is only explored from 2023 onward because that is the earliest official national third-95 anchor available in the reviewed public sources.",
+                "estimation_policy": "Estimated values remain separate from all publication figures and the official explorer. They are always marked as estimated and are accompanied by stage-specific uncertainty intervals.",
+                "formulas": [
+                    "Estimated regional stage = official national stage + shrunk regional residual trend",
+                    "Regional residual = observed regional stage - official national stage in the same year",
+                    "Estimated interval = estimated value +/- stage-specific residual uncertainty",
+                ],
+                "source_precedence": [
+                    "Observed regional yearly cascade values always override model estimates.",
+                    "Official national annual or quarterly stage values anchor the experimental regional backfill.",
+                    "No experimental suppression history is shown before an official national third-95 anchor exists.",
+                ],
+                "construction": [
+                    "Fit a simple yearly residual model for each region and stage using only observed regional yearly anchors.",
+                    "Shrink the fitted residual trend toward the observed mean residual so the backcast does not overreact to two observed years.",
+                    "Combine the residual model with the official national yearly stage series to derive exploratory regional history.",
+                ],
+                "harmonization": [
+                    "Observed and estimated values are kept separate in both the payload and the UI.",
+                    "The experimental layer is exploratory only and is never reused inside the publication overview.",
+                ],
+                "caveats": [
+                    "The modeled regional backfill is not official surveillance output.",
+                    "With only two observed regional cascade years, the experimental history is assumption-sensitive and should be treated as context rather than evidence.",
+                ],
+                "reference_ids": ["unaids-dataset", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
             },
         ]
         return {
@@ -2095,6 +2380,113 @@ class PublicationAssetBuilder:
         note = f"Regions are ordered from smallest to largest average gap to the 95% target. {leader} is closest overall; {laggard} is furthest away."
         fig.subplots_adjust(left=0.23, right=0.98, top=0.90, bottom=0.12)
         return self._save_figure(fig, "regional_cascade_ladder", "Regional cascade ladder", note)
+
+    def _render_regional_fingerprint_board(self, data: dict) -> PublicationFigure:
+        self._base_style()
+        years = data.get("years", []) or []
+        latest_year = max(years, default=None)
+        latest_rows = list(data.get("rows_by_year", {}).get(str(latest_year), [])) if latest_year else []
+        histories = data.get("region_histories", {}) or {}
+
+        if not latest_rows:
+            fig, ax = plt.subplots(figsize=(12.5, 4.8))
+            ax.axis("off")
+            ax.text(
+                0.5,
+                0.52,
+                "No observed yearly regional cascade rows are available for a fingerprint board.",
+                ha="center",
+                va="center",
+                fontsize=14,
+                color="#50615d",
+            )
+            return self._save_figure(
+                fig,
+                "regional_fingerprint_board",
+                "Regional fingerprint board",
+                "Fingerprint board unavailable because no observed yearly regional cascade rows were exported.",
+            )
+
+        def _latest_burden(region: str) -> float:
+            burden_rows = histories.get(region, {}).get("burden", []) or []
+            if not burden_rows:
+                return 0.0
+            ordered = sorted(burden_rows, key=lambda row: int(row.get("year") or 0))
+            return float(ordered[-1].get("value") or 0.0)
+
+        ranked_rows = sorted(latest_rows, key=lambda row: float(row.get("mean_gap") or 999))
+        best_region = ranked_rows[0]["region"]
+        widest_region = ranked_rows[-1]["region"]
+        burden_region = max(
+            (row["region"] for row in ranked_rows),
+            key=lambda region: _latest_burden(region),
+            default=best_region,
+        )
+        exemplar_regions = []
+        for region in (best_region, burden_region, widest_region):
+            if region and region not in exemplar_regions:
+                exemplar_regions.append(region)
+        exemplar_rows = [next(row for row in ranked_rows if row["region"] == region) for region in exemplar_regions]
+
+        fig = plt.figure(figsize=(15.2, 5.8))
+        gs = GridSpec(1, len(exemplar_rows), figure=fig, wspace=0.22)
+        stage_keys = [("diagnosis", "Diagnosed"), ("treatment", "On ART"), ("suppression", "Suppressed")]
+        delta_label_map = {"diagnosis": "Dx", "treatment": "ART", "suppression": "Supp"}
+
+        for idx, row in enumerate(exemplar_rows):
+            ax = fig.add_subplot(gs[0, idx])
+            region = row["region"]
+            history = sorted(histories.get(region, {}).get("cascade", []), key=lambda item: int(item.get("year") or 0))
+            previous = history[-2] if len(history) > 1 else None
+            y_positions = np.arange(len(stage_keys))[::-1]
+
+            for y, (key, label) in zip(y_positions, stage_keys):
+                value = float(row.get(key) or 0)
+                ax.hlines(y, 0, 100, color="#ebefea", linewidth=8.2, zorder=1)
+                ax.hlines(y, 0, value, color=CASCADE_COLORS[key], linewidth=8.2, zorder=2)
+                ax.scatter(value, y, color=CASCADE_COLORS[key], s=120, edgecolors="#fffaf0", linewidth=1.8, zorder=3)
+                if previous and previous.get(key) is not None:
+                    delta = float(row.get(key) or 0) - float(previous.get(key) or 0)
+                    ax.text(
+                        100,
+                        y,
+                        f"{delta_label_map[key]} {delta:+.0f}",
+                        ha="right",
+                        va="center",
+                        fontsize=10,
+                        color="#556863",
+                        fontweight="bold",
+                    )
+            ax.axvline(95, color="#c4561b", linewidth=1.2, linestyle=(0, (4, 3)), zorder=1)
+            ax.set_xlim(0, 100)
+            ax.set_ylim(-0.8, len(stage_keys) - 0.2)
+            ax.set_yticks(y_positions)
+            ax.set_yticklabels([label for _, label in stage_keys], fontsize=11)
+            ax.set_xticks([0, 50, 95, 100])
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}%"))
+            self._finalize_axis(ax)
+            ax.set_title(region, fontsize=16, fontfamily="DejaVu Serif", loc="left", pad=12)
+            ax.text(
+                0.0,
+                1.02,
+                f"{latest_year} observed snapshot · mean gap {float(row.get('mean_gap') or 0):.1f}",
+                transform=ax.transAxes,
+                fontsize=9.6,
+                color="#5e6a66",
+            )
+            if idx == 0:
+                ax.set_ylabel("Cascade stage", fontsize=12, fontweight="bold")
+            else:
+                ax.set_ylabel("")
+            ax.set_xlabel("Coverage", fontsize=12, fontweight="bold", labelpad=10)
+
+        fig.subplots_adjust(left=0.08, right=0.98, top=0.90, bottom=0.16)
+        note = (
+            f"Exemplar regions use observed yearly cascade rows only for {latest_year}. "
+            f"{best_region} is closest to the combined target, {widest_region} is furthest away, "
+            f"and {burden_region} carries the largest observed regional burden among the displayed fingerprints."
+        )
+        return self._save_figure(fig, "regional_fingerprint_board", "Regional fingerprint board", note)
 
     def _render_anomaly_board(self, data: dict) -> PublicationFigure:
         self._base_style()
