@@ -3,8 +3,10 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import re
 import shutil
+import subprocess
 import textwrap
 from collections import defaultdict
 from dataclasses import dataclass
@@ -292,6 +294,7 @@ class PublicationAssetBuilder:
         self.report_dir = self.figure_dir / "reports"
         self.output_pdf_dir = self.base_dir / "output" / "pdf"
         self.asset_path = self.normalized_dir / "publication_assets.json"
+        self.r_script_path = self.base_dir / "scripts" / "render_publication_figures.R"
 
     def build(self) -> dict:
         self.figure_dir.mkdir(parents=True, exist_ok=True)
@@ -316,13 +319,14 @@ class PublicationAssetBuilder:
         )
         methodology = self._build_methodology(series)
         references = self._build_references(series)
+        r_figures = self._render_r_publication_figures(series)
 
         figures = {
-            "national_cascade": self._render_national_cascade(series["national_cascade"]),
-            "regional_ladder": self._render_regional_ladder(series["regional_ladder"]),
-            "anomaly_board": self._render_anomaly_board(series["anomalies"]),
-            "historical_board": self._render_historical_board(series["historical"]),
-            "key_populations_board": self._render_key_population_board(series["key_populations"]),
+            "national_cascade": r_figures.get("national_cascade") or self._render_national_cascade(series["national_cascade"]),
+            "regional_ladder": r_figures.get("regional_ladder") or self._render_regional_ladder(series["regional_ladder"]),
+            "anomaly_board": r_figures.get("anomaly_board") or self._render_anomaly_board(series["anomalies"]),
+            "historical_board": r_figures.get("historical_board") or self._render_historical_board(series["historical"]),
+            "key_populations_board": r_figures.get("key_populations_board") or self._render_key_population_board(series["key_populations"]),
         }
 
         figure_payload = {}
@@ -352,6 +356,83 @@ class PublicationAssetBuilder:
         }
         self.asset_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         return payload
+
+    def _r_libs_user(self) -> Path:
+        return Path.home() / "Documents" / "R" / "win-library" / "4.5"
+
+    def _find_rscript(self) -> Path | None:
+        candidates = []
+        env_path = os.environ.get("RSCRIPT_PATH")
+        if env_path:
+            path = Path(env_path)
+            if path.exists():
+                return path
+        for root in (Path("C:/Program Files/R"), Path("C:/Program Files (x86)/R")):
+            if not root.exists():
+                continue
+            candidates.extend(root.glob("R-*/bin/x64/Rscript.exe"))
+            candidates.extend(root.glob("R-*/bin/Rscript.exe"))
+        if not candidates:
+            return None
+        candidates = sorted(candidates, key=lambda item: item.as_posix())
+        return candidates[-1]
+
+    def _figure_from_existing(self, basename: str, title: str, note: str) -> PublicationFigure | None:
+        svg_path = self.figure_dir / f"{basename}.svg"
+        png_path = self.figure_dir / f"{basename}.png"
+        pdf_path = self.figure_dir / f"{basename}.pdf"
+        if not (svg_path.exists() and png_path.exists() and pdf_path.exists()):
+            return None
+        return PublicationFigure(
+            title=title,
+            note=note,
+            svg=svg_path.read_text(encoding="utf-8"),
+            svg_path=str(svg_path.relative_to(self.base_dir)).replace("\\", "/"),
+            png_path=str(png_path.relative_to(self.base_dir)).replace("\\", "/"),
+            figure_pdf_path=str(pdf_path.relative_to(self.base_dir)).replace("\\", "/"),
+        )
+
+    def _render_r_publication_figures(self, series: dict) -> dict[str, PublicationFigure]:
+        rscript = self._find_rscript()
+        if rscript is None or not self.r_script_path.exists():
+            return {}
+
+        payload_path = self.normalized_dir / "publication_r_input.json"
+        payload = {"series": series}
+        payload_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        env = os.environ.copy()
+        env["R_LIBS_USER"] = str(self._r_libs_user())
+        figures: dict[str, PublicationFigure] = {}
+        try:
+            subprocess.run(
+                [str(rscript), str(self.r_script_path), str(payload_path), str(self.figure_dir)],
+                check=True,
+                cwd=str(self.base_dir),
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        except (subprocess.CalledProcessError, OSError):
+            return {}
+        finally:
+            try:
+                payload_path.unlink()
+            except FileNotFoundError:
+                pass
+
+        configs = {
+            "national_cascade": ("national_cascade_board", "National 95-95-95 board", "The board combines a target-position bullet strip, a shared 2015-2025 timeline, and a latest-cascade waterfall in people."),
+            "regional_ladder": ("regional_stage_matrix", "Regional stage matrix", "The publication figure is an ordered regional stage matrix with a companion gap strip for the latest observed yearly snapshot."),
+            "anomaly_board": ("anomaly_board", "Performance versus treatment burden", "The publication figure pairs a performance-versus-burden quadrant with the ranked treatment-leakage distribution."),
+            "historical_board": ("historical_board", "Historical burden indicators", "Historical panels are rendered from observed annual values only. No interpolation is applied across missing years."),
+            "key_populations_board": ("key_populations_board", "Key population sentinel panels", "Key-population series use a shared 2015-2025 presentation window while keeping gaps visible where no defensible observed value exists."),
+        }
+        for key, (basename, title, note) in configs.items():
+            figure = self._figure_from_existing(basename, title, note)
+            if figure is not None:
+                figures[key] = figure
+        return figures
 
     def _read_json(self, path: Path) -> dict:
         if not path.exists():
@@ -501,6 +582,7 @@ class PublicationAssetBuilder:
     def _build_anomalies(self, dashboard: dict, observations: list[dict]) -> dict:
         charts = dashboard.get("charts", {}).get("relationship_scatter", [])
         residual_rows = []
+        residual_by_region: dict[str, dict] = {}
         for chart in charts[:2]:
             fit_line = chart.get("fit_line", [])
             if len(fit_line) < 2:
@@ -510,11 +592,19 @@ class PublicationAssetBuilder:
             slope = 0 if x1 == x0 else (y1 - y0) / (x1 - x0)
             pair_label = "Treatment after diagnosis" if "diagnosis" in chart.get("chart_id", "") else "Suppression after treatment"
             for point in chart.get("points", []):
+                region = _format_region(point["region"])
                 fit_y = y0 + slope * (point["x"] - x0)
-                residual_rows.append({
-                    "label": f"{_format_region(point['region'])} | {pair_label}",
-                    "value": round(float(point["y"]) - float(fit_y), 2),
-                })
+                residual_value = round(float(point["y"]) - float(fit_y), 2)
+                residual = {
+                    "region": region,
+                    "stage": pair_label,
+                    "label": f"{region} | {pair_label}",
+                    "value": residual_value,
+                }
+                residual_rows.append(residual)
+                current = residual_by_region.get(region)
+                if current is None or abs(residual_value) > abs(current["value"]):
+                    residual_by_region[region] = residual
         residual_rows = sorted(residual_rows, key=lambda row: abs(row["value"]), reverse=True)[:8]
         residual_rows = sorted(residual_rows, key=lambda row: row["value"])
 
@@ -542,8 +632,31 @@ class PublicationAssetBuilder:
                 bucket["ltfu"] = value
             elif row["metric_type"] == "not_on_treatment_count":
                 bucket["not_on_treatment"] = value
-        leakage_rows = sorted(leakage.values(), key=lambda row: row["ltfu"] + row["not_on_treatment"], reverse=True)[:10]
-        return {"period_label": latest_period, "residual_rows": residual_rows, "leakage_rows": leakage_rows}
+        all_leakage_rows = sorted(leakage.values(), key=lambda row: row["ltfu"] + row["not_on_treatment"], reverse=True)
+        leakage_rows = all_leakage_rows[:10]
+
+        performance_burden_rows = []
+        for row in all_leakage_rows:
+            region = row["region"]
+            residual = residual_by_region.get(region)
+            if residual is None:
+                continue
+            performance_burden_rows.append({
+                "region": region,
+                "residual": residual["value"],
+                "stage": residual["stage"],
+                "alive": row["alive"],
+                "ltfu": row["ltfu"],
+                "not_on_treatment": row["not_on_treatment"],
+                "leakage_burden": row["ltfu"] + row["not_on_treatment"],
+            })
+
+        return {
+            "period_label": latest_period,
+            "residual_rows": residual_rows,
+            "leakage_rows": leakage_rows,
+            "performance_burden_rows": performance_burden_rows,
+        }
 
     def _build_historical_series(self, observations: list[dict], filename_source_map: dict[str, str]) -> dict:
         extracted = self._extract_markdown_series(filename_source_map)
@@ -1014,7 +1127,7 @@ class PublicationAssetBuilder:
             {
                 "id": "national_cascade",
                 "figure_key": "national_cascade",
-                "title": "National 95-95-95 cascade",
+                "title": "National 95-95-95 board",
                 "question": "How close is the Philippines to the UNAIDS 95-95-95 targets?",
                 "definition": "The national cascade compares diagnosed PLHIV, PLHIV on ART, and virally suppressed PLHIV on ART against the 95% target.",
                 "coverage_window": "Shared publication axis: 2015-2025. Official annual context for the first and second 95 is available from 2016-2024. Official quarterly surveillance checkpoints are available from 2023 Q2-2025 Q4.",
@@ -1023,6 +1136,9 @@ class PublicationAssetBuilder:
                     "1st 95 = diagnosed PLHIV / estimated PLHIV * 100",
                     "2nd 95 = PLHIV on ART / diagnosed PLHIV * 100",
                     "3rd 95 = virally suppressed PLHIV on ART / PLHIV on ART * 100",
+                    "Undiagnosed loss = estimated PLHIV - diagnosed PLHIV",
+                    "Off-ART loss = diagnosed PLHIV - PLHIV on ART",
+                    "Not-suppressed loss = PLHIV on ART - virally suppressed PLHIV on ART",
                 ],
                 "source_precedence": [
                     "Use official annual UNAIDS Philippines values for 1st-95 and 2nd-95 context whenever available.",
@@ -1034,10 +1150,12 @@ class PublicationAssetBuilder:
                     "Quarterly surveillance points from 2023 Q2 to 2025 Q4 come from official Philippines HIV surveillance reporting and are plotted on top of the annual context without being averaged into annual values.",
                     "The highlighted 3rd-95 line uses official quarter-end suppression among PLHIV on ART checkpoints from the DOH/SHIP surveillance reports, with the WHO June 2025 release used as an external cross-check for the 2025 Q1 national cascade.",
                     "The 3rd 95 is corrected to suppression among PLHIV on ART. It is not the higher suppression-among-tested metric.",
+                    "The waterfall is built from the latest observed people counts for diagnosed PLHIV, PLHIV on ART, and suppressed PLHIV on ART, with estimated PLHIV derived from the latest 1st-95 denominator.",
                 ],
                 "harmonization": [
                     "The panel starts at 2015 because that is the earliest year where the official annual cascade context is available in a defensible way for all national target panels.",
                     "Quarterly points are kept separate from annual context because they represent different publication cadences and sometimes different reporting bases.",
+                    "The bullet strip, shared timeline, and waterfall all use the same latest official quarterly endpoint so the board stays internally coherent.",
                 ],
                 "caveats": [
                     "The public annual UNAIDS Philippines extract contains a formal third-95 indicator field (PERCENT_ON_ART_VL_SUPPRESSED), but the values are blank for every available year.",
@@ -1048,9 +1166,9 @@ class PublicationAssetBuilder:
             {
                 "id": "regional_ladder",
                 "figure_key": "regional_ladder",
-                "title": "Yearly regional cascade explorer",
-                "question": "Which regions are closest to the 95-95-95 target, and how do they move year to year?",
-                "definition": "The yearly explorer compares diagnosis, treatment, and suppression coverage by region for one selected year, then shows the selected region's annual cascade history.",
+                "title": "Regional stage matrix and yearly explorer",
+                "question": "Which regions are closest to the 95-95-95 target, and how do regional stage values compare within one observed year?",
+                "definition": "The publication figure is an ordered stage matrix for the latest observed yearly regional snapshot. The explorer then extends that same yearly regional layer into year and region selectors.",
                 "coverage_window": "Yearly regional cascade coverage currently spans 2024-2025. The selected-region comparison shows the same yearly window because earlier official region-level 95-95-95 tables were not found in the reviewed corpus.",
                 "estimation_policy": "No synthetic or fitted regional cascade percentages are injected into the publication figures. If an official region-level cascade table is absent for a year, the year remains unavailable in the explorer.",
                 "formulas": [
@@ -1066,7 +1184,8 @@ class PublicationAssetBuilder:
                 ],
                 "construction": [
                     "For each region, metric, and year, the app selects the latest structured quarter in that year.",
-                    "Regions are included in the annual ladder only when all three cascade stages are present for that year.",
+                    "Regions are included in the publication stage matrix only when all three cascade stages are present for that year.",
+                    "The publication matrix orders regions by average gap to the 95 target and uses a separate gap strip rather than a connected regional ladder.",
                     "The region-over-time chart compares annual latest diagnosis, treatment, and suppression values for the selected region.",
                     "A separate regional burden line was intentionally excluded from the overview because the current yearly regional burden layer is too sparse to support a headline comparison.",
                 ],
@@ -1083,17 +1202,17 @@ class PublicationAssetBuilder:
             {
                 "id": "anomaly_board",
                 "figure_key": "anomaly_board",
-                "title": "Yearly outliers and treatment leakage explorer",
-                "question": "Which regions are above or below the expected cascade pattern, and where is treatment leakage concentrated?",
-                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. Leakage focuses on loss from care: lost to follow-up plus not on treatment.",
-                "coverage_window": "Residuals are available for 2024-2025 because those are the years with region-level cascade percentages. Treatment leakage is available for 2023-2025 because 2023 can be backfilled from the year-end SHIP treatment-outcome table.",
-                "estimation_policy": "No synthetic residuals or synthetic treatment leakage values are injected. Residuals are computed only when observed region-level cascade percentages exist; leakage is shown only when an observed treatment-outcome table is available for the year.",
+                "title": "Performance versus treatment burden",
+                "question": "Which regions perform above or below the fitted cascade pattern once treatment leakage burden is taken into account?",
+                "definition": "Residuals compare observed regional coverage with the fitted regional relationship. The companion leakage ranking shows where loss from care is concentrated: lost to follow-up plus other documented off-treatment burden.",
+                "coverage_window": "Residuals are available for 2024-2025 because those are the years with region-level cascade percentages. Treatment leakage is available for 2023-2025 because 2023 can be backfilled from the official year-end SHIP treatment-outcome table.",
+                "estimation_policy": "No synthetic residuals or synthetic treatment leakage values are injected. Residuals are computed only when observed region-level cascade percentages exist. Leakage is shown only when an observed treatment-outcome table or explicit official year-end treatment categories are available.",
                 "formulas": [
                     "Treatment residual = observed treatment coverage - fitted treatment coverage from the diagnosis-to-treatment line",
                     "Suppression residual = observed suppression coverage - fitted suppression coverage from the treatment-to-suppression line",
-                    "Documented treatment leakage = lost to follow-up + other documented off treatment",
-                    "For 2024 onward, other documented off treatment = not on treatment from the structured treatment-outcome table",
-                    "For 2023, other documented off treatment = transout (overseas) + stopped from the official year-end treatment-outcome table",
+                    "Documented treatment leakage = lost to follow-up + other documented off-treatment burden",
+                    "For 2024 onward, other documented off-treatment burden = not on treatment from the structured treatment-outcome table",
+                    "For 2023, other documented off-treatment burden = transout (overseas) + stopped from the official year-end treatment-outcome table",
                 ],
                 "source_precedence": [
                     "Residuals use yearly regional cascade rows only where official region-level cascade tables exist.",
@@ -1102,12 +1221,13 @@ class PublicationAssetBuilder:
                 ],
                 "construction": [
                     "Residuals are recomputed inside each year using the regions available in that year.",
-                    "Treatment leakage is restricted to loss from care: lost to follow-up plus not on treatment from the latest structured treatment-outcome snapshot inside each year.",
-                    "If a yearly source uses older treatment-outcome categories, the chart harmonizes them as other documented off treatment and labels that distinction explicitly.",
+                    "The left panel positions each region by residual and treatment-leakage burden, with point area scaling to total documented loss from care.",
+                    "The right panel ranks the largest treatment-leakage burdens as stacked components so concentration can be compared across regions.",
                 ],
                 "harmonization": [
                     "The anomaly explorer is annual only. Each year represents the latest structured comparable quarter inside that year.",
                     "Residual labels are rewritten into plain English rather than internal cascade shorthand.",
+                    "Treatment leakage component names are harmonized across years so 2023 transout/stopped can be compared cautiously with 2024 onward not-on-treatment reporting.",
                 ],
                 "caveats": [
                     "Residuals are unavailable before 2024 because the older official reports reviewed here do not publish complete region-level cascade percentages.",
