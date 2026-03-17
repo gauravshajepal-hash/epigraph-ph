@@ -252,6 +252,176 @@ def _collapse_annual_plateaus(points: list[dict]) -> list[dict]:
     return collapsed
 
 
+def _inverse_gamma_sample(rng: np.random.Generator, shape: float, rate: float) -> float:
+    safe_shape = max(float(shape), 1e-6)
+    safe_rate = max(float(rate), 1e-9)
+    gamma_draw = float(rng.gamma(shape=safe_shape, scale=1.0 / safe_rate))
+    return 1.0 / max(gamma_draw, 1e-12)
+
+
+def _bayesian_regression_mcmc(
+    y: np.ndarray,
+    X: np.ndarray,
+    *,
+    draws: int,
+    burnin: int,
+    thin: int,
+    rng: np.random.Generator,
+    prior_sd: float = 0.35,
+    a0: float = 2.5,
+    b0: float = 0.02,
+) -> dict:
+    y = np.asarray(y, dtype=float)
+    X = np.asarray(X, dtype=float)
+    if y.ndim != 1 or X.ndim != 2 or X.shape[0] != y.shape[0]:
+        raise ValueError("Bayesian regression requires 1D y and 2D X with matching rows.")
+    n_obs, n_coef = X.shape
+    prior_var = float(prior_sd) ** 2
+    prior_precision = np.eye(n_coef, dtype=float) / prior_var
+    xtx = X.T @ X
+    xty = X.T @ y
+
+    beta = np.linalg.lstsq(X, y, rcond=None)[0]
+    resid = y - X @ beta
+    sigma2 = max(float(np.var(resid, ddof=max(n_coef, 1))), 0.0025)
+
+    total_iterations = burnin + draws * thin
+    beta_draws: list[np.ndarray] = []
+    sigma_draws: list[float] = []
+    for iteration in range(total_iterations):
+        precision = xtx / sigma2 + prior_precision
+        covariance = np.linalg.inv(precision + np.eye(n_coef) * 1e-9)
+        mean = covariance @ (xty / sigma2)
+        beta = rng.multivariate_normal(mean, covariance)
+        resid = y - X @ beta
+        sigma2 = _inverse_gamma_sample(
+            rng,
+            a0 + n_obs / 2.0,
+            b0 + 0.5 * float(resid.T @ resid),
+        )
+        if iteration >= burnin and (iteration - burnin) % thin == 0:
+            beta_draws.append(beta.copy())
+            sigma_draws.append(float(sigma2))
+
+    beta_samples = np.asarray(beta_draws, dtype=float)
+    sigma_samples = np.asarray(sigma_draws, dtype=float)
+    beta_mean = np.mean(beta_samples, axis=0)
+    fitted = X @ beta_mean
+    residuals = y - fitted
+    return {
+        "beta_draws": beta_samples,
+        "sigma_draws": sigma_samples,
+        "beta_mean": beta_mean,
+        "sigma_mean": float(np.mean(sigma_samples)),
+        "fitted": fitted,
+        "residuals": residuals,
+    }
+
+
+def _hierarchical_step_mcmc(
+    step_observations: dict[str, float],
+    *,
+    draws: int,
+    burnin: int,
+    thin: int,
+    rng: np.random.Generator,
+    mu_prior_sd: float = 4.0,
+    a_sigma: float = 2.5,
+    b_sigma: float = 6.0,
+    a_tau: float = 2.5,
+    b_tau: float = 6.0,
+) -> dict:
+    regions = list(step_observations)
+    if not regions:
+        zeros = np.zeros(draws, dtype=float)
+        return {
+            "regions": regions,
+            "mu_draws": zeros,
+            "sigma2_draws": np.full(draws, 9.0, dtype=float),
+            "tau2_draws": np.full(draws, 4.0, dtype=float),
+            "theta_draws": {},
+            "mu_mean": 0.0,
+            "sigma_mean": 3.0,
+            "tau_mean": 2.0,
+        }
+
+    y = np.array([float(step_observations[region]) for region in regions], dtype=float)
+    n_regions = len(regions)
+    theta = y.copy()
+    mu = float(np.mean(y))
+    sigma2 = max(float(np.var(y, ddof=0)), 4.0)
+    tau2 = max(float(np.var(y, ddof=0) / 2.0), 2.0)
+    total_iterations = burnin + draws * thin
+
+    mu_draws: list[float] = []
+    sigma_draws: list[float] = []
+    tau_draws: list[float] = []
+    theta_draws: dict[str, list[float]] = {region: [] for region in regions}
+
+    for iteration in range(total_iterations):
+        theta_variance = 1.0 / ((1.0 / sigma2) + (1.0 / tau2))
+        theta_sd = math.sqrt(theta_variance)
+        for index, region in enumerate(regions):
+            theta_mean = theta_variance * ((y[index] / sigma2) + (mu / tau2))
+            theta[index] = float(rng.normal(theta_mean, theta_sd))
+
+        mu_variance = 1.0 / ((n_regions / tau2) + (1.0 / (mu_prior_sd ** 2)))
+        mu_mean = mu_variance * (float(np.sum(theta)) / tau2)
+        mu = float(rng.normal(mu_mean, math.sqrt(mu_variance)))
+
+        sigma2 = _inverse_gamma_sample(
+            rng,
+            a_sigma + n_regions / 2.0,
+            b_sigma + 0.5 * float(np.sum((y - theta) ** 2)),
+        )
+        tau2 = _inverse_gamma_sample(
+            rng,
+            a_tau + n_regions / 2.0,
+            b_tau + 0.5 * float(np.sum((theta - mu) ** 2)),
+        )
+
+        if iteration >= burnin and (iteration - burnin) % thin == 0:
+            mu_draws.append(mu)
+            sigma_draws.append(float(sigma2))
+            tau_draws.append(float(tau2))
+            for index, region in enumerate(regions):
+                theta_draws[region].append(float(theta[index]))
+
+    mu_array = np.asarray(mu_draws, dtype=float)
+    sigma_array = np.asarray(sigma_draws, dtype=float)
+    tau_array = np.asarray(tau_draws, dtype=float)
+    return {
+        "regions": regions,
+        "mu_draws": mu_array,
+        "sigma2_draws": sigma_array,
+        "tau2_draws": tau_array,
+        "theta_draws": {region: np.asarray(values, dtype=float) for region, values in theta_draws.items()},
+        "mu_mean": float(np.mean(mu_array)) if mu_array.size else 0.0,
+        "sigma_mean": math.sqrt(float(np.mean(sigma_array))) if sigma_array.size else 3.0,
+        "tau_mean": math.sqrt(float(np.mean(tau_array))) if tau_array.size else 2.0,
+    }
+
+
+def _shrink_correlation(residual_matrix: np.ndarray, shrinkage: float = 0.35) -> np.ndarray:
+    residual_matrix = np.asarray(residual_matrix, dtype=float)
+    if residual_matrix.ndim != 2 or residual_matrix.shape[1] == 0:
+        return np.eye(1, dtype=float)
+    if residual_matrix.shape[0] < 2:
+        return np.eye(residual_matrix.shape[1], dtype=float)
+    corr = np.corrcoef(residual_matrix, rowvar=False)
+    corr = np.nan_to_num(corr, nan=0.0)
+    np.fill_diagonal(corr, 1.0)
+    corr = shrinkage * np.eye(corr.shape[0], dtype=float) + (1.0 - shrinkage) * corr
+    corr = (corr + corr.T) / 2.0
+    eigenvalues, eigenvectors = np.linalg.eigh(corr)
+    eigenvalues[eigenvalues < 1e-6] = 1e-6
+    corr = eigenvectors @ np.diag(eigenvalues) @ eigenvectors.T
+    scale = np.sqrt(np.diag(corr))
+    corr = corr / np.outer(scale, scale)
+    np.fill_diagonal(corr, 1.0)
+    return corr
+
+
 def _find_nearby_numbers(lines: list[str], start_index: int, window: int = 10) -> list[float]:
     values: list[float] = []
     for probe in lines[start_index:start_index + window]:
@@ -1052,8 +1222,7 @@ class PublicationAssetBuilder:
                     "filename": row["suppression_filename"],
                     "period_label": row["suppression_period"],
                 })
-            top = sorted(rows, key=lambda item: abs(item["value"]), reverse=True)[:8]
-            return sorted(top, key=lambda item: item["value"])
+            return sorted(rows, key=lambda item: item["value"])
 
         leakage_metric_map = {
             "alive_on_art_count": ("alive", "Alive on ART", False),
@@ -1177,51 +1346,197 @@ class PublicationAssetBuilder:
                     annual[year] = float(value)
             return annual
 
-        def _project_national_series(series_map: dict[int, float], end_year: int = 2035) -> dict[int, float]:
-            if not series_map:
-                return {}
-            projected = dict(series_map)
-            ordered_years = sorted(projected)
-            if len(ordered_years) == 1:
-                last_value = projected[ordered_years[-1]]
-                for year in range(ordered_years[-1] + 1, end_year + 1):
-                    projected[year] = round(last_value, 1)
-                return projected
-            tail_years = ordered_years[-min(4, len(ordered_years)) :]
-            x = np.array(tail_years, dtype=float)
-            y = np.array([projected[year] for year in tail_years], dtype=float)
-            slope, intercept = np.polyfit(x, y, 1)
-            slope = float(np.clip(slope, -4.0, 4.0))
-            current = float(projected[ordered_years[-1]])
-            for year in range(ordered_years[-1] + 1, end_year + 1):
-                current = float(np.clip(current + slope, 0.0, 100.0))
-                projected[year] = round(current, 1)
-            return projected
+        def _logit_percent(value: float) -> float:
+            proportion = float(np.clip(float(value) / 100.0, 0.001, 0.999))
+            return float(math.log(proportion / (1.0 - proportion)))
+
+        def _inv_logit_percent(value: float) -> float:
+            return float(100.0 / (1.0 + math.exp(-float(value))))
 
         stage_id_map = {
             "diagnosis": "first_95",
             "treatment": "second_95",
             "suppression": "third_95",
         }
+        official_harp = self._read_harp_annual_cascade_series()
+        national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
+        national_observed = {
+            stage: _annualize_national_stage(national_rows.get(series_id, {}))
+            for stage, series_id in stage_id_map.items()
+        }
+        if not any(national_observed.values()):
+            national_observed = {
+                "diagnosis": {int(point["year"]): float(point["value"]) for point in official_harp.get("first_95", [])},
+                "treatment": {int(point["year"]): float(point["value"]) for point in official_harp.get("second_95", [])},
+                "suppression": {int(point["year"]): float(point["value"]) for point in official_harp.get("third_95", [])},
+            }
+        national_counts_observed = {
+            "estimated_plhiv": {int(point["year"]): float(point["value"]) for point in official_harp.get("estimated_plhiv", [])},
+            "diagnosed_plhiv": {int(point["year"]): float(point["value"]) for point in official_harp.get("diagnosed_plhiv", [])},
+            "plhiv_on_art": {int(point["year"]): float(point["value"]) for point in official_harp.get("plhiv_on_art", [])},
+            "suppressed_count": {int(point["year"]): float(point["value"]) for point in official_harp.get("suppressed_count", [])},
+        }
+
+        common_national_years = sorted(
+            set(national_observed["diagnosis"].keys())
+            & set(national_observed["treatment"].keys())
+            & set(national_observed["suppression"].keys())
+            & set(national_counts_observed["estimated_plhiv"].keys())
+        )
+        latest_hard_year = max(common_national_years, default=2025)
+        forecast_end_year = max(latest_hard_year + 10, 2035)
+        forecast_years = list(range(latest_hard_year + 1, forecast_end_year + 1))
+
+        stage_matrix = np.array(
+            [
+                [_logit_percent(national_observed["diagnosis"][year]), _logit_percent(national_observed["treatment"][year]), _logit_percent(national_observed["suppression"][year])]
+                for year in common_national_years
+            ],
+            dtype=float,
+        )
+        stage_diffs = np.diff(stage_matrix, axis=0) if len(stage_matrix) > 1 else np.empty((0, 3))
+        tail_stage_diffs = stage_diffs[-min(4, len(stage_diffs)) :] if len(stage_diffs) else np.empty((0, 3))
+        if len(tail_stage_diffs):
+            stage_drift = np.mean(tail_stage_diffs, axis=0)
+        else:
+            stage_drift = np.array([0.02, 0.03, 0.06], dtype=float)
+        if len(tail_stage_diffs) > 1:
+            stage_cov = np.cov(tail_stage_diffs.T)
+        else:
+            stage_cov = np.diag([0.020, 0.016, 0.028])
+        stage_cov = np.array(stage_cov, dtype=float)
+        stage_cov += np.eye(3) * 0.0025
+
+        estimated_years = sorted(national_counts_observed["estimated_plhiv"])
+        log_estimated = np.array([math.log(national_counts_observed["estimated_plhiv"][year]) for year in estimated_years], dtype=float)
+        estimated_diffs = np.diff(log_estimated) if len(log_estimated) > 1 else np.array([], dtype=float)
+        tail_estimated_diffs = estimated_diffs[-min(4, len(estimated_diffs)) :] if len(estimated_diffs) else np.array([], dtype=float)
+        estimated_growth_mu = float(np.mean(tail_estimated_diffs)) if len(tail_estimated_diffs) else 0.08
+        estimated_growth_sigma = max(float(np.std(tail_estimated_diffs, ddof=0)) if len(tail_estimated_diffs) > 1 else 0.0, 0.02)
+
+        national_rng = np.random.default_rng(42)
+        national_draws = 1200
+        exported_paths = 80
+        stage_samples: dict[str, dict[int, list[float]]] = {stage: defaultdict(list) for stage in stage_id_map}
+        count_samples: dict[str, dict[int, list[float]]] = {key: defaultdict(list) for key in national_counts_observed}
+        stage_path_cache: dict[str, list[dict]] = {stage: [] for stage in stage_id_map}
+        count_path_cache: dict[str, list[dict]] = {key: [] for key in national_counts_observed}
+        bottleneck_counts: dict[int, dict[str, int]] = {year: {"diagnosis": 0, "treatment": 0, "suppression": 0, "all_met": 0} for year in forecast_years}
+
+        latest_stage_logits = stage_matrix[-1] if len(stage_matrix) else np.array([_logit_percent(61), _logit_percent(64), _logit_percent(53)], dtype=float)
+        latest_estimated_log = float(log_estimated[-1]) if len(log_estimated) else math.log(252800.0)
+        for draw_index in range(national_draws):
+            stage_logits = latest_stage_logits.copy()
+            estimated_log = latest_estimated_log
+            stage_paths = {stage: [(latest_hard_year, float(national_observed[stage].get(latest_hard_year, _inv_logit_percent(stage_logits[index]))))] for index, stage in enumerate(("diagnosis", "treatment", "suppression"))}
+            count_paths = {
+                "estimated_plhiv": [(latest_hard_year, float(national_counts_observed["estimated_plhiv"].get(latest_hard_year, math.exp(estimated_log))))],
+                "diagnosed_plhiv": [(latest_hard_year, float(national_counts_observed["diagnosed_plhiv"].get(latest_hard_year, 0.0)))],
+                "plhiv_on_art": [(latest_hard_year, float(national_counts_observed["plhiv_on_art"].get(latest_hard_year, 0.0)))],
+                "suppressed_count": [(latest_hard_year, float(national_counts_observed["suppressed_count"].get(latest_hard_year, 0.0)))],
+            }
+
+            for year in forecast_years:
+                stage_shock = national_rng.multivariate_normal(stage_drift, stage_cov)
+                stage_shock = np.clip(stage_shock, -0.40, 0.40)
+                stage_logits = np.clip(stage_logits + stage_shock, -3.4, 4.2)
+                estimated_growth = float(np.clip(national_rng.normal(estimated_growth_mu, estimated_growth_sigma), -0.05, 0.22))
+                estimated_log += estimated_growth
+
+                diagnosis_pct = _inv_logit_percent(stage_logits[0])
+                treatment_pct = _inv_logit_percent(stage_logits[1])
+                suppression_pct = _inv_logit_percent(stage_logits[2])
+                estimated_count = float(math.exp(estimated_log))
+                diagnosed_count = float(estimated_count * (diagnosis_pct / 100.0))
+                on_art_count = float(diagnosed_count * (treatment_pct / 100.0))
+                suppressed_count = float(on_art_count * (suppression_pct / 100.0))
+
+                for stage, value in (
+                    ("diagnosis", diagnosis_pct),
+                    ("treatment", treatment_pct),
+                    ("suppression", suppression_pct),
+                ):
+                    stage_samples[stage][year].append(value)
+                    stage_paths[stage].append((year, value))
+                for count_key, value in (
+                    ("estimated_plhiv", estimated_count),
+                    ("diagnosed_plhiv", diagnosed_count),
+                    ("plhiv_on_art", on_art_count),
+                    ("suppressed_count", suppressed_count),
+                ):
+                    count_samples[count_key][year].append(value)
+                    count_paths[count_key].append((year, value))
+
+                shortfalls = {
+                    "diagnosis": max(95.0 - diagnosis_pct, 0.0),
+                    "treatment": max(95.0 - treatment_pct, 0.0),
+                    "suppression": max(95.0 - suppression_pct, 0.0),
+                }
+                dominant_stage = max(shortfalls, key=shortfalls.get)
+                if shortfalls[dominant_stage] <= 0:
+                    dominant_stage = "all_met"
+                bottleneck_counts[year][dominant_stage] += 1
+
+            if draw_index < exported_paths:
+                for stage in stage_id_map:
+                    stage_path_cache[stage].append({
+                        "draw": draw_index + 1,
+                        "years": [int(year) for year, _ in stage_paths[stage]],
+                        "values": [round(float(value), 1) for _, value in stage_paths[stage]],
+                    })
+                for count_key in national_counts_observed:
+                    count_path_cache[count_key].append({
+                        "draw": draw_index + 1,
+                        "years": [int(year) for year, _ in count_paths[count_key]],
+                        "values": [round(float(value), 0) for _, value in count_paths[count_key]],
+                    })
+
+        national_stage_values = {stage: dict(values) for stage, values in national_observed.items()}
+        national_forecast_rows = []
+        for year in forecast_years:
+            forecast_row = {"year": year}
+            for stage in ("diagnosis", "treatment", "suppression"):
+                samples = np.array(stage_samples[stage].get(year, []), dtype=float)
+                if samples.size:
+                    forecast_row[stage] = round(float(np.median(samples)), 1)
+                    forecast_row[f"{stage}_lower"] = round(float(np.quantile(samples, 0.1)), 1)
+                    forecast_row[f"{stage}_upper"] = round(float(np.quantile(samples, 0.9)), 1)
+                    national_stage_values[stage][year] = forecast_row[stage]
+            for count_key in ("estimated_plhiv", "diagnosed_plhiv", "plhiv_on_art", "suppressed_count"):
+                samples = np.array(count_samples[count_key].get(year, []), dtype=float)
+                if samples.size:
+                    forecast_row[count_key] = round(float(np.median(samples)), 0)
+                    forecast_row[f"{count_key}_lower"] = round(float(np.quantile(samples, 0.1)), 0)
+                    forecast_row[f"{count_key}_upper"] = round(float(np.quantile(samples, 0.9)), 0)
+            national_forecast_rows.append(forecast_row)
+
+        national_target_probabilities = []
+        national_bottlenecks = []
+        for year in forecast_years:
+            target_row = {"year": year}
+            for stage in ("diagnosis", "treatment", "suppression"):
+                samples = np.array(stage_samples[stage].get(year, []), dtype=float)
+                target_row[stage] = round(float(np.mean(samples >= 95.0)), 4) if samples.size else None
+            national_target_probabilities.append(target_row)
+            counts = bottleneck_counts.get(year, {})
+            total = sum(counts.values()) or 1
+            national_bottlenecks.append({
+                "year": year,
+                "diagnosis": round(counts.get("diagnosis", 0) / total, 4),
+                "treatment": round(counts.get("treatment", 0) / total, 4),
+                "suppression": round(counts.get("suppression", 0) / total, 4),
+                "all_met": round(counts.get("all_met", 0) / total, 4),
+            })
+
         observed_years = sorted(
             int(year)
             for year in (regional_yearly.get("years") or [])
             if int(year)
         )
-        latest_observed_year = max(observed_years, default=2025)
-        forecast_end_year = max(latest_observed_year + 5, 2035)
-        national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
-        national_stage_values = {
-            stage: _project_national_series(
-                _annualize_national_stage(national_rows.get(series_id, {})),
-                end_year=forecast_end_year,
-            )
-            for stage, series_id in stage_id_map.items()
-        }
+        latest_observed_year = max(observed_years, default=latest_hard_year)
 
         region_histories = regional_yearly.get("region_histories", {}) or {}
         regions = regional_yearly.get("regions", []) or sorted(region_histories)
-        forecast_years = list(range(latest_observed_year + 1, forecast_end_year + 1))
         all_years = sorted(set(observed_years) | set(forecast_years))
 
         estimated_histories: dict[str, dict] = {}
@@ -1254,7 +1569,7 @@ class PublicationAssetBuilder:
                     stage_residual_steps[stage].append(current_residual - previous_residual)
 
         rng = np.random.default_rng(42)
-        draws = 600
+        draws = national_draws
         phi = 0.82
         exported_paths = 80
 
@@ -1414,7 +1729,7 @@ class PublicationAssetBuilder:
                         row[f"{stage}_upper"] = round(min(100.0, float(forecast_stats["upper"])), 1)
                         row[f"{stage}_period"] = str(year)
                         row[f"{stage}_source_url"] = ""
-                        row[f"{stage}_filename"] = "Monte Carlo Markov forecast"
+                        row[f"{stage}_filename"] = "Experimental forward forecast"
                         forecast_years_by_stage[stage].append(year)
                     has_any_value = has_any_value or row[f"{stage}"] is not None
                 leakage_row = next((item for item in anomaly_yearly.get("leakage_by_year", {}).get(str(year), []) if item.get("region") == region), None)
@@ -1476,10 +1791,84 @@ class PublicationAssetBuilder:
             stage: sorted(set(forecast_years_by_stage[stage]))
             for stage in ("diagnosis", "treatment", "suppression")
         }
+        national_observed_rows = []
+        for year in common_national_years:
+            national_observed_rows.append({
+                "year": year,
+                "diagnosis": round(float(national_observed["diagnosis"].get(year, math.nan)), 1),
+                "treatment": round(float(national_observed["treatment"].get(year, math.nan)), 1),
+                "suppression": round(float(national_observed["suppression"].get(year, math.nan)), 1),
+                "estimated_plhiv": round(float(national_counts_observed["estimated_plhiv"].get(year, math.nan)), 0),
+                "diagnosed_plhiv": round(float(national_counts_observed["diagnosed_plhiv"].get(year, math.nan)), 0),
+                "plhiv_on_art": round(float(national_counts_observed["plhiv_on_art"].get(year, math.nan)), 0),
+                "suppressed_count": round(float(national_counts_observed["suppressed_count"].get(year, math.nan)), 0),
+            })
+
+        contracts = []
+        threshold_grid = {
+            "diagnosis": [70, 80, 90, 95],
+            "treatment": [70, 80, 90, 95],
+            "suppression": [60, 70, 80, 90, 95],
+        }
+        for stage in ("diagnosis", "treatment", "suppression"):
+            current_value = float(national_observed[stage].get(latest_hard_year, 0.0))
+            for target_year in (2030, 2035):
+                if target_year not in forecast_years:
+                    continue
+                samples = np.array(stage_samples[stage].get(target_year, []), dtype=float)
+                if not samples.size:
+                    continue
+                for threshold in threshold_grid[stage]:
+                    if threshold <= current_value:
+                        continue
+                    contracts.append({
+                        "stage": stage,
+                        "threshold": threshold,
+                        "target_year": target_year,
+                        "probability": round(float(np.mean(samples >= threshold)), 4),
+                        "label": f"{stage.title()} reaches {threshold}% by {target_year}",
+                    })
+
+        latest_leakage_year = max((int(year) for year in anomaly_yearly.get("leakage_by_year", {}).keys()), default=None)
+        latest_leakage_rows = anomaly_yearly.get("leakage_by_year", {}).get(str(latest_leakage_year), []) if latest_leakage_year else []
+        latest_leakage_lookup = {row.get("region"): row for row in latest_leakage_rows}
+        watch_year = 2030 if 2030 in forecast_years else (forecast_years[-1] if forecast_years else latest_hard_year)
+        regional_watchlist = []
+        for region in regions:
+            history = estimated_histories.get(region, {}).get("cascade", [])
+            target_row = next((row for row in history if int(row.get("year") or 0) == watch_year), None)
+            if not target_row:
+                continue
+            shortfalls = {
+                "diagnosis": max(95.0 - float(target_row.get("diagnosis") or 0.0), 0.0),
+                "treatment": max(95.0 - float(target_row.get("treatment") or 0.0), 0.0),
+                "suppression": max(95.0 - float(target_row.get("suppression") or 0.0), 0.0),
+            }
+            leak_row = latest_leakage_lookup.get(region, {})
+            leak_alive = float(leak_row.get("alive", 0.0) or 0.0)
+            leak_ltfu = float(leak_row.get("ltfu", 0.0) or 0.0)
+            leak_off = float(leak_row.get("not_on_treatment", 0.0) or 0.0)
+            leak_denom = leak_alive + leak_ltfu + leak_off
+            leakage_rate = ((leak_ltfu + leak_off) / leak_denom * 100.0) if leak_denom > 0 else 0.0
+            bottleneck_stage = max(shortfalls, key=shortfalls.get)
+            mean_gap = float(np.mean(list(shortfalls.values())))
+            risk_score = mean_gap + leakage_rate * 0.35
+            regional_watchlist.append({
+                "region": region,
+                "target_year": watch_year,
+                "diagnosis": round(float(target_row.get("diagnosis") or 0.0), 1),
+                "treatment": round(float(target_row.get("treatment") or 0.0), 1),
+                "suppression": round(float(target_row.get("suppression") or 0.0), 1),
+                "mean_gap": round(mean_gap, 1),
+                "bottleneck_stage": bottleneck_stage,
+                "leakage_rate": round(leakage_rate, 1),
+                "risk_score": round(risk_score, 1),
+            })
+        regional_watchlist.sort(key=lambda row: row["risk_score"], reverse=True)
 
         return {
             "years": all_years,
-            "default_year": max(observed_years, default=None),
+            "default_year": latest_hard_year,
             "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
             "rows_by_year": rows_by_year,
             "regions": regions,
@@ -1488,15 +1877,744 @@ class PublicationAssetBuilder:
             "estimated_years_by_stage": estimated_stage_years,
             "forecast_years_by_stage": forecast_stage_years,
             "latest_observed_year": latest_observed_year,
+            "latest_hard_year": latest_hard_year,
             "forecast_end_year": forecast_end_year,
-            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact and projects forward from the observed 2025 endpoint through a forward-only yearly forecast window. No historical backfill is shown in this layer.",
-            "model_note": "Experimental forecasts use a first-order Monte Carlo Markov state model on region-level residuals around the official national annual stage trajectories. Each stage draws 600 simulated yearly paths per region from the latest observed regional anchor, then reports the median and 10th-90th percentile interval. Forecasts are never mixed into the official overview or explorer.",
+            "coverage_note": f"Observed annual national seed values currently run through {latest_hard_year}. Observed regional anchors currently span {min(observed_years) if observed_years else latest_hard_year}-{latest_observed_year}. Forward forecasts start after the latest hard year and never overwrite observed rows.",
+            "model_note": "Experimental forecasts combine a national logit-transition Monte Carlo model for diagnosis, treatment, and suppression with a regional AR(1) gap process anchored to observed region-level departures from the national path. Forecasts are forward-looking only and remain outside the official atlas.",
             "source_policy": [
                 "Observed regional cascade values always override model forecasts.",
-                "Diagnosis, treatment, and suppression forecasts are anchored to the official 2018-2025 DOH/HARP annual cascade table and start from the latest observed regional endpoint.",
-                "Forecasts beyond 2025 are experimental and derived from a capped national annual stage trend plus the regional Markov residual process.",
+                "National experimental seed values are always taken from the latest hard annual official HARP year available in the normalized layer.",
+                "Diagnosis, treatment, and suppression forecasts are simulated jointly on the logit scale from the latest official national stage values, then regional gaps are projected forward around that national path.",
                 "No historical regional backfill is shown in this layer.",
             ],
+            "national": {
+                "latest_hard_year": latest_hard_year,
+                "forecast_years": forecast_years,
+                "observed": national_observed_rows,
+                "forecast": national_forecast_rows,
+                "paths": {
+                    "stages": stage_path_cache,
+                    "counts": count_path_cache,
+                },
+                "target_probabilities": national_target_probabilities,
+                "bottlenecks": national_bottlenecks,
+            },
+            "regional": {
+                "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
+                "watch_year": watch_year,
+                "region_histories": estimated_histories,
+            },
+            "simulation": {
+                "engine": "Joint logit-transition Monte Carlo with AR(1) regional gaps",
+                "latest_hard_year": latest_hard_year,
+                "regional_anchor_year": latest_observed_year,
+                "draws": national_draws,
+                "forecast_start_year": forecast_years[0] if forecast_years else latest_hard_year,
+                "forecast_end_year": forecast_end_year,
+                "future_only": True,
+            },
+            "outputs": {
+                "contracts": contracts,
+                "regional_watchlist": regional_watchlist[:10],
+                "national_target_probabilities": national_target_probabilities,
+                "bottleneck_probabilities": national_bottlenecks,
+            },
+        }
+
+    def _build_experimental_regional_series(
+        self,
+        national_cascade: dict,
+        regional_yearly: dict,
+        anomaly_yearly: dict,
+    ) -> dict:
+        def _annualize_national_stage(row: dict) -> dict[int, float]:
+            annual = {}
+            for point in row.get("official_annual", []):
+                year = int(point.get("year") or 0)
+                value = _parse_numeric(point.get("value"))
+                if year and value is not None:
+                    annual[year] = float(value)
+            return annual
+
+        def _logit_percent(value: float) -> float:
+            proportion = float(np.clip(float(value) / 100.0, 0.001, 0.999))
+            return float(math.log(proportion / (1.0 - proportion)))
+
+        def _inv_logit_percent(value: float) -> float:
+            return float(100.0 / (1.0 + math.exp(-float(value))))
+
+        def _safe_quantile(values: list[float], q: float, default: float = 0.0) -> float:
+            array = np.asarray(values, dtype=float)
+            if not array.size:
+                return float(default)
+            return float(np.quantile(array, q))
+
+        stage_id_map = {
+            "diagnosis": "first_95",
+            "treatment": "second_95",
+            "suppression": "third_95",
+        }
+        stages = ("diagnosis", "treatment", "suppression")
+        official_harp = self._read_harp_annual_cascade_series()
+        national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
+
+        national_observed = {
+            "diagnosis": {int(point["year"]): float(point["value"]) for point in official_harp.get("first_95", [])},
+            "treatment": {int(point["year"]): float(point["value"]) for point in official_harp.get("second_95", [])},
+            "suppression": {int(point["year"]): float(point["value"]) for point in official_harp.get("third_95", [])},
+        }
+        for stage, series_id in stage_id_map.items():
+            if not national_observed[stage]:
+                national_observed[stage] = _annualize_national_stage(national_rows.get(series_id, {}))
+
+        national_counts_observed = {
+            "estimated_plhiv": {int(point["year"]): float(point["value"]) for point in official_harp.get("estimated_plhiv", [])},
+            "diagnosed_plhiv": {int(point["year"]): float(point["value"]) for point in official_harp.get("diagnosed_plhiv", [])},
+            "plhiv_on_art": {int(point["year"]): float(point["value"]) for point in official_harp.get("plhiv_on_art", [])},
+            "suppressed_count": {int(point["year"]): float(point["value"]) for point in official_harp.get("suppressed_count", [])},
+        }
+
+        common_national_years = sorted(
+            set(national_observed["diagnosis"].keys())
+            & set(national_observed["treatment"].keys())
+            & set(national_observed["suppression"].keys())
+            & set(national_counts_observed["estimated_plhiv"].keys())
+            & set(national_counts_observed["diagnosed_plhiv"].keys())
+            & set(national_counts_observed["plhiv_on_art"].keys())
+            & set(national_counts_observed["suppressed_count"].keys())
+        )
+        if not common_national_years:
+            return {
+                "years": [],
+                "default_year": None,
+                "default_region": "",
+                "rows_by_year": {},
+                "regions": [],
+                "region_histories": {},
+                "observed_years_by_stage": {stage: [] for stage in stages},
+                "estimated_years_by_stage": {stage: [] for stage in stages},
+                "forecast_years_by_stage": {stage: [] for stage in stages},
+                "latest_observed_year": None,
+                "latest_hard_year": None,
+                "forecast_end_year": None,
+                "coverage_note": "No official annual national seed was available for experimental forecasting.",
+                "model_note": "No Bayesian experimental model could be fit because the official national seed series was unavailable.",
+                "source_policy": [],
+                "national": {"observed": [], "forecast": [], "paths": {"stages": {}, "counts": {}}, "target_probabilities": [], "bottlenecks": []},
+                "regional": {"default_region": "", "watch_year": None, "region_histories": {}},
+                "simulation": {"engine": "Unavailable", "future_only": True},
+                "outputs": {"contracts": [], "regional_watchlist": [], "national_target_probabilities": [], "bottleneck_probabilities": []},
+            }
+
+        latest_hard_year = max(common_national_years)
+        forecast_end_year = max(latest_hard_year + 10, 2035)
+        forecast_years = list(range(latest_hard_year + 1, forecast_end_year + 1))
+        years_diff = np.asarray(common_national_years[1:], dtype=int)
+        design_matrix = np.column_stack([
+            np.ones(len(years_diff), dtype=float),
+            (years_diff >= 2023).astype(float),
+        ])
+
+        posterior_draws = 500
+        burnin = 600
+        thin = 4
+        regression_rng = np.random.default_rng(42)
+
+        stage_models: dict[str, dict] = {}
+        last_stage_deltas: list[float] = []
+        for stage in stages:
+            stage_values = np.asarray([national_observed[stage][year] for year in common_national_years], dtype=float)
+            stage_logits = np.asarray([_logit_percent(value) for value in stage_values], dtype=float)
+            y = np.diff(stage_logits)
+            model = _bayesian_regression_mcmc(
+                y,
+                design_matrix,
+                draws=posterior_draws,
+                burnin=burnin,
+                thin=thin,
+                rng=regression_rng,
+                prior_sd=0.22,
+                a0=3.0,
+                b0=0.015,
+            )
+            model["years"] = years_diff.tolist()
+            model["latest_value"] = float(stage_values[-1])
+            model["latest_logit"] = float(stage_logits[-1])
+            model["last_delta"] = float(y[-1]) if y.size else float(model["beta_mean"][0])
+            stage_models[stage] = model
+            last_stage_deltas.append(model["last_delta"])
+
+        estimated_years = sorted(national_counts_observed["estimated_plhiv"])
+        estimated_logs = np.asarray(
+            [math.log(national_counts_observed["estimated_plhiv"][year]) for year in estimated_years],
+            dtype=float,
+        )
+        growth_model = _bayesian_regression_mcmc(
+            np.diff(estimated_logs),
+            np.column_stack([
+                np.ones(len(estimated_years) - 1, dtype=float),
+                (np.asarray(estimated_years[1:], dtype=int) >= 2023).astype(float),
+            ]),
+            draws=posterior_draws,
+            burnin=burnin,
+            thin=thin,
+            rng=np.random.default_rng(84),
+            prior_sd=0.12,
+            a0=3.0,
+            b0=0.003,
+        )
+        growth_model["latest_log"] = float(estimated_logs[-1])
+        growth_model["last_delta"] = float(np.diff(estimated_logs)[-1]) if len(estimated_logs) > 1 else 0.06
+
+        residual_matrix = np.column_stack([stage_models[stage]["residuals"] for stage in stages])
+        stage_corr = _shrink_correlation(residual_matrix, shrinkage=0.35)
+        national_draws = min(
+            len(stage_models["diagnosis"]["beta_draws"]),
+            len(stage_models["treatment"]["beta_draws"]),
+            len(stage_models["suppression"]["beta_draws"]),
+            len(growth_model["beta_draws"]),
+        )
+        national_draws = max(national_draws, 1)
+        exported_paths = min(80, national_draws)
+
+        stage_samples: dict[str, dict[int, list[float]]] = {stage: defaultdict(list) for stage in stages}
+        count_samples: dict[str, dict[int, list[float]]] = {key: defaultdict(list) for key in national_counts_observed}
+        person_samples: dict[str, dict[int, list[float]]] = {stage: defaultdict(list) for stage in stages}
+        stage_path_cache: dict[str, list[dict]] = {stage: [] for stage in stages}
+        count_path_cache: dict[str, list[dict]] = {key: [] for key in national_counts_observed}
+        bottleneck_counts: dict[int, dict[str, int]] = {year: {"diagnosis": 0, "treatment": 0, "suppression": 0, "all_met": 0} for year in forecast_years}
+        person_bottleneck_counts: dict[int, dict[str, int]] = {year: {"diagnosis": 0, "treatment": 0, "suppression": 0} for year in forecast_years}
+        first_hit_counts: dict[str, dict[int, int]] = {stage: {year: 0 for year in forecast_years} for stage in stages}
+
+        latest_stage_logits = np.asarray([stage_models[stage]["latest_logit"] for stage in stages], dtype=float)
+        prev_stage_deltas = np.asarray(last_stage_deltas, dtype=float)
+        latest_estimated_log = float(growth_model["latest_log"])
+        prev_growth_delta = float(growth_model["last_delta"])
+        simulation_rng = np.random.default_rng(2025)
+
+        for draw_index in range(national_draws):
+            sample_index = draw_index
+            stage_logits = latest_stage_logits.copy()
+            estimated_log = latest_estimated_log
+            previous_deltas = prev_stage_deltas.copy()
+            previous_growth = prev_growth_delta
+            reached = {
+                stage: latest_hard_year if float(national_observed[stage][latest_hard_year]) >= 95.0 else None
+                for stage in stages
+            }
+            stage_paths = {
+                stage: [(latest_hard_year, float(national_observed[stage][latest_hard_year]))]
+                for stage in stages
+            }
+            count_paths = {
+                "estimated_plhiv": [(latest_hard_year, float(national_counts_observed["estimated_plhiv"][latest_hard_year]))],
+                "diagnosed_plhiv": [(latest_hard_year, float(national_counts_observed["diagnosed_plhiv"][latest_hard_year]))],
+                "plhiv_on_art": [(latest_hard_year, float(national_counts_observed["plhiv_on_art"][latest_hard_year]))],
+                "suppressed_count": [(latest_hard_year, float(national_counts_observed["suppressed_count"][latest_hard_year]))],
+            }
+
+            for year in forecast_years:
+                x_future = np.asarray([1.0, 1.0 if year >= 2023 else 0.0], dtype=float)
+                mean_delta = np.asarray([
+                    float(stage_models[stage]["beta_draws"][sample_index] @ x_future)
+                    for stage in stages
+                ], dtype=float)
+                sigma_vec = np.asarray([
+                    math.sqrt(max(float(stage_models[stage]["sigma_draws"][sample_index]), 1e-6))
+                    for stage in stages
+                ], dtype=float)
+                stage_cov = np.diag(sigma_vec) @ stage_corr @ np.diag(sigma_vec)
+                stage_shock = simulation_rng.multivariate_normal(np.zeros(len(stages)), stage_cov)
+                current_deltas = mean_delta + 0.45 * (previous_deltas - mean_delta) + stage_shock
+                current_deltas = np.clip(current_deltas, -0.35, 0.35)
+                stage_logits = np.clip(stage_logits + current_deltas, -4.2, 4.6)
+                previous_deltas = current_deltas
+
+                mean_growth = float(growth_model["beta_draws"][sample_index] @ x_future)
+                growth_sd = math.sqrt(max(float(growth_model["sigma_draws"][sample_index]), 1e-6))
+                growth = float(mean_growth + 0.55 * (previous_growth - mean_growth) + simulation_rng.normal(0.0, growth_sd))
+                growth = float(np.clip(growth, -0.02, 0.20))
+                estimated_log += growth
+                previous_growth = growth
+
+                diagnosis_pct = _inv_logit_percent(stage_logits[0])
+                treatment_pct = _inv_logit_percent(stage_logits[1])
+                suppression_pct = _inv_logit_percent(stage_logits[2])
+                estimated_count = float(math.exp(estimated_log))
+                diagnosed_count = float(estimated_count * (diagnosis_pct / 100.0))
+                on_art_count = float(diagnosed_count * (treatment_pct / 100.0))
+                suppressed_count = float(on_art_count * (suppression_pct / 100.0))
+
+                stage_values = {
+                    "diagnosis": diagnosis_pct,
+                    "treatment": treatment_pct,
+                    "suppression": suppression_pct,
+                }
+                count_values = {
+                    "estimated_plhiv": estimated_count,
+                    "diagnosed_plhiv": diagnosed_count,
+                    "plhiv_on_art": on_art_count,
+                    "suppressed_count": suppressed_count,
+                }
+                person_shortfalls = {
+                    "diagnosis": max(estimated_count - diagnosed_count, 0.0),
+                    "treatment": max(diagnosed_count - on_art_count, 0.0),
+                    "suppression": max(on_art_count - suppressed_count, 0.0),
+                }
+
+                for stage, value in stage_values.items():
+                    stage_samples[stage][year].append(value)
+                    stage_paths[stage].append((year, value))
+                    if reached[stage] is None and value >= 95.0:
+                        reached[stage] = year
+                        first_hit_counts[stage][year] += 1
+                for count_key, value in count_values.items():
+                    count_samples[count_key][year].append(value)
+                    count_paths[count_key].append((year, value))
+                for stage, value in person_shortfalls.items():
+                    person_samples[stage][year].append(value)
+
+                rate_shortfalls = {
+                    "diagnosis": max(95.0 - diagnosis_pct, 0.0),
+                    "treatment": max(95.0 - treatment_pct, 0.0),
+                    "suppression": max(95.0 - suppression_pct, 0.0),
+                }
+                rate_stage = max(rate_shortfalls, key=rate_shortfalls.get)
+                if rate_shortfalls[rate_stage] <= 0:
+                    rate_stage = "all_met"
+                bottleneck_counts[year][rate_stage] += 1
+
+                person_stage = max(person_shortfalls, key=person_shortfalls.get)
+                person_bottleneck_counts[year][person_stage] += 1
+
+            if draw_index < exported_paths:
+                for stage in stages:
+                    stage_path_cache[stage].append({
+                        "draw": draw_index + 1,
+                        "years": [int(year) for year, _ in stage_paths[stage]],
+                        "values": [round(float(value), 1) for _, value in stage_paths[stage]],
+                    })
+                for count_key in count_paths:
+                    count_path_cache[count_key].append({
+                        "draw": draw_index + 1,
+                        "years": [int(year) for year, _ in count_paths[count_key]],
+                        "values": [round(float(value), 0) for _, value in count_paths[count_key]],
+                    })
+
+        national_stage_values = {stage: dict(values) for stage, values in national_observed.items()}
+        national_forecast_rows = []
+        for year in forecast_years:
+            row = {"year": year}
+            for stage in stages:
+                values = stage_samples[stage].get(year, [])
+                if values:
+                    row[stage] = round(float(np.median(values)), 1)
+                    row[f"{stage}_lower"] = round(_safe_quantile(values, 0.1), 1)
+                    row[f"{stage}_upper"] = round(_safe_quantile(values, 0.9), 1)
+                    national_stage_values[stage][year] = float(row[stage])
+            for count_key in ("estimated_plhiv", "diagnosed_plhiv", "plhiv_on_art", "suppressed_count"):
+                values = count_samples[count_key].get(year, [])
+                if values:
+                    row[count_key] = round(float(np.median(values)), 0)
+                    row[f"{count_key}_lower"] = round(_safe_quantile(values, 0.1), 0)
+                    row[f"{count_key}_upper"] = round(_safe_quantile(values, 0.9), 0)
+            for stage in stages:
+                values = person_samples[stage].get(year, [])
+                if values:
+                    row[f"{stage}_gap_count"] = round(float(np.median(values)), 0)
+            national_forecast_rows.append(row)
+
+        national_observed_rows = []
+        for year in common_national_years:
+            diagnosed = float(national_counts_observed["diagnosed_plhiv"][year])
+            on_art = float(national_counts_observed["plhiv_on_art"][year])
+            suppressed = float(national_counts_observed["suppressed_count"][year])
+            estimated = float(national_counts_observed["estimated_plhiv"][year])
+            national_observed_rows.append({
+                "year": year,
+                "diagnosis": round(float(national_observed["diagnosis"][year]), 1),
+                "treatment": round(float(national_observed["treatment"][year]), 1),
+                "suppression": round(float(national_observed["suppression"][year]), 1),
+                "estimated_plhiv": round(estimated, 0),
+                "diagnosed_plhiv": round(diagnosed, 0),
+                "plhiv_on_art": round(on_art, 0),
+                "suppressed_count": round(suppressed, 0),
+                "diagnosis_gap_count": round(max(estimated - diagnosed, 0.0), 0),
+                "treatment_gap_count": round(max(diagnosed - on_art, 0.0), 0),
+                "suppression_gap_count": round(max(on_art - suppressed, 0.0), 0),
+            })
+
+        national_target_probabilities = []
+        national_bottlenecks = []
+        national_person_bottlenecks = []
+        first_hit_probabilities = {stage: [] for stage in stages}
+        for year in forecast_years:
+            target_row = {"year": year}
+            for stage in stages:
+                samples = np.asarray(stage_samples[stage].get(year, []), dtype=float)
+                target_row[stage] = round(float(np.mean(samples >= 95.0)), 4) if samples.size else None
+            national_target_probabilities.append(target_row)
+
+            total_rate = sum(bottleneck_counts[year].values()) or 1
+            national_bottlenecks.append({
+                "year": year,
+                "diagnosis": round(bottleneck_counts[year]["diagnosis"] / total_rate, 4),
+                "treatment": round(bottleneck_counts[year]["treatment"] / total_rate, 4),
+                "suppression": round(bottleneck_counts[year]["suppression"] / total_rate, 4),
+                "all_met": round(bottleneck_counts[year]["all_met"] / total_rate, 4),
+            })
+
+            total_people = sum(person_bottleneck_counts[year].values()) or 1
+            national_person_bottlenecks.append({
+                "year": year,
+                "diagnosis": round(person_bottleneck_counts[year]["diagnosis"] / total_people, 4),
+                "treatment": round(person_bottleneck_counts[year]["treatment"] / total_people, 4),
+                "suppression": round(person_bottleneck_counts[year]["suppression"] / total_people, 4),
+            })
+
+        for stage in stages:
+            for year in forecast_years:
+                first_hit_probabilities[stage].append({
+                    "year": year,
+                    "probability": round(first_hit_counts[stage][year] / national_draws, 4),
+                })
+
+        threshold_grid = {
+            "diagnosis": [70, 80, 90, 95],
+            "treatment": [70, 80, 90, 95],
+            "suppression": [60, 70, 80, 90, 95],
+        }
+        contracts = []
+        for stage in stages:
+            current_value = float(national_observed[stage].get(latest_hard_year, 0.0))
+            for target_year in (2030, 2035):
+                if target_year not in forecast_years:
+                    continue
+                samples = np.asarray(stage_samples[stage].get(target_year, []), dtype=float)
+                if not samples.size:
+                    continue
+                for threshold in threshold_grid[stage]:
+                    if threshold <= current_value:
+                        continue
+                    contracts.append({
+                        "stage": stage,
+                        "threshold": threshold,
+                        "target_year": target_year,
+                        "probability": round(float(np.mean(samples >= threshold)), 4),
+                        "label": f"{stage.title()} reaches {threshold}% by {target_year}",
+                    })
+        contracts.sort(key=lambda item: item["probability"], reverse=True)
+
+        observed_years = sorted(int(year) for year in (regional_yearly.get("years") or []) if int(year))
+        latest_observed_year = max(observed_years, default=latest_hard_year)
+        region_histories = regional_yearly.get("region_histories", {}) or {}
+        regions = regional_yearly.get("regions", []) or sorted(region_histories)
+        all_years = sorted(set(observed_years) | set(forecast_years))
+
+        observed_years_by_stage = defaultdict(set)
+        forecast_years_by_stage = defaultdict(set)
+        rows_by_year: dict[str, list[dict]] = {}
+        estimated_histories: dict[str, dict] = {}
+
+        regional_stage_models = {}
+        for stage in stages:
+            step_observations: dict[str, float] = {}
+            gap_previous: list[float] = []
+            gap_current: list[float] = []
+            region_anchor_lookup: dict[str, list[tuple[int, float, float]]] = {}
+            for region in regions:
+                cascade_history = region_histories.get(region, {}).get("cascade", []) or []
+                anchors = []
+                for row in cascade_history:
+                    year = int(row.get("year") or 0)
+                    if year not in national_stage_values[stage]:
+                        continue
+                    value = _parse_numeric(row.get(stage))
+                    if value is None:
+                        continue
+                    gap = float(value) - float(national_stage_values[stage][year])
+                    anchors.append((year, float(value), gap))
+                anchors.sort(key=lambda item: item[0])
+                region_anchor_lookup[region] = anchors
+                if len(anchors) >= 2:
+                    step_observations[region] = float(anchors[-1][2] - anchors[-2][2])
+                    for previous_anchor, current_anchor in zip(anchors[:-1], anchors[1:]):
+                        gap_previous.append(previous_anchor[2])
+                        gap_current.append(current_anchor[2])
+
+            if len(gap_previous) >= 2 and float(np.var(gap_previous, ddof=0)) > 1e-9:
+                phi_value = float(np.cov(np.asarray(gap_previous), np.asarray(gap_current), ddof=0)[0, 1] / np.var(gap_previous, ddof=0))
+                phi_value = float(np.clip(phi_value, 0.15, 0.92))
+            else:
+                phi_value = 0.65
+
+            hierarchical = _hierarchical_step_mcmc(
+                step_observations,
+                draws=posterior_draws,
+                burnin=burnin,
+                thin=thin,
+                rng=np.random.default_rng(100 + len(step_observations)),
+            )
+            regional_stage_models[stage] = {
+                "phi": phi_value,
+                "hierarchical": hierarchical,
+                "anchors": region_anchor_lookup,
+            }
+
+        latest_leakage_year = max((int(year) for year in anomaly_yearly.get("leakage_by_year", {}).keys()), default=None)
+        latest_leakage_rows = anomaly_yearly.get("leakage_by_year", {}).get(str(latest_leakage_year), []) if latest_leakage_year else []
+        latest_leakage_lookup = {row.get("region"): row for row in latest_leakage_rows}
+        regional_rng = np.random.default_rng(90210)
+        watch_year = 2030 if 2030 in forecast_years else (forecast_years[-1] if forecast_years else latest_hard_year)
+
+        for region in regions:
+            observed_lookup = {
+                int(row.get("year") or 0): row
+                for row in (region_histories.get(region, {}).get("cascade", []) or [])
+                if int(row.get("year") or 0)
+            }
+            region_rows = []
+            region_paths = {}
+            model_summary = {}
+
+            for stage in stages:
+                stage_model = regional_stage_models[stage]
+                anchors = list(stage_model["anchors"].get(region, []))
+                hier = stage_model["hierarchical"]
+                phi_value = float(stage_model["phi"])
+                latest_anchor_year = max((anchor[0] for anchor in anchors), default=None)
+                latest_anchor_value = anchors[-1][1] if anchors else None
+                latest_anchor_gap = anchors[-1][2] if anchors else None
+
+                path_cache = {"paths": [], "by_year": {}, "reach_probabilities": {}}
+                if anchors and latest_anchor_year is not None and latest_anchor_year < forecast_end_year:
+                    forecast_year_lookup: dict[int, list[float]] = defaultdict(list)
+                    reach_years: list[int | None] = []
+                    theta_draws = hier["theta_draws"].get(region)
+                    for draw_index in range(posterior_draws):
+                        if theta_draws is not None and len(theta_draws):
+                            theta = float(theta_draws[draw_index])
+                        else:
+                            theta = float(hier["mu_draws"][draw_index] + regional_rng.normal(0.0, math.sqrt(max(float(hier["tau2_draws"][draw_index]), 1e-6))))
+                        theta = float(np.clip(theta, -6.0, 6.0))
+                        sigma_step = math.sqrt(max(float(hier["sigma2_draws"][draw_index]), 1e-6))
+                        gap = float(latest_anchor_gap)
+                        path = [(latest_anchor_year, float(latest_anchor_value))]
+                        reached_year = latest_anchor_year if float(latest_anchor_value) >= 95.0 else None
+                        for forward_year in forecast_years:
+                            national_forward_value = national_stage_values.get(stage, {}).get(forward_year)
+                            if national_forward_value is None:
+                                continue
+                            gap = float(np.clip(phi_value * gap + theta + regional_rng.normal(0.0, sigma_step), -55.0, 55.0))
+                            value = float(np.clip(float(national_forward_value) + gap, 0.0, 100.0))
+                            path.append((forward_year, value))
+                            forecast_year_lookup[forward_year].append(value)
+                            if reached_year is None and value >= 95.0:
+                                reached_year = forward_year
+                        if draw_index < exported_paths:
+                            path_cache["paths"].append({
+                                "draw": draw_index + 1,
+                                "years": [int(year) for year, _ in path],
+                                "values": [round(float(value), 1) for _, value in path],
+                            })
+                        reach_years.append(reached_year)
+
+                    path_cache["by_year"] = {
+                        forward_year: {
+                            "median": float(np.median(values)),
+                            "lower": _safe_quantile(values, 0.1),
+                            "upper": _safe_quantile(values, 0.9),
+                        }
+                        for forward_year, values in forecast_year_lookup.items()
+                        if values
+                    }
+                    for forward_year in forecast_years:
+                        if not reach_years:
+                            continue
+                        reached = sum(1 for value in reach_years if value is not None and value <= forward_year)
+                        path_cache["reach_probabilities"][str(forward_year)] = round(reached / len(reach_years), 4)
+
+                for year in all_years:
+                    row = next((item for item in region_rows if int(item["year"]) == year), None)
+                    if row is None:
+                        row = {"year": year, "region": region}
+                        region_rows.append(row)
+                    national_value = national_stage_values.get(stage, {}).get(year)
+                    if national_value is None:
+                        row[stage] = None
+                        row[f"{stage}_status"] = "missing"
+                        row[f"{stage}_lower"] = None
+                        row[f"{stage}_upper"] = None
+                        continue
+                    observed_row = observed_lookup.get(year)
+                    observed_value = _parse_numeric((observed_row or {}).get(stage))
+                    if observed_value is not None:
+                        row[stage] = float(observed_value)
+                        row[f"{stage}_status"] = "observed"
+                        row[f"{stage}_lower"] = float(observed_value)
+                        row[f"{stage}_upper"] = float(observed_value)
+                        row[f"{stage}_period"] = (observed_row or {}).get(f"{stage}_period", str(year))
+                        row[f"{stage}_source_url"] = (observed_row or {}).get(f"{stage}_source_url", "")
+                        row[f"{stage}_filename"] = (observed_row or {}).get(f"{stage}_filename", "")
+                        observed_years_by_stage[stage].add(year)
+                    elif year in path_cache["by_year"]:
+                        stats = path_cache["by_year"][year]
+                        row[stage] = round(float(stats["median"]), 1)
+                        row[f"{stage}_status"] = "forecast"
+                        row[f"{stage}_lower"] = round(float(stats["lower"]), 1)
+                        row[f"{stage}_upper"] = round(float(stats["upper"]), 1)
+                        row[f"{stage}_period"] = str(year)
+                        row[f"{stage}_source_url"] = ""
+                        row[f"{stage}_filename"] = "Experimental Bayesian forecast"
+                        forecast_years_by_stage[stage].add(year)
+                    else:
+                        row[stage] = None
+                        row[f"{stage}_status"] = "missing"
+                        row[f"{stage}_lower"] = None
+                        row[f"{stage}_upper"] = None
+
+                region_paths[stage] = path_cache["paths"]
+                theta_draws = stage_model["hierarchical"]["theta_draws"].get(region, np.asarray([], dtype=float))
+                step_posterior = theta_draws.tolist() if theta_draws.size else []
+                model_summary[stage] = {
+                    "anchor_years": [anchor[0] for anchor in anchors],
+                    "latest_anchor_year": latest_anchor_year,
+                    "step_mean": round(float(np.mean(theta_draws)) if theta_draws.size else float(stage_model["hierarchical"]["mu_mean"]), 2),
+                    "global_step_mean": round(float(stage_model["hierarchical"]["mu_mean"]), 2),
+                    "sigma": round(float(stage_model["hierarchical"]["sigma_mean"]), 2),
+                    "draws": posterior_draws,
+                    "phi": round(phi_value, 2),
+                    "reach_probabilities": path_cache["reach_probabilities"],
+                    "status": "anchored_bayesian" if anchors else "unavailable",
+                    "step_interval": [
+                        round(_safe_quantile(step_posterior, 0.1, default=stage_model["hierarchical"]["mu_mean"]), 2),
+                        round(_safe_quantile(step_posterior, 0.9, default=stage_model["hierarchical"]["mu_mean"]), 2),
+                    ],
+                }
+
+            for row in region_rows:
+                leak = latest_leakage_lookup.get(region) if int(row["year"]) == latest_leakage_year else None
+                if leak:
+                    row["leakage_burden"] = float(leak.get("ltfu", 0.0)) + float(leak.get("not_on_treatment", 0.0))
+                    row["leakage_status"] = "observed"
+                else:
+                    row["leakage_burden"] = None
+                    row["leakage_status"] = "missing"
+            region_rows.sort(key=lambda row: int(row["year"]))
+            estimated_histories[region] = {
+                "cascade": region_rows,
+                "paths": region_paths,
+                "model": model_summary,
+            }
+            for row in region_rows:
+                if any(row.get(stage) is not None for stage in stages):
+                    rows_by_year.setdefault(str(int(row["year"])), []).append(row)
+
+        for year, rows in rows_by_year.items():
+            rows.sort(
+                key=lambda row: (
+                    0 if all(row.get(f"{stage}_status") == "observed" for stage in stages) else 1,
+                    sum(max(95.0 - float(row.get(stage) or 0.0), 0.0) for stage in stages),
+                )
+            )
+
+        observed_stage_years = {stage: sorted(values) for stage, values in observed_years_by_stage.items()}
+        for stage in stages:
+            observed_stage_years.setdefault(stage, [])
+        forecast_stage_years = {stage: sorted(values) for stage, values in forecast_years_by_stage.items()}
+        for stage in stages:
+            forecast_stage_years.setdefault(stage, [])
+
+        regional_watchlist = []
+        for region in regions:
+            history = estimated_histories.get(region, {}).get("cascade", [])
+            target_row = next((row for row in history if int(row.get("year") or 0) == watch_year), None)
+            if not target_row:
+                continue
+            shortfalls = {
+                stage: max(95.0 - float(target_row.get(stage) or 0.0), 0.0)
+                for stage in stages
+            }
+            leak_row = latest_leakage_lookup.get(region, {})
+            leak_alive = float(leak_row.get("alive", 0.0) or 0.0)
+            leak_ltfu = float(leak_row.get("ltfu", 0.0) or 0.0)
+            leak_off = float(leak_row.get("not_on_treatment", 0.0) or 0.0)
+            leak_total = leak_alive + leak_ltfu + leak_off
+            leakage_rate = ((leak_ltfu + leak_off) / leak_total * 100.0) if leak_total > 0 else 0.0
+            mean_gap = float(np.mean(list(shortfalls.values())))
+            bottleneck_stage = max(shortfalls, key=shortfalls.get)
+            risk_score = mean_gap + leakage_rate * 0.35
+            regional_watchlist.append({
+                "region": region,
+                "target_year": watch_year,
+                "diagnosis": round(float(target_row.get("diagnosis") or 0.0), 1),
+                "treatment": round(float(target_row.get("treatment") or 0.0), 1),
+                "suppression": round(float(target_row.get("suppression") or 0.0), 1),
+                "mean_gap": round(mean_gap, 1),
+                "bottleneck_stage": bottleneck_stage,
+                "leakage_rate": round(leakage_rate, 1),
+                "risk_score": round(risk_score, 1),
+            })
+        regional_watchlist.sort(key=lambda row: row["risk_score"], reverse=True)
+
+        return {
+            "years": all_years,
+            "default_year": latest_hard_year,
+            "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
+            "rows_by_year": rows_by_year,
+            "regions": regions,
+            "region_histories": estimated_histories,
+            "observed_years_by_stage": observed_stage_years,
+            "estimated_years_by_stage": {stage: [] for stage in stages},
+            "forecast_years_by_stage": forecast_stage_years,
+            "latest_observed_year": latest_observed_year,
+            "latest_hard_year": latest_hard_year,
+            "forecast_end_year": forecast_end_year,
+            "coverage_note": f"Observed annual national seed values currently run through {latest_hard_year}. Observed regional anchors currently span {min(observed_years) if observed_years else latest_hard_year}-{latest_observed_year}. Forecasts begin after the latest hard year and remain fully forward-looking.",
+            "model_note": "Experimental forecasts use a Bayesian national transition model on diagnosis, treatment, suppression, and estimated PLHIV growth, then propagate hierarchical regional gaps around that national path. This layer remains exploratory and separate from the official atlas.",
+            "source_policy": [
+                "Observed regional cascade values always override model forecasts.",
+                "National experimental seed values are always taken from the latest hard annual official HARP year available in the normalized layer.",
+                "Diagnosis, treatment, and suppression are fit jointly as bounded transition processes and then simulated forward only after the latest hard year.",
+                "Regional forecasts use hierarchical Bayesian gap dynamics anchored to observed region-level departures from the national path.",
+                "No historical regional backfill is shown in this layer.",
+            ],
+            "national": {
+                "latest_hard_year": latest_hard_year,
+                "forecast_years": forecast_years,
+                "observed": national_observed_rows,
+                "forecast": national_forecast_rows,
+                "paths": {
+                    "stages": stage_path_cache,
+                    "counts": count_path_cache,
+                },
+                "target_probabilities": national_target_probabilities,
+                "bottlenecks": national_bottlenecks,
+                "person_bottlenecks": national_person_bottlenecks,
+                "first_hit_probabilities": first_hit_probabilities,
+            },
+            "regional": {
+                "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
+                "watch_year": watch_year,
+                "region_histories": estimated_histories,
+            },
+            "simulation": {
+                "engine": "Bayesian MCMC transition model with hierarchical regional gaps",
+                "latest_hard_year": latest_hard_year,
+                "regional_anchor_year": latest_observed_year,
+                "draws": posterior_draws,
+                "forecast_start_year": forecast_years[0] if forecast_years else latest_hard_year,
+                "forecast_end_year": forecast_end_year,
+                "future_only": True,
+            },
+            "outputs": {
+                "contracts": contracts,
+                "regional_watchlist": regional_watchlist[:10],
+                "national_target_probabilities": national_target_probabilities,
+                "bottleneck_probabilities": national_bottlenecks,
+                "person_bottleneck_probabilities": national_person_bottlenecks,
+                "first_hit_probabilities": first_hit_probabilities,
+            },
         }
 
     def _build_methodology(self, series: dict) -> dict:
@@ -1682,34 +2800,51 @@ class PublicationAssetBuilder:
             {
                 "id": "experimental_regional",
                 "figure_key": "",
-                "title": "Experimental regional forecast paths",
-                "question": "How could regional cascade performance evolve after the observed 2025 endpoint under a forward-looking Monte Carlo Markov model?",
-                "definition": "The experimental layer combines observed regional yearly cascade anchors with official national stage trajectories to generate forward-only regional forecast paths for exploration only.",
-                "coverage_window": "Observed regional anchors currently span 2024-2025. Forward yearly forecasts start after the latest observed anchor and extend through the exported horizon.",
-                "estimation_policy": "Forecast values remain separate from all publication figures and the official explorer. They are always marked as forecasts and are accompanied by stage-specific uncertainty intervals and sampled forecast paths.",
+                "title": "Experimental forward scenarios",
+                "question": "Given the latest hard observed national year-end cascade and the current regional anchors, what future national and regional paths are plausible, and which cascade stage is most likely to remain the bottleneck?",
+                "definition": "The experimental layer keeps all observed rows intact, seeds the model from the latest hard official national year, fits Bayesian MCMC transition models for diagnosis, treatment, suppression, and estimated PLHIV growth, then projects hierarchical regional departures around that national path for exploration only.",
+                "coverage_window": "Observed national seed values currently run through the latest hard official annual HARP year available in the normalized layer. Observed regional anchors span only the exported observed window. Forecast years begin after the latest hard year and extend through the exported horizon.",
+                "estimation_policy": "This layer is forward-looking only. It does not backfill or overwrite any observed historical row. National forecasts are drawn from posterior Bayesian transition samples; regional forecasts are drawn from hierarchical Bayesian gap samples around the national path; outputs are reported as distributions, contracts, bottleneck probabilities, and regional watchlists rather than single deterministic values.",
                 "formulas": [
-                    "Forecast regional stage = official national stage + simulated regional residual path",
-                    "Regional residual = observed regional stage - official national stage in the same year",
-                    "Forecast interval = stage-specific 10th-90th percentile envelope across simulated paths",
-                    "Reach-to-95 probability by year = share of simulated paths that reach or exceed 95 by that year",
+                    "Delta logit(stage_t) ~ Normal(X_t beta_stage, sigma_stage^2) with posterior draws from Bayesian regression",
+                    "logit(stage_t+1) = logit(stage_t) + mean-reverting Bayesian stage increment",
+                    "Delta log(estimated PLHIV_t) ~ Normal(X_t beta_growth, sigma_growth^2)",
+                    "estimated PLHIV_t+1 = estimated PLHIV_t * exp(mean-reverting Bayesian growth increment)",
+                    "diagnosed count_t = estimated PLHIV_t * diagnosis_t",
+                    "on ART count_t = diagnosed count_t * treatment_t",
+                    "suppressed count_t = on ART count_t * suppression_t",
+                    "regional gap_t+1 = phi * regional gap_t + region-specific Bayesian step + shock",
+                    "regional stage_t = national stage_t + simulated regional gap_t",
+                    "reach probability by year = share of simulated paths at or above threshold by that year",
+                    "dominant bottleneck = stage with the largest remaining shortfall from 95 in a simulated year",
                 ],
                 "source_precedence": [
-                    "Observed regional yearly cascade values always override model forecasts.",
-                    "Official national annual stage values anchor the experimental regional forecast paths.",
-                    "No historical regional backfill is published in this layer.",
+                    "Observed regional yearly cascade values always override forecasts.",
+                    "The national seed is always the latest hard official annual HARP year present in the normalized layer.",
+                    "Official annual national stage and count values anchor the forward national simulation.",
+                    "Regional forecasts are derived only after the national simulation is built.",
+                    "No historical synthetic backfill is shown in this layer.",
                 ],
                 "construction": [
-                    "Fit a yearly residual model for each region and stage using only observed regional yearly anchors.",
-                    "Start each simulation at the latest observed regional stage endpoint and evolve it forward with a first-order Markov residual process.",
-                    "Combine the simulated residual paths with the official national yearly stage trend to derive exploratory future regional trajectories.",
+                    "Extract official annual national diagnosis, treatment, suppression, estimated PLHIV, diagnosed PLHIV, PLHIV on ART, and suppressed counts.",
+                    "Fit Bayesian transition regressions on annual diagnosis, treatment, and suppression movement on the logit scale.",
+                    "Fit a Bayesian annual growth model for estimated PLHIV counts on the log scale.",
+                    "Simulate forward national paths from posterior draws with cross-stage residual correlation and mean reversion from the latest hard year.",
+                    "Use the simulated national stage paths as the common forward scaffold for all regions.",
+                    "Fit hierarchical Bayesian region-level yearly gap steps relative to the national path using observed region anchors only.",
+                    "Simulate forward regional gaps and combine them with the national path to produce exploratory regional scenarios.",
+                    "Summarize the simulated future using percentile bands, reach-to-threshold probabilities, bottleneck attribution, and regional risk watchlists.",
                 ],
                 "harmonization": [
-                    "Observed and forecast values are kept separate in both the payload and the UI.",
-                    "The experimental layer is exploratory only and is never reused inside the publication overview.",
+                    "Observed, forecast, and estimated outputs remain separate in both the payload and the UI.",
+                    "National and regional simulations are forward-only and begin after the latest hard observed year.",
+                    "All figure exports and summaries explicitly label this layer as experimental and non-official.",
                 ],
                 "caveats": [
-                    "The modeled regional forecast paths are not official surveillance output.",
-                    "With only two observed regional cascade years, the forecast fan is assumption-sensitive and should be treated as scenario context rather than evidence.",
+                    "Observed regional yearly coverage is still sparse, so regional futures are weakly anchored compared with the national simulation.",
+                    "The national engine is a Bayesian transition-and-gap model, not a full causal or policy-response model.",
+                    "Bottleneck probabilities and target contracts are scenario outputs, not official forecasts.",
+                    "No synthetic value is allowed to replace an observed annual or regional row.",
                 ],
                 "reference_ids": ["unaids-dataset", "harp-annual-2018-2025", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
             },

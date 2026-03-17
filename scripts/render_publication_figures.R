@@ -24,15 +24,15 @@ dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 payload <- fromJSON(input_path, simplifyVector = FALSE)
 series <- payload$series
 
-stage_palette <- c(
-  "Diagnosed" = "#6ee0c0",
-  "On ART" = "#5b9cf5",
-  "Suppressed" = "#00d4aa"
-)
+  stage_palette <- c(
+    "Diagnosed"  = "#ff4757", # Red
+    "On ART"     = "#2ed573", # Green
+    "Suppressed" = "#1e90ff"  # Blue
+  )
 
 positive_color <- "#2d9cdb"
 negative_color <- "#e63946"
-grid_color <- "#1e2f4c"
+grid_color <- "#7889a01a" # 10% opacity soft blue-grey for refined grid
 bg_color <- "transparent"
 panel_color <- "transparent"
 
@@ -67,7 +67,7 @@ epi_theme <- function(base_size = 13) {
     theme(
       plot.background = element_rect(fill = "transparent", colour = NA),
       panel.background = element_blank(),
-      panel.grid.major = element_line(colour = grid_color, linewidth = 0.5),
+      panel.grid.major = element_line(colour = grid_color, linewidth = 0.6, linetype = "dotted"),
       panel.grid.minor = element_blank(),
       axis.title = element_text(face = "bold", colour = "#e0e6f0"),
       axis.text = element_text(colour = "#7889a0"),
@@ -149,10 +149,10 @@ build_national_cascade <- function(data) {
     )
 
   bullet <- ggplot(bullet_df, aes(y = anchor)) +
-    geom_segment(aes(x = 0, xend = 100, yend = anchor), linewidth = 9.5, colour = "#101d33", lineend = "round") +
-    geom_segment(aes(x = 0, xend = 95, yend = anchor), linewidth = 9.5, colour = "#2d9cdb44", lineend = "round") +
-    geom_segment(aes(x = 0, xend = latest_value, yend = anchor, colour = stage), linewidth = 9.5, lineend = "round") +
-    geom_point(aes(x = latest_value, fill = stage), shape = 21, size = 6.2, stroke = 1.25, colour = "#0c1629") +
+    geom_segment(aes(x = 0, xend = 100, yend = anchor), linewidth = 10, colour = "#101d33", lineend = "round") +
+    geom_segment(aes(x = 0, xend = 95, yend = anchor), linewidth = 10, colour = "#2d9cdb25", lineend = "round") +
+    geom_segment(aes(x = 0, xend = latest_value, yend = anchor, colour = stage), linewidth = 10, lineend = "round", linejoin = "round") +
+    geom_point(aes(x = latest_value, fill = stage), shape = 21, size = 6.8, stroke = 2.0, colour = "#0c1629") +
     geom_vline(xintercept = 95, linetype = "22", linewidth = 0.7, colour = "#f0a030") +
     geom_text(aes(x = 2, y = anchor, label = card_value, colour = stage), hjust = 0, vjust = 1.55, size = 7.2, fontface = "bold", family = "serif") +
     geom_text(aes(x = 2, y = anchor, label = context_label), hjust = 0, vjust = -0.15, size = 3.55, colour = "#8f9ba8") +
@@ -189,19 +189,25 @@ build_national_cascade <- function(data) {
 
   timeline <- ggplot() +
     geom_hline(yintercept = 95, linetype = "22", linewidth = 0.6, colour = "#f0a030") +
-    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 2.5, na.rm = TRUE) +
-    geom_point(data = annual, aes(x = x, y = value, fill = stage), shape = 21, size = 3.8, stroke = 1.0, colour = "#0c1629", na.rm = TRUE) +
+    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 5.0, alpha = 0.1, na.rm = TRUE) +
+    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 2.5, alpha = 0.35, na.rm = TRUE) +
+    geom_line(data = annual, aes(x = x, y = value, colour = stage, group = stage), linewidth = 1.2, na.rm = TRUE) +
+    geom_point(data = annual, aes(x = x, y = value, fill = stage), shape = 21, size = 4.2, stroke = 1.5, colour = "#0c1629", na.rm = TRUE) +
     ggrepel::geom_text_repel(
       data = latest_annual,
-      aes(x = x, y = value, label = sprintf("%s  %.0f%%", label, value), colour = stage),
-      direction = "y",
+      aes(x = x, y = value, label = sprintf("%s  <b>%.0f%%</b>", label, value), colour = stage),
+      direction = "both",
       hjust = 0,
-      nudge_x = 0.28,
-      size = 4.0,
+      nudge_x = 0.35,
+      size = 4.2,
       fontface = "bold",
       min.segment.length = 0,
-      box.padding = 0.28,
-      max.overlaps = 20,
+      segment.size = 0.5,
+      segment.alpha = 0.5,
+      box.padding = 0.45,
+      point.padding = 0.3,
+      force = 15,
+      max.overlaps = 50,
       show.legend = FALSE
     ) +
     scale_colour_manual(values = stage_palette) +
@@ -238,15 +244,15 @@ build_national_cascade <- function(data) {
   )
 
   count_plot <- ggplot(count_df, aes(x = value, y = stage, fill = fill_key)) +
-    geom_col(width = 0.62, colour = "#0c1629", linewidth = 0.9) +
+    geom_col(width = 0.48, colour = "transparent", alpha = 0.95) +
     geom_text(aes(label = label), hjust = -0.06, size = 3.6, colour = "#e0e6f0", fontface = "bold") +
     scale_fill_manual(values = c(
       "Estimated PLHIV" = "#435d8a",
-      "Diagnosed" = "#61d85a",
+      "Diagnosed" = "#00f5d4",
       "On ART" = "#2d9cdb",
       "Suppressed" = "#00d4aa"
     )) +
-    scale_x_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.18))) +
+    scale_x_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.22))) +
     labs(
       title = "2025 cascade stage counts",
       x = "People",
@@ -255,7 +261,8 @@ build_national_cascade <- function(data) {
     compact_theme(11.5) +
     theme(
       legend.position = "none",
-      axis.text.y = element_text(face = "bold")
+      axis.text.y = element_text(face = "bold"),
+      plot.margin = margin(10, 25, 10, 10)
     )
 
     top_row <- bullet
