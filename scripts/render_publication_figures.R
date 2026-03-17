@@ -25,9 +25,9 @@ payload <- fromJSON(input_path, simplifyVector = FALSE)
 series <- payload$series
 
 stage_palette <- c(
-  "Diagnosed" = "#5b9cf5",
-  "On ART" = "#2d9cdb",
-  "Suppressed" = "#f0a030"
+  "Diagnosed" = "#6ee0c0",
+  "On ART" = "#5b9cf5",
+  "Suppressed" = "#00d4aa"
 )
 
 positive_color <- "#2d9cdb"
@@ -270,35 +270,40 @@ build_regional_matrix <- function(data) {
 
   rows <- rows %>%
     mutate(region = factor(region, levels = rev(region)))
-  matrix_df <- rows %>%
-    select(region, diagnosis, treatment, suppression) %>%
-    pivot_longer(-region, names_to = "stage", values_to = "value") %>%
-    mutate(stage = recode(stage, diagnosis = "Diagnosed", treatment = "On ART", suppression = "Suppressed"))
 
-  heatmap <- ggplot(matrix_df, aes(x = stage, y = region, fill = value)) +
-    geom_tile(colour = "#101d33", linewidth = 0.9, width = 0.98, height = 0.92) +
-    geom_text(aes(label = sprintf("%.0f%%", value)), size = 4.3, colour = "#ffffff", fontface = "bold") +
-    scale_fill_gradientn(
-      colours = c("#162035", "#21415e", "#256f8b", "#65c79a"),
-      limits = c(30, 95),
-      labels = label_percent(scale = 1)
-    ) +
-    labs(
-      title = paste0("Regional stage matrix  ", data$period_label),
-      x = NULL,
-      y = NULL
-    ) +
-    epi_theme(12) +
+  build_column <- function(stage_name, col_name, high_color) {
+    col_df <- rows %>%
+      select(region, value = !!sym(col_name)) %>%
+      mutate(stage = stage_name)
+
+    ggplot(col_df, aes(x = stage, y = region, fill = value)) +
+      geom_tile(colour = "#101d33", linewidth = 0.7, width = 0.98, height = 0.92) +
+      geom_text(aes(label = sprintf("%.0f%%", value)), size = 3.6, colour = "#ffffff", fontface = "bold") +
+      scale_fill_gradient(low = "#1a2436", high = high_color, limits = c(30, 100)) +
+      labs(x = NULL, y = NULL) +
+      epi_theme(11) +
+      theme(
+        legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 11, color = high_color),
+        panel.grid = element_blank(),
+        axis.text.y = element_text(size = 10),
+        plot.margin = margin(0, 0, 0, 0)
+      )
+  }
+
+  p1 <- build_column("Diagnosed", "diagnosis", "#6ee0c0")
+  p2 <- build_column("On ART", "treatment", "#5b9cf5") + theme(axis.text.y = element_blank())
+  p3 <- build_column("Suppressed", "suppression", "#00d4aa") + theme(axis.text.y = element_blank())
+
+  (p1 | p2 | p3) +
+    plot_annotation(
+      title = paste0("Regional stage matrix | Observed year-end ", data$period_label),
+      theme = epi_theme(12)
+    ) &
     theme(
-      legend.position = "bottom",
-      axis.text.x = element_text(face = "bold", size = 12),
-      panel.grid = element_blank(),
-      axis.text.y = element_text(size = 11),
-      legend.key.width = grid::unit(1.8, "cm")
+      plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.background = element_blank()
     )
-
-  heatmap &
-    theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
 }
 
 build_regional_fingerprint_board <- function(data) {
@@ -449,15 +454,15 @@ build_anomaly_board <- function(data) {
 
   label_df <- perf %>%
     arrange(desc(abs(residual) + leakage_total / max(leakage_total, na.rm = TRUE) * 3)) %>%
-    slice_head(n = min(5, nrow(perf)))
+    slice_head(n = min(3, nrow(perf)))
 
   quad <- ggplot(perf, aes(x = residual, y = leakage_rate)) +
     geom_vline(xintercept = 0, linewidth = 0.7, colour = "#7889a0") +
-    geom_point(aes(size = leakage_total, fill = stage, colour = sign), shape = 21, stroke = 1.0, alpha = 0.94) +
+    geom_point(aes(size = leakage_total, fill = stage, colour = sign), shape = 21, stroke = 0.9, alpha = 0.88) +
     ggrepel::geom_text_repel(
       data = label_df,
       aes(label = region),
-      size = 4.1,
+      size = 3.8,
       min.segment.length = 0,
       box.padding = 0.3,
       max.overlaps = 50,
@@ -465,19 +470,24 @@ build_anomaly_board <- function(data) {
     ) +
     scale_fill_manual(values = c("Treatment after diagnosis" = "#2d9cdb", "Suppression after treatment" = "#e63946")) +
     scale_colour_manual(values = c("Above expected" = "#5b9cf5", "Below expected" = "#f0a030")) +
-    scale_size_continuous(range = c(4.5, 14), labels = label_number(scale_cut = cut_short_scale())) +
+    scale_size_continuous(range = c(3.8, 10.5), labels = label_number(scale_cut = cut_short_scale())) +
       scale_x_continuous(labels = function(x) sprintf("%+.0f", x)) +
       scale_y_continuous(limits = c(0, NA), labels = label_percent(scale = 1)) +
       labs(
         title = "Performance versus burden quadrant",
-        x = "Residual from expected cascade performance (percentage points)",
+        x = "Residual vs expected (percentage points)",
         y = paste0("Loss-from-care rate (", data$period_label, ")"),
         size = "Loss from care",
         fill = "Cascade break",
         colour = "Direction"
       ) +
       epi_theme(12) +
-      theme(legend.position = "bottom")
+      theme(
+        legend.position = "bottom",
+        legend.box = "vertical",
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 10)
+      )
 
   quad &
     theme(plot.background = element_rect(fill = "transparent", colour = NA), panel.background = element_blank())
@@ -555,7 +565,6 @@ render_safe <- function(builder, basename, width, height) {
 
 render_safe(function() build_national_cascade(series$national_cascade), "national_cascade_board", 15.5, 8.6)
 render_safe(function() build_regional_matrix(series$regional_ladder), "regional_stage_matrix", 15.5, 8.8)
-render_safe(function() build_regional_fingerprint_board(series$regional_yearly), "regional_fingerprint_board", 15.5, 7.6)
 render_safe(function() build_anomaly_board(series$anomalies), "anomaly_board", 15.5, 8.3)
 render_safe(function() build_historical_board(series$historical), "historical_board", 15.5, 9.0)
 render_safe(function() build_key_population_board(series$key_populations), "key_populations_board", 15.5, 9.2)

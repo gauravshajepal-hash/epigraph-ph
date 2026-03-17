@@ -329,7 +329,6 @@ class PublicationAssetBuilder:
         figures = {
             "national_cascade": r_figures.get("national_cascade") or self._render_national_cascade(series["national_cascade"]),
             "regional_ladder": r_figures.get("regional_ladder") or self._render_regional_ladder(series["regional_ladder"]),
-            "regional_fingerprint_board": r_figures.get("regional_fingerprint_board") or self._render_regional_fingerprint_board(series["regional_yearly"]),
             "anomaly_board": r_figures.get("anomaly_board") or self._render_anomaly_board(series["anomalies"]),
             "historical_board": r_figures.get("historical_board") or self._render_historical_board(series["historical"]),
             "key_populations_board": r_figures.get("key_populations_board") or self._render_key_population_board(series["key_populations"]),
@@ -421,10 +420,9 @@ class PublicationAssetBuilder:
         print("R error:", result.stderr)
 
         configs = {
-            "national_cascade": ("national_cascade_board", "National 95-95-95 board", "The board combines a target-position bullet strip, a shared 2015-2025 timeline, and a latest-cascade waterfall in people."),
-            "regional_ladder": ("regional_stage_matrix", "Regional stage matrix", "The publication figure is an ordered regional stage matrix with a companion gap strip for the latest observed yearly snapshot."),
-            "regional_fingerprint_board": ("regional_fingerprint_board", "Regional fingerprint board", "The publication figure compares a small set of exemplar regions using observed yearly cascade values, target gaps, and year-over-year movement."),
-            "anomaly_board": ("anomaly_board", "Performance versus treatment burden", "The publication figure pairs a performance-versus-burden quadrant with the ranked treatment-leakage distribution."),
+            "national_cascade": ("national_cascade_board", "National 95-95-95 board", "The board combines a compact target-position strip, an observed 2018-2025 year-end trajectory from the official DOH/HARP table, and the observed 2025 stage counts."),
+            "regional_ladder": ("regional_stage_matrix", "Regional stage matrix", "The publication figure is an ordered yearly regional stage matrix. It shows the latest observed regional diagnosis, treatment, and suppression values directly without a second gap companion chart."),
+            "anomaly_board": ("anomaly_board", "Performance versus treatment burden", "The publication figure uses a single performance-versus-burden quadrant so the residual and leakage stories stay in one compact view."),
             "historical_board": ("historical_board", "Historical burden indicators", "Historical panels are rendered from observed annual values only. No interpolation is applied across missing years."),
             "key_populations_board": ("key_populations_board", "Key population sentinel panels", "Key-population series use a shared 2015-2025 presentation window while keeping gaps visible where no defensible observed value exists."),
         }
@@ -1179,14 +1177,14 @@ class PublicationAssetBuilder:
                     annual[year] = float(value)
             return annual
 
-        def _project_national_series(series_map: dict[int, float], years_forward: int = 3) -> dict[int, float]:
+        def _project_national_series(series_map: dict[int, float], end_year: int = 2035) -> dict[int, float]:
             if not series_map:
                 return {}
             projected = dict(series_map)
             ordered_years = sorted(projected)
             if len(ordered_years) == 1:
                 last_value = projected[ordered_years[-1]]
-                for year in range(ordered_years[-1] + 1, ordered_years[-1] + years_forward + 1):
+                for year in range(ordered_years[-1] + 1, end_year + 1):
                     projected[year] = round(last_value, 1)
                 return projected
             tail_years = ordered_years[-min(4, len(ordered_years)) :]
@@ -1195,7 +1193,7 @@ class PublicationAssetBuilder:
             slope, intercept = np.polyfit(x, y, 1)
             slope = float(np.clip(slope, -4.0, 4.0))
             current = float(projected[ordered_years[-1]])
-            for year in range(ordered_years[-1] + 1, ordered_years[-1] + years_forward + 1):
+            for year in range(ordered_years[-1] + 1, end_year + 1):
                 current = float(np.clip(current + slope, 0.0, 100.0))
                 projected[year] = round(current, 1)
             return projected
@@ -1205,20 +1203,26 @@ class PublicationAssetBuilder:
             "treatment": "second_95",
             "suppression": "third_95",
         }
+        observed_years = sorted(
+            int(year)
+            for year in (regional_yearly.get("years") or [])
+            if int(year)
+        )
+        latest_observed_year = max(observed_years, default=2025)
+        forecast_end_year = max(latest_observed_year + 5, 2035)
         national_rows = {row.get("series_id"): row for row in national_cascade.get("rows", [])}
         national_stage_values = {
-            stage: _project_national_series(_annualize_national_stage(national_rows.get(series_id, {})))
+            stage: _project_national_series(
+                _annualize_national_stage(national_rows.get(series_id, {})),
+                end_year=forecast_end_year,
+            )
             for stage, series_id in stage_id_map.items()
         }
 
         region_histories = regional_yearly.get("region_histories", {}) or {}
         regions = regional_yearly.get("regions", []) or sorted(region_histories)
-        stage_years = {
-            stage: sorted(values.keys())
-            for stage, values in national_stage_values.items()
-            if values
-        }
-        all_years = sorted({year for years in stage_years.values() for year in years})
+        forecast_years = list(range(latest_observed_year + 1, forecast_end_year + 1))
+        all_years = sorted(set(observed_years) | set(forecast_years))
 
         estimated_histories: dict[str, dict] = {}
         rows_by_year: dict[str, list[dict]] = {}
@@ -1252,6 +1256,7 @@ class PublicationAssetBuilder:
         rng = np.random.default_rng(42)
         draws = 600
         phi = 0.82
+        exported_paths = 80
 
         for region in regions:
             cascade_history = region_histories.get(region, {}).get("cascade", []) or []
@@ -1292,6 +1297,7 @@ class PublicationAssetBuilder:
                 }
 
             region_rows = []
+            region_paths = {}
             for year in all_years:
                 row = {"year": year, "region": region}
                 has_any_value = False
@@ -1316,63 +1322,100 @@ class PublicationAssetBuilder:
                         observed_years_by_stage[stage].append(year)
                     else:
                         model = stage_models[stage]
-                        if not model["anchor_years"]:
+                        latest_anchor = max(model["anchor_years"], default=None)
+                        if not model["anchor_years"] or year <= latest_anchor:
                             row[f"{stage}"] = None
                             row[f"{stage}_status"] = "missing"
                             row[f"{stage}_lower"] = None
                             row[f"{stage}_upper"] = None
                             continue
 
-                        anchor_lookup = {
-                            model["anchor_years"][index]: model["anchor_residuals"][index]
-                            for index in range(len(model["anchor_years"]))
-                        }
-                        earliest_anchor = min(model["anchor_years"])
-                        latest_anchor = max(model["anchor_years"])
-                        stage_draws = []
-                        for _ in range(draws):
-                            sampled = dict(anchor_lookup)
-                            current = sampled[earliest_anchor]
-                            for back_year in range(earliest_anchor - 1, min(all_years) - 1, -1):
-                                current = float(
-                                    np.clip(
-                                        phi * current - model["step_mean"] + rng.normal(0.0, model["sigma"]),
-                                        -60.0,
-                                        60.0,
+                        cached = region_paths.get(stage)
+                        if cached is None:
+                            latest_anchor_row = observed_lookup.get(latest_anchor, {})
+                            latest_anchor_value = float(_parse_numeric(latest_anchor_row.get(stage)) or 0.0)
+                            latest_anchor_residual = float(model["anchor_residuals"][-1])
+                            stage_simulations: list[list[tuple[int, float]]] = []
+                            reach_years: list[int | None] = []
+                            forecast_year_lookup: dict[int, list[float]] = defaultdict(list)
+                            for _ in range(draws):
+                                residual = latest_anchor_residual
+                                path = [(latest_anchor, latest_anchor_value)]
+                                reached_year = latest_anchor if latest_anchor_value >= 95 else None
+                                for forward_year in forecast_years:
+                                    national_forward_value = national_stage_values.get(stage, {}).get(forward_year)
+                                    if national_forward_value is None:
+                                        continue
+                                    residual = float(
+                                        np.clip(
+                                            phi * residual + model["step_mean"] + rng.normal(0.0, model["sigma"]),
+                                            -60.0,
+                                            60.0,
+                                        )
                                     )
-                                )
-                                sampled[back_year] = current
-                            current = sampled[latest_anchor]
-                            for forward_year in range(latest_anchor + 1, max(all_years) + 1):
-                                current = float(
-                                    np.clip(
-                                        phi * current + model["step_mean"] + rng.normal(0.0, model["sigma"]),
-                                        -60.0,
-                                        60.0,
-                                    )
-                                )
-                                sampled[forward_year] = current
-                            stage_draws.append(float(np.clip(national_value + sampled.get(year, 0.0), 0.0, 100.0)))
+                                    value = float(np.clip(float(national_forward_value) + residual, 0.0, 100.0))
+                                    path.append((forward_year, value))
+                                    forecast_year_lookup[forward_year].append(value)
+                                    if reached_year is None and value >= 95:
+                                        reached_year = forward_year
+                                stage_simulations.append(path)
+                                reach_years.append(reached_year)
 
-                        estimate = float(np.median(stage_draws))
-                        lower = float(np.quantile(stage_draws, 0.1))
-                        upper = float(np.quantile(stage_draws, 0.9))
-                        is_forecast = year > latest_anchor
-                        row[f"{stage}"] = round(estimate, 1)
-                        row[f"{stage}_status"] = "forecast" if is_forecast else "estimated"
-                        row[f"{stage}_lower"] = round(max(0.0, lower), 1)
-                        row[f"{stage}_upper"] = round(min(100.0, upper), 1)
+                            sampled_paths = []
+                            if stage_simulations:
+                                stride = max(1, len(stage_simulations) // exported_paths)
+                                for index, path in enumerate(stage_simulations[::stride][:exported_paths], start=1):
+                                    sampled_paths.append({
+                                        "draw": index,
+                                        "years": [int(year_value) for year_value, _ in path],
+                                        "values": [round(float(value), 1) for _, value in path],
+                                    })
+
+                            reach_probabilities = {}
+                            for forward_year in forecast_years:
+                                valid_draws = len(stage_simulations)
+                                if not valid_draws:
+                                    continue
+                                reached = sum(
+                                    1
+                                    for reached_year in reach_years
+                                    if reached_year is not None and reached_year <= forward_year
+                                )
+                                reach_probabilities[str(forward_year)] = round(reached / valid_draws, 4)
+
+                            cached = {
+                                "paths": sampled_paths,
+                                "by_year": {
+                                    forward_year: {
+                                        "median": float(np.median(values)),
+                                        "lower": float(np.quantile(values, 0.1)),
+                                        "upper": float(np.quantile(values, 0.9)),
+                                    }
+                                    for forward_year, values in forecast_year_lookup.items()
+                                    if values
+                                },
+                                "latest_anchor_year": latest_anchor,
+                                "latest_anchor_value": round(latest_anchor_value, 1),
+                                "reach_probabilities": reach_probabilities,
+                            }
+                            region_paths[stage] = cached
+
+                        forecast_stats = cached["by_year"].get(year)
+                        if not forecast_stats:
+                            row[f"{stage}"] = None
+                            row[f"{stage}_status"] = "missing"
+                            row[f"{stage}_lower"] = None
+                            row[f"{stage}_upper"] = None
+                            continue
+
+                        row[f"{stage}"] = round(float(forecast_stats["median"]), 1)
+                        row[f"{stage}_status"] = "forecast"
+                        row[f"{stage}_lower"] = round(max(0.0, float(forecast_stats["lower"])), 1)
+                        row[f"{stage}_upper"] = round(min(100.0, float(forecast_stats["upper"])), 1)
                         row[f"{stage}_period"] = str(year)
                         row[f"{stage}_source_url"] = ""
-                        row[f"{stage}_filename"] = (
-                            "Monte Carlo Markov forecast"
-                            if is_forecast
-                            else "Monte Carlo Markov backfill"
-                        )
-                        if is_forecast:
-                            forecast_years_by_stage[stage].append(year)
-                        else:
-                            estimated_years_by_stage[stage].append(year)
+                        row[f"{stage}_filename"] = "Monte Carlo Markov forecast"
+                        forecast_years_by_stage[stage].append(year)
                     has_any_value = has_any_value or row[f"{stage}"] is not None
                 leakage_row = next((item for item in anomaly_yearly.get("leakage_by_year", {}).get(str(year), []) if item.get("region") == region), None)
                 if leakage_row:
@@ -1387,14 +1430,20 @@ class PublicationAssetBuilder:
 
             estimated_histories[region] = {
                 "cascade": region_rows,
+                "paths": {
+                    stage: region_paths.get(stage, {}).get("paths", [])
+                    for stage in ("diagnosis", "treatment", "suppression")
+                },
                 "model": {
                     stage: {
                         "anchor_years": stage_models[stage]["anchor_years"],
+                        "latest_anchor_year": max(stage_models[stage]["anchor_years"], default=None),
                         "step_mean": round(stage_models[stage]["step_mean"], 2),
                         "global_step_mean": round(stage_models[stage]["global_step_mean"], 2),
                         "sigma": round(stage_models[stage]["sigma"], 2),
                         "draws": stage_models[stage]["draws"],
                         "phi": stage_models[stage]["phi"],
+                        "reach_probabilities": region_paths.get(stage, {}).get("reach_probabilities", {}),
                         "status": stage_models[stage]["status"],
                     }
                     for stage in stage_models
@@ -1416,21 +1465,21 @@ class PublicationAssetBuilder:
             )
 
         observed_stage_years = {
-            stage: sorted({year for year in years if year in set(observed_years_by_stage[stage])})
-            for stage, years in stage_years.items()
+            stage: sorted(set(observed_years_by_stage[stage]))
+            for stage in ("diagnosis", "treatment", "suppression")
         }
         estimated_stage_years = {
-            stage: sorted({year for year in years if year in set(estimated_years_by_stage[stage])})
-            for stage, years in stage_years.items()
+            stage: []
+            for stage in ("diagnosis", "treatment", "suppression")
         }
         forecast_stage_years = {
-            stage: sorted({year for year in years if year in set(forecast_years_by_stage[stage])})
-            for stage, years in stage_years.items()
+            stage: sorted(set(forecast_years_by_stage[stage]))
+            for stage in ("diagnosis", "treatment", "suppression")
         }
 
         return {
             "years": all_years,
-            "default_year": max(all_years, default=None),
+            "default_year": max(observed_years, default=None),
             "default_region": "Region 6" if "Region 6" in regions else (regions[0] if regions else ""),
             "rows_by_year": rows_by_year,
             "regions": regions,
@@ -1438,13 +1487,15 @@ class PublicationAssetBuilder:
             "observed_years_by_stage": observed_stage_years,
             "estimated_years_by_stage": estimated_stage_years,
             "forecast_years_by_stage": forecast_stage_years,
-            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact, backfills earlier yearly context to 2018 from official national year-end trajectories, and adds short-horizon forecasts beyond 2025. Suppression remains unavailable before 2018 because no earlier official national year-end third-95 anchor series was identified.",
-            "model_note": "Experimental estimates use a first-order Monte Carlo Markov state model on region-level residuals around the official national annual stage trajectories. Each stage draws 600 simulated yearly paths per region, then reports the median and 10th-90th percentile interval. Estimated values are never mixed into the official overview or explorer.",
+            "latest_observed_year": latest_observed_year,
+            "forecast_end_year": forecast_end_year,
+            "coverage_note": "Experimental regional history keeps observed 2024-2025 cascade values intact and projects forward from the observed 2025 endpoint through a forward-only yearly forecast window. No historical backfill is shown in this layer.",
+            "model_note": "Experimental forecasts use a first-order Monte Carlo Markov state model on region-level residuals around the official national annual stage trajectories. Each stage draws 600 simulated yearly paths per region from the latest observed regional anchor, then reports the median and 10th-90th percentile interval. Forecasts are never mixed into the official overview or explorer.",
             "source_policy": [
-                "Observed regional cascade values always override model estimates.",
-                "Diagnosis, treatment, and suppression backfill are anchored to the official 2018-2025 DOH/HARP annual cascade table.",
+                "Observed regional cascade values always override model forecasts.",
+                "Diagnosis, treatment, and suppression forecasts are anchored to the official 2018-2025 DOH/HARP annual cascade table and start from the latest observed regional endpoint.",
                 "Forecasts beyond 2025 are experimental and derived from a capped national annual stage trend plus the regional Markov residual process.",
-                "Suppression backfill is limited to years where an official national year-end third-95 anchor exists.",
+                "No historical regional backfill is shown in this layer.",
             ],
         }
 
@@ -1522,38 +1573,6 @@ class PublicationAssetBuilder:
                     "Reviewed older official reports, including 2019 Q4, October 2021, and December 2022, publish national ART totals and facility lists but not a region-level treatment-outcome table that can support yearly regional cascade backfill.",
                 ],
                 "reference_ids": ["ship-2019-q4", "ship-2021-oct", "ship-2022-dec", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
-            },
-            {
-                "id": "regional_fingerprint_board",
-                "figure_key": "regional_fingerprint_board",
-                "title": "Regional fingerprint board",
-                "question": "How do the most informative regions differ in cascade shape and year-over-year movement?",
-                "definition": "The fingerprint board summarizes a small set of exemplar regions using their yearly diagnosis, treatment, and suppression coverage, current gap to target, and year-over-year change.",
-                "coverage_window": "Observed yearly regional cascade currently spans 2024-2025. The board uses observed-only regional values from that window.",
-                "estimation_policy": "No synthetic values are injected into the fingerprint board. It is derived entirely from observed yearly regional cascade rows.",
-                "formulas": [
-                    "Stage gap = 95 - observed regional stage coverage",
-                    "Year-over-year delta = current yearly stage coverage - previous yearly stage coverage",
-                    "Exemplar regions = lowest mean gap, highest mean gap, and highest observed regional burden among fully observed yearly cascade rows",
-                ],
-                "source_precedence": [
-                    "Use the same observed yearly regional cascade rows that feed the publication stage matrix and the explorer.",
-                    "If a region has only one observed year, show the current value without a yearly change estimate.",
-                ],
-                "construction": [
-                    "Select a small set of exemplar regions so the publication overview can show how cascade shape differs without turning back into a crowded regional ladder.",
-                    "Render diagnosis, treatment, and suppression on the same 0-100 scale for each exemplar region.",
-                    "Annotate the current yearly endpoint, the gap to 95, and the year-over-year delta using only observed yearly rows.",
-                ],
-                "harmonization": [
-                    "Stage colors match the national cascade board and the regional stage matrix.",
-                    "The fingerprint board remains publication-only and does not inherit any modeled values from the experimental layer.",
-                ],
-                "caveats": [
-                    "This board is illustrative rather than exhaustive. It highlights a few regions to make the regional story legible at overview scale.",
-                    "The board does not claim pre-2024 observed regional cascade coverage because the reviewed official corpus does not support that claim.",
-                ],
-                "reference_ids": ["ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4", "design-ahead"],
             },
             {
                 "id": "anomaly_board",
@@ -1663,33 +1682,34 @@ class PublicationAssetBuilder:
             {
                 "id": "experimental_regional",
                 "figure_key": "",
-                "title": "Experimental regional backfill",
-                "question": "How can earlier regional cascade context be explored without contaminating the official atlas?",
-                "definition": "The experimental layer combines observed regional yearly cascade anchors with official national stage trajectories to produce explicitly modeled regional backfill for exploration only.",
-                "coverage_window": "Diagnosis and treatment can be explored on the 2016-2025 national anchor window. Suppression can be explored from 2018 onward because that is the earliest official national year-end third-95 anchor available in the reviewed public sources.",
-                "estimation_policy": "Estimated values remain separate from all publication figures and the official explorer. They are always marked as estimated and are accompanied by stage-specific uncertainty intervals.",
+                "title": "Experimental regional forecast paths",
+                "question": "How could regional cascade performance evolve after the observed 2025 endpoint under a forward-looking Monte Carlo Markov model?",
+                "definition": "The experimental layer combines observed regional yearly cascade anchors with official national stage trajectories to generate forward-only regional forecast paths for exploration only.",
+                "coverage_window": "Observed regional anchors currently span 2024-2025. Forward yearly forecasts start after the latest observed anchor and extend through the exported horizon.",
+                "estimation_policy": "Forecast values remain separate from all publication figures and the official explorer. They are always marked as forecasts and are accompanied by stage-specific uncertainty intervals and sampled forecast paths.",
                 "formulas": [
-                    "Estimated regional stage = official national stage + shrunk regional residual trend",
+                    "Forecast regional stage = official national stage + simulated regional residual path",
                     "Regional residual = observed regional stage - official national stage in the same year",
-                    "Estimated interval = estimated value +/- stage-specific residual uncertainty",
+                    "Forecast interval = stage-specific 10th-90th percentile envelope across simulated paths",
+                    "Reach-to-95 probability by year = share of simulated paths that reach or exceed 95 by that year",
                 ],
                 "source_precedence": [
-                    "Observed regional yearly cascade values always override model estimates.",
-                    "Official national annual or quarterly stage values anchor the experimental regional backfill.",
-                    "No experimental suppression history is shown before an official national year-end third-95 anchor exists.",
+                    "Observed regional yearly cascade values always override model forecasts.",
+                    "Official national annual stage values anchor the experimental regional forecast paths.",
+                    "No historical regional backfill is published in this layer.",
                 ],
                 "construction": [
-                    "Fit a simple yearly residual model for each region and stage using only observed regional yearly anchors.",
-                    "Shrink the fitted residual trend toward the observed mean residual so the backcast does not overreact to two observed years.",
-                    "Combine the residual model with the official national yearly stage series to derive exploratory regional history.",
+                    "Fit a yearly residual model for each region and stage using only observed regional yearly anchors.",
+                    "Start each simulation at the latest observed regional stage endpoint and evolve it forward with a first-order Markov residual process.",
+                    "Combine the simulated residual paths with the official national yearly stage trend to derive exploratory future regional trajectories.",
                 ],
                 "harmonization": [
-                    "Observed and estimated values are kept separate in both the payload and the UI.",
+                    "Observed and forecast values are kept separate in both the payload and the UI.",
                     "The experimental layer is exploratory only and is never reused inside the publication overview.",
                 ],
                 "caveats": [
-                    "The modeled regional backfill is not official surveillance output.",
-                    "With only two observed regional cascade years, the experimental history is assumption-sensitive and should be treated as context rather than evidence.",
+                    "The modeled regional forecast paths are not official surveillance output.",
+                    "With only two observed regional cascade years, the forecast fan is assumption-sensitive and should be treated as scenario context rather than evidence.",
                 ],
                 "reference_ids": ["unaids-dataset", "harp-annual-2018-2025", "ship-2024-q2", "ship-2024-q4", "ship-2025-q2", "ship-2025-q3", "ship-2025-q4"],
             },
