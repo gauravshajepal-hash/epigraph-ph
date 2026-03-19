@@ -239,10 +239,10 @@
 <circle cx='413.46' cy='441.30' r='5.54' style='stroke-width: 2.13; stroke: #0C1629; fill: #1E90FF;' />
 <circle cx='468.66' cy='402.57' r='5.54' style='stroke-width: 2.13; stroke: #0C1629; fill: #1E90FF;' />
 <line x1='461.16' y1='384.46' x2='464.38' y2='382.01' style='stroke-width: 1.07; stroke: #FF4757; stroke-opacity: 0.50;' />
-<line x1='461.48' y1='364.09' x2='464.44' y2='366.44' style='stroke-width: 1.07; stroke: #2ED573; stroke-opacity: 0.50;' />
+<line x1='461.73' y1='364.08' x2='464.50' y2='366.37' style='stroke-width: 1.07; stroke: #2ED573; stroke-opacity: 0.50;' />
 <line x1='461.05' y1='408.29' x2='464.35' y2='405.81' style='stroke-width: 1.07; stroke: #1E90FF; stroke-opacity: 0.50;' />
-<text x='378.59' y='394.80' style='font-size: 11.95px; font-weight: bold;fill: #FF4757; font-family: "Arial";' textLength='137.34px' lengthAdjust='spacingAndGlyphs'>Diagnosed  &lt;b&gt;61%&lt;/b&gt;</text>
-<text x='392.19' y='362.29' style='font-size: 11.95px; font-weight: bold;fill: #2ED573; font-family: "Arial";' textLength='120.30px' lengthAdjust='spacingAndGlyphs'>On ART  &lt;b&gt;64%&lt;/b&gt;</text>
+<text x='378.59' y='394.81' style='font-size: 11.95px; font-weight: bold;fill: #FF4757; font-family: "Arial";' textLength='137.34px' lengthAdjust='spacingAndGlyphs'>Diagnosed  &lt;b&gt;61%&lt;/b&gt;</text>
+<text x='394.65' y='362.28' style='font-size: 11.95px; font-weight: bold;fill: #2ED573; font-family: "Arial";' textLength='120.30px' lengthAdjust='spacingAndGlyphs'>On ART  &lt;b&gt;64%&lt;/b&gt;</text>
 <text x='371.62' y='418.63' style='font-size: 11.95px; font-weight: bold;fill: #1E90FF; font-family: "Arial";' textLength='144.66px' lengthAdjust='spacingAndGlyphs'>Suppressed  &lt;b&gt;53%&lt;/b&gt;</text>
 </g>
 <g clip-path='url(#cpMC4wMHwxMTE2LjAwfDAuMDB8NjE5LjIw)'>

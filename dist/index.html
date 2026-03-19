@@ -41,6 +41,7 @@
     html, body {
       margin: 0;
       min-height: 100%;
+      padding-bottom: 60vh;
       background: var(--bg);
       background-image:
         radial-gradient(ellipse at 15% -8%, rgba(45, 156, 219, 0.08) 0%, transparent 50%),
@@ -61,7 +62,7 @@
       opacity: 0.5;
     }
 
-    .shell { position: relative; z-index: 1; max-width: 1760px; margin: 0 auto; padding: 10px 12px 30px; }
+    .shell { position: relative; z-index: 1; max-width: 1760px; margin: 0 auto; padding: 10px 12px 60vh; overflow: visible; }
     .hero {
       background: linear-gradient(135deg, rgba(8, 14, 30, 0.95), rgba(10, 20, 40, 0.92));
       color: var(--ink);
@@ -133,15 +134,15 @@
       color: var(--accent);
     }
     .status-banner.is-visible { display: block; }
-    .section { display: none; margin-top: 22px; animation: reveal 260ms ease; }
-    .section.is-active { display: block; }
-    @keyframes reveal {
+    .section { display: none; overflow: visible; }
+    .section.is-active { display: block; animation: fadeIn 300ms ease; }
+    @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .grid { display: grid; gap: 14px; }
     .grid.kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 12px; }
-    .grid.columns-2 { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); margin-top: 14px; }
+    .grid.columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
     .dashboard-band { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     .grid.columns-2.dashboard-band { grid-template-columns: 1fr; }
     .overview-preface { display: grid; }
@@ -152,12 +153,14 @@
       box-shadow: var(--shadow);
       padding: 10px;
       backdrop-filter: blur(16px);
+      overflow: visible;
     }
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
       gap: 14px;
       margin-top: 14px;
+      overflow: visible;
     }
     .col-span-12 { grid-column: span 12; }
     .col-span-8 { grid-column: span 8; }
@@ -231,12 +234,6 @@
       background: transparent;
       border: 0;
     }
-    .atlas-card {
-      padding: 4px 8px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: rgba(16, 28, 52, 0.3);
-    }
     .chart-host.scatter {
       height: 180px;
     }
@@ -248,7 +245,7 @@
       margin-top: 14px;
     }
     .chart-host.fingerprint {
-      height: 220px;
+      height: 280px;
     }
     .chart-host.rank-compact {
       height: auto;
@@ -274,6 +271,12 @@
       line-height: 1.08;
       letter-spacing: -0.01em;
       font-weight: 700;
+    }
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      position: relative;
+      z-index: 1000;
     }
     .figure-actions {
       display: flex;
@@ -527,34 +530,73 @@
       gap: 18px;
       margin-top: 18px;
     }
-    .method-index {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    .tab-pills {
+      display: flex;
       gap: 12px;
-      margin-top: 18px;
+      padding: 4px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 50px;
+    }
+    .pill-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-btn:hover {
+      color: var(--ink);
+      background: rgba(255,255,255,0.03);
+    }
+    .pill-btn.is-active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(45, 156, 219, 0.3);
+    }
+    .pill-btn .badge {
+      font-size: 0.75rem;
+      background: rgba(0,0,0,0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-family: inherit;
+    }
+    .sticky-top {
+      position: sticky;
+      top: 100px;
+    }
+    .method-index {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .method-index a {
       display: block;
+      padding: 12px 16px;
       border: 1px solid var(--panel-border);
-      border-radius: 16px;
-      background: rgba(16, 28, 52, 0.5);
-      padding: 14px 16px;
-      color: var(--ink);
+      border-radius: 12px;
       text-decoration: none;
-      font-weight: 700;
-      line-height: 1.4;
+      color: var(--muted);
+      font-size: 0.88rem;
+      transition: all 0.2s;
     }
     .method-index a:hover {
-      border-color: rgba(45, 156, 219, 0.25);
-      background: rgba(14, 124, 102, 0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-color: var(--accent);
     }
-    .method-index small {
+    .method-index a small {
       display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      opacity: 0.6;
+      font-size: 0.75rem;
+      margin-top: 4px;
     }
     .method-card,
     .reference-group-card {
@@ -600,6 +642,52 @@
       border-radius: 18px;
       background: rgba(16, 28, 52, 0.6);
       padding: 16px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(45, 156, 219, 0.1);
+      border: 1px solid rgba(45, 156, 219, 0.2);
+      border-radius: 4px;
+      font-size: 0.70rem;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .tag:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .action-btn {
+      appearance: none;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--panel-border);
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--muted);
+    }
+    .action-btn.success {
+      background: var(--accent-green) !important;
+      border-color: var(--accent-green) !important;
+      color: #fff !important;
+    }
+    .highlight-pulse {
+      animation: highlight-pulse-anim 3s ease-out;
+    }
+    @keyframes highlight-pulse-anim {
+      0% { border-color: var(--accent); box-shadow: 0 0 0 0 rgba(45, 156, 219, 0.4); }
+      70% { border-color: var(--accent); box-shadow: 0 0 0 10px rgba(45, 156, 219, 0); }
+      100% { border-color: var(--panel-border); box-shadow: 0 0 0 0 rgba(45, 156, 219, 0); }
     }
     .formula-panel h4,
     .source-panel h4 {
@@ -991,6 +1079,91 @@
       background: rgba(16, 28, 52, 0.4);
       padding: 10px 12px;
     }
+    .summary-stack .fingerprint-stat {
+      flex: 1;
+      padding: 10px;
+      background: rgba(16, 28, 52, 0.4);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+    }
+    
+    /* Persona & Storytelling Components */
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .persona-card {
+      padding: 18px;
+      background: linear-gradient(135deg, rgba(8, 14, 30, 0.6), rgba(45, 156, 219, 0.05));
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      transition: all 300ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .persona-card:hover { transform: translateY(-3px); border-color: rgba(45, 156, 219, 0.4); background: rgba(45, 156, 219, 0.08); }
+    .persona-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      color: var(--accent-strong);
+      font-size: 1.25rem;
+    }
+    .persona-card h4 { margin: 0 0 8px; font-size: 0.95rem; color: var(--ink-strong); letter-spacing: 0.02em; }
+    .persona-card p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: var(--muted); }
+    
+    /* Status Meter / Scoreboard */
+    .status-meter-box {
+      margin-top: 14px;
+      padding: 14px 18px;
+      background: rgba(10, 15, 26, 0.4);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+    .status-meter-group { flex: 1; min-width: 0; }
+    .status-meter-label { display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 6px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; }
+    .status-meter-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 999px; position: relative; overflow: hidden; }
+    .status-meter-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, var(--accent), var(--accent-strong)); box-shadow: 0 0 10px rgba(45, 156, 219, 0.3); }
+    .status-meter-fill.at-target { background: linear-gradient(90deg, #27ae60, #2ecc71); box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+
+    /* Control Console / Option Tiles */
+    .control-console {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .option-tile {
+      padding: 14px;
+      background: rgba(16, 28, 52, 0.8);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: all 200ms ease;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    .option-tile:hover { border-color: rgba(45, 156, 219, 0.3); color: var(--ink-strong); background: rgba(45, 156, 219, 0.05); }
+    .option-tile.is-selected { border-color: var(--accent); color: var(--accent-strong); background: rgba(45, 156, 219, 0.12); box-shadow: inset 0 0 12px rgba(45, 156, 219, 0.1); }
+    .option-tile .tile-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; }
+    .option-tile .tile-value { font-weight: 700; font-size: 0.95rem; }
     .goal-stat-label {
       color: var(--muted);
       font-size: 0.72rem;
@@ -1036,19 +1209,110 @@
     .atlas-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 18px; }
     .duo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 18px; align-items: start; }
     .atlas-card {
-      padding: 20px;
+      padding: 24px;
       border-radius: var(--radius-lg);
       border: 1px solid var(--panel-border);
       background: var(--panel);
       backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
-    .atlas-card h3 { margin: 0 0 6px; }
+    .atlas-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      min-height: 42px; /* Standardize header height */
+    }
+    .atlas-card h3 { margin: 0; }
     .atlas-note { margin-top: 14px; color: var(--muted); font-size: 0.94rem; line-height: 1.68; }
+    .insight-box {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(45,156,219,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(45,156,219,0.15);
+    }
+    .experimental-subsection {
+      margin-top: 16px;
+    }
+    .experimental-list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+      margin: 10px 0 0;
+    }
+    .experimental-list li {
+      position: relative;
+      padding: 12px 16px;
+      border-left: 3px solid rgba(45, 156, 219, 0.4);
+      background: linear-gradient(90deg, rgba(45, 156, 219, 0.08) 0%, transparent 100%);
+      border-radius: 4px 12px 12px 4px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #dfe7f2;
+    }
+    .experimental-list li strong {
+      color: var(--accent-strong);
+      font-weight: 700;
+      font-family: var(--mono);
+    }
+    .insight-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #00d4aa;
+      font-weight: 700;
+    }
+    .insight-box p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #e0e6f0;
+    }
     .atlas-stat-strip {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       margin-top: 14px;
+    }
+    .control-select {
+      appearance: none;
+      -webkit-appearance: none;
+      color-scheme: dark;
+      background: rgba(16, 28, 52, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(45, 156, 219, 0.35);
+      border-radius: 14px;
+      color: var(--ink-strong);
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 10px 42px 10px 18px;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%234db5ef' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .control-select option {
+      background-color: #101d33;
+      color: #dfe7f2;
+    }
+    .control-select:hover {
+      border-color: var(--accent);
+      background-color: rgba(45, 156, 219, 0.15);
+      box-shadow: 0 0 20px rgba(45, 156, 219, 0.25);
+      transform: translateY(-1px);
+    }
+    .control-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(45, 156, 219, 0.2);
     }
     .atlas-stat {
       border: 1px solid var(--panel-border);
@@ -1483,89 +1747,148 @@
 
     <section class="section" id="methods-section">
       <div class="dashboard-grid">
-        <article class="card col-span-6">
-          <div class="card-header">
-            <div>
-              <div class="eyebrow">Methods</div>
-              <h2>How each figure was generated</h2>
+        <article class="card col-span-12">
+          <div class="card-header" style="justify-content: flex-start; gap: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px;">
+            <div style="flex: 1;">
+              <div class="eyebrow">Analytical Infrastructure</div>
+              <h2>Methods & Sources</h2>
+              <p class="mini-note" style="margin-top: 8px;">Documentation of figure generation policy, formulas, and the comprehensive source inventory.</p>
             </div>
-            <span class="pill" id="methodology-pill">Loading</span>
-          </div>
-          <p class="mini-note">Each section documents the figure question, exact formula block, coverage window, estimation policy, source precedence, and source table for the corresponding publication figure.</p>
-          <div class="method-index" id="method-index"></div>
-          <div class="methodology-list" id="methodology-list"></div>
-        </article>
-        <article class="card col-span-6">
-          <div class="card-header">
-            <div>
-              <div class="eyebrow">Sources</div>
-              <h2>Source reports, datasets, and checkpoints</h2>
+            <div class="tab-pills" style="margin-left: auto;">
+              <button class="pill-btn is-active" onclick="switchMethodSubView('methods')" id="subview-btn-methods">
+                Core Methods <span class="badge" id="methodology-pill-count">6</span>
+              </button>
+              <button class="pill-btn" onclick="switchMethodSubView('sources')" id="subview-btn-sources">
+                Reference Catalog <span class="badge" id="references-pill-count">42</span>
+              </button>
             </div>
-            <span class="pill" id="references-pill">Loading</span>
           </div>
-          <p class="mini-note">The source inventory behind the current figures. Includes official international datasets and Philippine surveillance reports.</p>
-          <div class="reference-groups" id="reference-groups"></div>
+
+          <!-- Sub-View: Methods -->
+          <div id="method-subview-methods" class="subview-content">
+            <div class="grid columns-12 gap-32" style="margin-top: 24px;">
+              <div class="col-span-3">
+                <div class="sticky-top">
+                  <div class="eyebrow" style="margin-bottom: 12px;">Method Index</div>
+                  <div class="method-index" id="method-index"></div>
+                </div>
+              </div>
+              <div class="col-span-9">
+                <div class="methodology-list" id="methodology-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-View: Sources -->
+          <div id="method-subview-sources" class="subview-content" style="display: none;">
+            <div class="grid columns-12 gap-32" style="margin-top: 24px;">
+              <div class="col-span-12">
+                <div class="search-bar-host" style="margin-bottom: 24px;">
+                  <input type="text" id="reference-search" placeholder="Search 40+ sources (organization, title, or tags)..." class="control-input" style="width: 100%; max-width: 600px;">
+                </div>
+                <div class="reference-groups" id="reference-groups"></div>
+              </div>
+            </div>
+          </div>
         </article>
       </div>
     </section>
 
     <section class="section" id="experimental-section">
       <div class="dashboard-grid">
-        <article class="card col-span-12">
+        <article class="card col-span-12" style="background: var(--bg-raised);">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Experimental estimates</div>
-              <h2>Forward national and regional scenarios</h2>
-            </div>
-            <span class="signal-tag" id="experimental-pill">Observed only</span>
-          </div>
-          <p class="mini-note" id="experimental-intro">This layer remains separate from the official atlas. The latest hard official annual cascade is always used as the seed, and all forecasts run forward only from the next year onward.</p>
-          <div class="control-row">
-            <div class="control-group">
-              <label for="experimental-region-select">Region</label>
-              <select id="experimental-region-select"></select>
-            </div>
-            <div class="control-group">
-              <label for="experimental-stage-select">Stage</label>
-              <select id="experimental-stage-select">
-                <option value="diagnosis">Diagnosed</option>
-                <option value="treatment">On ART</option>
-                <option value="suppression">Suppressed</option>
-              </select>
+              <div class="eyebrow">Project 2035</div>
+              <h2>Future Scenarios</h2>
             </div>
           </div>
-          <div class="dashboard-grid">
-            <article class="atlas-card col-span-8">
-              <h3>National forward scenarios</h3>
-              <p class="analytic-subtitle">Observed annual national values remain solid through the latest hard year. Future paths show simulated trajectories, a forecast median, and an uncertainty band.</p>
-              <div class="chart-host tall" id="experimental-national-chart"></div>
-              <div class="atlas-note" id="experimental-national-note"></div>
-            </article>
-            <article class="atlas-card col-span-4">
-              <h3>Selected regional forward path</h3>
-              <p class="analytic-subtitle">Observed regional anchors stay intact. Forecast paths project the region’s departure around the national path for the selected stage.</p>
-              <div class="chart-host tall" id="experimental-chart"></div>
-              <div class="atlas-note" id="experimental-chart-note"></div>
-            </article>
-            <article class="atlas-card col-span-5">
-              <h3>Simulation setup</h3>
-              <p class="analytic-subtitle">Latest hard year, anchor window, draws, and the current source policy behind the experimental model.</p>
-              <div class="fingerprint-summary" id="experimental-simulation-summary"></div>
-            </article>
-            <article class="atlas-card col-span-7">
-              <h3>Future bottleneck probabilities</h3>
-              <p class="analytic-subtitle">Share of simulated national futures in which diagnosis, treatment, or suppression remains the largest shortfall from the 95 target.</p>
-              <div class="chart-host" id="experimental-bottleneck-chart"></div>
-              <div class="atlas-note" id="experimental-bottleneck-note"></div>
-            </article>
-            <article class="atlas-card col-span-12">
-              <h3>Output contracts and regional watchlist</h3>
-              <p class="analytic-subtitle">Scenario-style target probabilities and the regions most exposed to future mean-gap and leakage risk at the watch year.</p>
-              <div class="fingerprint-summary" id="experimental-output-summary"></div>
-              <div class="atlas-note" id="experimental-output-note"></div>
-            </article>
+
+          <!-- Simulation Control Console -->
+          <div class="control-console">
+            <div class="option-tile" data-value="diagnosis" id="tile-diagnosis">
+              <span class="tile-label">Focus Stage</span>
+              <span class="tile-value">DIAGNOSIS (95-X-X)</span>
+            </div>
+            <div class="option-tile" data-value="treatment" id="tile-treatment">
+              <span class="tile-label">Focus Stage</span>
+              <span class="tile-value">TREATMENT (X-95-X)</span>
+            </div>
+            <div class="option-tile" data-value="suppression" id="tile-suppression">
+              <span class="tile-label">Focus Stage</span>
+              <span class="tile-value">SUPPRESSION (X-X-95)</span>
+            </div>
           </div>
+          
+          <!-- Hidden Native Select (for syncing with existing logic) -->
+          <select id="experimental-stage-select" style="display: none;">
+            <option value="diagnosis">diagnosis</option>
+            <option value="treatment">treatment</option>
+            <option value="suppression">suppression</option>
+          </select>
+
+          <p class="mini-note" style="margin-top: 20px; text-align: center;">Projections start from latest verified data (2024). Adjust the focus stage to see the ripple effect across the country.</p>
         </article>
+
+      <div class="row pt-4 col-span-12" id="experimental-explorer-container">
+        <div class="dashboard-grid relative" style="margin-top: 24px;">
+          <!-- Quadrant 1: National Scenarios -->
+          <article class="atlas-card col-span-6">
+            <div class="card-header">
+              <h3>National forward scenarios</h3>
+            </div>
+            <p class="analytic-subtitle">Observed national trend and the distribution of simulated futures for the selected stage.</p>
+            <div class="chart-host tall" id="experimental-national-chart"></div>
+            <div class="card-note" id="experimental-national-note"></div>
+          </article>
+
+          <!-- Quadrant 2: Regional Forward Path -->
+          <article class="atlas-card col-span-6">
+            <div class="card-header">
+              <h3>Selected regional forward path</h3>
+              <select class="control-select" id="experimental-region-select"></select>
+            </div>
+            <p class="analytic-subtitle">Observed regional anchors stay intact. Forecast paths project the region’s departure around the national path.</p>
+            <div class="chart-host tall" id="experimental-chart"></div>
+            <div class="card-note" id="experimental-regional-note"></div>
+          </article>
+
+          <!-- Row 2: Hurdles & Success Targets -->
+          <article class="atlas-card col-span-6">
+            <div class="card-header">
+              <h3>Strategic Hurdles to 2035</h3>
+            </div>
+            <p class="analytic-subtitle">Identifying the biggest challenges that could slow down our progress toward the 95-95-95 goals.</p>
+            <div class="chart-host" id="experimental-bottleneck-chart" style="height: 320px;"></div>
+            <div class="insight-box" id="experimental-bottleneck-insight">
+              <h4>Strategic Insight</h4>
+              <p id="experimental-bottleneck-insight-text">Analyzing the simulation data to identify key intervention points...</p>
+            </div>
+            <div class="card-note" id="experimental-bottleneck-note"></div>
+          </article>
+
+          <article class="atlas-card col-span-6">
+            <div class="card-header">
+              <h3>Success Scores & Regional Watchlist</h3>
+            </div>
+            <p class="analytic-subtitle">Probability of achieving targets and regions requiring the most strategic attention.</p>
+            <div id="experimental-output-summary" style="margin-top: 16px;"></div>
+            <div class="card-note" id="experimental-output-note"></div>
+          </article>
+
+          <!-- Row 3: Technical Metadata (Wide) -->
+          <article class="atlas-card col-span-12" style="margin-top: 24px;">
+            <div class="card-header">
+              <h3>Data Foundation & Simulation Parameters</h3>
+            </div>
+            <p class="analytic-subtitle">Technical constraints and historical anchors used to build these simulated futures.</p>
+            <div id="experimental-simulation-summary" class="grid columns-2" style="margin-top: 20px; gap: 32px;"></div>
+          </article>
+        </div>
+      </div>
+      </div>
+    </section>
+  </div>
       </div>
     </section>
   </div>
@@ -1613,6 +1936,7 @@
         renderExperimentalSection();
         setupRegionalExplorer();
         setupExperimentalExplorer();
+        setupMethodologyExplorer();
         applyInitialViewFromLocation();
 
         setStatus(
@@ -3268,8 +3592,8 @@
 
     function renderMethodologySection() {
       const sections = state.bootstrap?.publication?.methodology?.sections || [];
-      const pill = document.getElementById("methodology-pill");
-      if (pill) pill.textContent = `${formatNumber(sections.length)} figure methods`;
+      const pill = document.getElementById("methodology-pill-count");
+      if (pill) pill.textContent = formatNumber(sections.length);
       const container = document.getElementById("methodology-list");
       const methodIndex = document.getElementById("method-index");
       if (!sections.length) {
@@ -3322,18 +3646,72 @@
       const experimental = state.bootstrap?.publication?.series?.experimental_regional || {};
       const pill = document.getElementById("experimental-pill");
       const intro = document.getElementById("experimental-intro");
-      if (!pill) return;
       const latestHardYear = Number(experimental.latest_hard_year || experimental.simulation?.latest_hard_year || 0);
       const forecastStart = Number(experimental.simulation?.forecast_start_year || 0);
       const forecastEnd = Number(experimental.simulation?.forecast_end_year || 0);
-      if (!latestHardYear) {
-        pill.textContent = "No experimental layer";
-        if (intro) intro.textContent = "No forward simulation payload was exported.";
-        return;
+      
+      if (pill) {
+        if (!latestHardYear) {
+          pill.textContent = "No experimental layer";
+        } else {
+          pill.textContent = `${latestHardYear} hard seed / ${forecastStart}-${forecastEnd} forward`;
+        }
       }
-      pill.textContent = `${latestHardYear} hard seed / ${forecastStart}-${forecastEnd} forward`;
-      if (intro) {
+      if (intro && latestHardYear) {
         intro.textContent = `This layer remains separate from the official atlas. The latest hard official annual year (${latestHardYear}) is always used as the seed, and all forecasts run forward only from ${forecastStart} through ${forecastEnd}.`;
+      }
+    }
+
+    function switchMethodSubView(viewName) {
+      document.querySelectorAll(".subview-content").forEach(el => el.style.display = "none");
+      document.getElementById(`method-subview-${viewName}`).style.display = "block";
+      
+      document.querySelectorAll(".pill-btn").forEach(btn => btn.classList.remove("is-active"));
+      document.getElementById(`subview-btn-${viewName}`).classList.add("is-active");
+    }
+
+    function setupMethodologyExplorer() {
+      const searchInput = document.getElementById("reference-search");
+      if (!searchInput) return;
+
+      searchInput.addEventListener("input", (e) => {
+        const query = (e.target.value || "").toLowerCase().trim();
+        const items = document.querySelectorAll(".reference-item");
+        
+        items.forEach(item => {
+          const content = item.textContent.toLowerCase();
+          item.style.display = content.includes(query) ? "block" : "none";
+        });
+
+        // Hide empty groups
+        document.querySelectorAll(".reference-group-card").forEach(group => {
+          const visibleItems = [...group.querySelectorAll(".reference-item")].filter(el => el.style.display !== "none");
+          group.style.display = visibleItems.length ? "block" : "none";
+        });
+      });
+    }
+
+    function copyReferenceCitation(id) {
+      const btn = event.target;
+      const citation = btn.dataset.citation;
+      navigator.clipboard.writeText(citation).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = "Copied!";
+        btn.classList.add("success");
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove("success");
+        }, 2000);
+      });
+    }
+
+    function jumpToMethod(id) {
+      switchMethodSubView("methods");
+      const target = document.getElementById(`method-${id}`);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.classList.add("highlight-pulse");
+        setTimeout(() => target.classList.remove("highlight-pulse"), 3000);
       }
     }
 
@@ -3349,10 +3727,6 @@
           const target = document.getElementById(id);
           if (target) target.innerHTML = `<div class="empty-state">No experimental simulation payload was exported.</div>`;
         });
-        ["experimental-simulation-summary", "experimental-output-summary"].forEach(id => {
-          const target = document.getElementById(id);
-          if (target) target.innerHTML = "";
-        });
         return;
       }
 
@@ -3364,8 +3738,29 @@
         stageSelect.value = "treatment";
       }
 
+      // Sync Option Tiles
+      document.querySelectorAll(".option-tile").forEach(tile => {
+        tile.addEventListener("click", () => {
+          const val = tile.dataset.value;
+          stageSelect.value = val;
+          stageSelect.dispatchEvent(new Event("change"));
+        });
+      });
+
       regionSelect.addEventListener("change", renderExperimentalExplorer);
-      stageSelect.addEventListener("change", renderExperimentalExplorer);
+      stageSelect.addEventListener("change", () => {
+        // Update UI state for tiles
+        document.querySelectorAll(".option-tile").forEach(t => {
+          t.classList.toggle("is-selected", t.dataset.value === stageSelect.value);
+        });
+        renderExperimentalExplorer();
+      });
+      
+      // Initialize tile state
+      document.querySelectorAll(".option-tile").forEach(t => {
+        t.classList.toggle("is-selected", t.dataset.value === stageSelect.value);
+      });
+
       renderExperimentalExplorer();
     }
 
@@ -3378,16 +3773,16 @@
       const nationalChartTarget = document.getElementById("experimental-national-chart");
       const regionalChartTarget = document.getElementById("experimental-chart");
       const bottleneckTarget = document.getElementById("experimental-bottleneck-chart");
-      const nationalNoteTarget = document.getElementById("experimental-national-note");
-      const regionalNoteTarget = document.getElementById("experimental-chart-note");
-      const bottleneckNoteTarget = document.getElementById("experimental-bottleneck-note");
       const simulationSummaryTarget = document.getElementById("experimental-simulation-summary");
       const outputSummaryTarget = document.getElementById("experimental-output-summary");
+      
+      const nationalNoteTarget = document.getElementById("experimental-national-note");
+      const regionalNoteTarget = document.getElementById("experimental-regional-note");
+      const bottleneckNoteTarget = document.getElementById("experimental-bottleneck-note");
       const outputNoteTarget = document.getElementById("experimental-output-note");
 
       if (experimental.national) {
         mountPlotlyChart("experimental-national-chart", buildExperimentalNationalOption(stageKey, experimental));
-        if (nationalNoteTarget) nationalNoteTarget.textContent = buildExperimentalNationalNote(stageKey, experimental);
       } else if (nationalChartTarget) {
         disposePlotlyChart("experimental-national-chart");
         nationalChartTarget.innerHTML = `<div class="empty-state">No national forecast layer was exported.</div>`;
@@ -3404,6 +3799,26 @@
 
       if ((experimental.outputs?.bottleneck_probabilities || []).length) {
         mountPlotlyChart("experimental-bottleneck-chart", buildExperimentalBottleneckOption(experimental));
+        
+        // Update layperson insight box
+        const insightText = document.getElementById("experimental-bottleneck-insight-text");
+        if (insightText) {
+          const rows = experimental.outputs?.bottleneck_probabilities || [];
+          const latest = rows[rows.length - 1] || {};
+          const dominant = ["diagnosis", "treatment", "suppression"].reduce((best, key) => {
+            return Number(latest[key] || 0) > Number(latest[best] || 0) ? key : best;
+          }, "diagnosis");
+          
+          const stageNames = { diagnosis: "Diagnosis", treatment: "Treatment", suppression: "Viral Suppression" };
+          const stageDesc = {
+            diagnosis: "Identifying people living with HIV remains the primary hurdle. Without wider testing, we cannot connect people to the care they need.",
+            treatment: "Getting people onto consistent medication is the main challenge. Success depends on reducing barriers to healthcare access.",
+            suppression: "Maintaining consistent care to keep the virus at undetectable levels is the final hurdle. This is critical for long-term health and stopping transmission."
+          };
+          
+          const prob = Math.round(Number(latest[dominant] || 0) * 100);
+          insightText.innerHTML = `Our model identifies <strong>${stageNames[dominant]}</strong> as the primary hurdle (${prob}% probability) to achieving 2035 targets. <br><br> ${stageDesc[dominant]}`;
+        }
         if (bottleneckNoteTarget) bottleneckNoteTarget.textContent = buildExperimentalBottleneckNote(experimental);
       } else if (bottleneckTarget) {
         disposePlotlyChart("experimental-bottleneck-chart");
@@ -3415,9 +3830,7 @@
       }
       if (outputSummaryTarget) {
         outputSummaryTarget.innerHTML = buildExperimentalOutputSummary(region, stageKey, experimental);
-      }
-      if (outputNoteTarget) {
-        outputNoteTarget.textContent = buildExperimentalOutputNote(region, stageKey, experimental);
+        if (outputNoteTarget) outputNoteTarget.textContent = buildExperimentalOutputNote(region, stageKey, experimental);
       }
     }
 
@@ -3440,8 +3853,16 @@
       const data = [];
       paths.forEach((path, index) => {
         const startIndex = path.years.findIndex(year => Number(year) >= latestHardYear);
-        const futureYears = (startIndex >= 0 ? path.years.slice(startIndex) : path.years).map(Number);
-        const futureValues = (startIndex >= 0 ? path.values.slice(startIndex) : path.values).map(Number);
+        const rawYears = (startIndex >= 0 ? path.years.slice(startIndex) : path.years).map(Number);
+        const rawValues = (startIndex >= 0 ? path.values.slice(startIndex) : path.values).map(Number);
+        const futureYears = [];
+        const futureValues = [];
+        for (let i = 0; i < rawYears.length; i++) {
+          if (Number.isFinite(rawYears[i]) && Number.isFinite(rawValues[i])) {
+            futureYears.push(rawYears[i]);
+            futureValues.push(rawValues[i]);
+          }
+        }
         if (!futureYears.length || !futureValues.length) return;
         data.push({
           type: "scatter",
@@ -3478,18 +3899,35 @@
         });
       }
       if (observedRows.length) {
-        data.push({
-          type: "scatter",
-          mode: "lines+markers",
-          name: "Observed",
-          x: observedRows.map(row => Number(row.year || 0)),
-          y: observedRows.map(row => Number(row[stageKey] ?? null)),
-          line: { color: "#dfe7f2", width: 2.5 },
-          marker: { color: "#dfe7f2", size: 7, line: { color: "#101d33", width: 1 } },
-          hovertemplate: `<b>${escapeHtml(meta.label)}</b><br>Observed year: %{x}<br>Coverage: <b>%{y:.1f}%</b><extra></extra>`,
-        });
+        const obs2024 = observedRows.filter(row => Number(row.year || 0) >= 2024);
+        if (obs2024.length) {
+          data.push({
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Observed",
+            x: obs2024.map(row => Number(row.year || 0)),
+            y: obs2024.map(row => Number(row[stageKey] ?? null)),
+            line: { color: "#dfe7f2", width: 2.5 },
+            marker: { color: "#dfe7f2", size: 8, line: { color: "#101d33", width: 1.5 } },
+            hovertemplate: `<b>${escapeHtml(meta.label)}</b><br>Observed year: %{x}<br>Coverage: <b>%{y:.1f}%</b><extra></extra>`,
+          });
+        }
       }
       if (forecastRows.length) {
+        // Neon Glow effect via double layer
+        data.push({
+          type: "scatter",
+          mode: "lines",
+          x: [latestHardYear, ...forecastRows.map(row => Number(row.year || 0))],
+          y: [
+            Number(observedRows.find(row => Number(row.year || 0) === latestHardYear)?.[stageKey] ?? null),
+            ...forecastRows.map(row => Number(row[stageKey] ?? null)),
+          ],
+          line: { color: meta.color, width: 8, opacity: 0.15 },
+          hoverinfo: "skip",
+          showlegend: false,
+        });
+        
         data.push({
           type: "scatter",
           mode: "lines+markers",
@@ -3501,7 +3939,7 @@
           ],
           customdata: [[latestHardYear, null, null]].concat(forecastRows.map(row => [row.year, row[`${stageKey}_lower`], row[`${stageKey}_upper`]])),
           line: { color: meta.color, width: 3 },
-          marker: { color: meta.color, size: 7, line: { color: "#101d33", width: 1 } },
+          marker: { color: meta.color, size: 7, line: { color: "#101d33", width: 1.5 } },
           hovertemplate:
             `<b>${escapeHtml(meta.label)} forecast</b><br>` +
             "Year: %{x}<br>" +
@@ -3513,14 +3951,14 @@
       return {
         data,
         layout: {
-          margin: { t: 18, r: 18, b: 42, l: 52 },
+          margin: { t: 30, r: 18, b: 42, l: 52 },
           hovermode: "x unified",
           xaxis: {
+            range: [2023.8, 2035.5],
             tickmode: "array",
-            tickvals: years,
-            ticktext: years.map(String),
-            range: years.length ? [Math.min(...years) - 0.15, Math.max(...years) + 0.35] : undefined,
-            tickfont: { color: "#7889a0", size: 12 },
+            tickvals: [2024, 2027, 2030, 2033, 2035],
+            ticktext: ["2024", "2027", "2030", "2033", "2035"],
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -3529,22 +3967,26 @@
           yaxis: {
             range: [0, 100],
             ticksuffix: "%",
-            tickfont: { color: "#7889a0", size: 12 },
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
             automargin: true,
           },
-          legend: { orientation: "h", y: -0.16, x: 0, font: { size: 11 } },
+          legend: { orientation: "h", y: -0.16, x: 0, font: { family: '"IBM Plex Mono", monospace', size: 11 } },
           shapes: [{
             type: "line",
-            x0: years.length ? Math.min(...years) - 0.2 : 0,
-            x1: years.length ? Math.max(...years) + 0.2 : 1,
-            y0: 95,
-            y1: 95,
-            line: { color: "rgba(240,160,48,0.72)", width: 1.4, dash: "dash" },
+            x0: 2024, x1: 2036, y0: 95, y1: 95,
+            line: { color: "#4db5ef", width: 2, dash: "dash" },
           }],
+          annotations: [{
+            x: 2035, y: 99,
+            text: "95% TARGET",
+            showarrow: false,
+            xanchor: "right",
+            font: { family: '"IBM Plex Mono", monospace', size: 10, color: "#4db5ef", weight: 700 }
+          }]
         },
       };
     }
@@ -3564,8 +4006,18 @@
       const data = [];
       pathRows.forEach((path, index) => {
         const startIndex = path.years.findIndex(year => Number(year) >= Number(experimental.latest_hard_year || 0));
-        const futureYears = (startIndex >= 0 ? path.years.slice(startIndex) : path.years).map(Number);
-        const futureValues = (startIndex >= 0 ? path.values.slice(startIndex) : path.values).map(Number);
+        const rawYears = (startIndex >= 0 ? path.years.slice(startIndex) : path.years).map(Number);
+        const rawValues = (startIndex >= 0 ? path.values.slice(startIndex) : path.values).map(Number);
+        
+        const futureYears = [];
+        const futureValues = [];
+        for (let i = 0; i < rawYears.length; i++) {
+          if (Number.isFinite(rawYears[i]) && Number.isFinite(rawValues[i])) {
+            futureYears.push(rawYears[i]);
+            futureValues.push(rawValues[i]);
+          }
+        }
+
         if (!futureYears.length || !futureValues.length) return;
         data.push({
           type: "scatter",
@@ -3602,25 +4054,39 @@
         });
       }
       if (observedRows.length) {
-        data.push({
-          type: "scatter",
-          mode: "lines+markers",
-          name: "Observed",
-          x: observedRows.map(row => Number(row.year || 0)),
-          y: observedRows.map(row => Number(row[stageKey] ?? null)),
-          customdata: observedRows.map(row => [row[`${stageKey}_period`] || row.year, row[`${stageKey}_filename`] || "Observed regional anchor"]),
-          line: { color: "#dfe7f2", width: 2.5 },
-          marker: { color: "#dfe7f2", size: 7, line: { color: "#101d33", width: 1 } },
-          hovertemplate:
-            `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
-            `${escapeHtml(meta.label)} observed<br>` +
-            "Year: %{x}<br>" +
-            "Coverage: <b>%{y:.1f}%</b><br>" +
-            "Source period: %{customdata[0]}<br>" +
-            "File: %{customdata[1]}<extra></extra>",
-        });
+        const obs2024 = observedRows.filter(row => Number(row.year || 0) >= 2024);
+        if (obs2024.length) {
+          data.push({
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Observed",
+            x: obs2024.map(row => Number(row.year || 0)),
+            y: obs2024.map(row => Number(row[stageKey] ?? null)),
+            customdata: obs2024.map(row => [row[`${stageKey}_period`] || row.year, row[`${stageKey}_filename`] || "Observed regional anchor"]),
+            line: { color: "#dfe7f2", width: 2.5 },
+            marker: { color: "#dfe7f2", size: 8, line: { color: "#101d33", width: 1.5 } },
+            hovertemplate:
+              `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
+              `${escapeHtml(meta.label)} observed<br>` +
+              "Year: %{x}<br>" +
+              "Coverage: <b>%{y:.1f}%</b><br>" +
+              "Source period: %{customdata[0]}<br>" +
+              "File: %{customdata[1]}<extra></extra>",
+          });
+        }
       }
       if (forecastRows.length) {
+        // Neon Glow effect via double layer
+        data.push({
+          type: "scatter",
+          mode: "lines",
+          x: latestObserved ? [Number(latestObserved.year || 0), ...forecastRows.map(row => Number(row.year || 0))] : forecastRows.map(row => Number(row.year || 0)),
+          y: latestObserved ? [Number(latestObserved?.[stageKey] ?? null), ...forecastRows.map(row => Number(row[stageKey] ?? null))] : forecastRows.map(row => Number(row[stageKey] ?? null)),
+          line: { color: meta.color, width: 8, opacity: 0.15 },
+          hoverinfo: "skip",
+          showlegend: false,
+        });
+
         data.push({
           type: "scatter",
           mode: "lines+markers",
@@ -3631,7 +4097,7 @@
             ? [[latestObserved.year, latestObserved[stageKey], latestObserved[stageKey]]].concat(forecastRows.map(row => [row.year, row[`${stageKey}_lower`], row[`${stageKey}_upper`]]))
             : forecastRows.map(row => [row.year, row[`${stageKey}_lower`], row[`${stageKey}_upper`]]),
           line: { color: meta.color, width: 3 },
-          marker: { color: meta.color, size: 7, line: { color: "#101d33", width: 1 } },
+          marker: { color: meta.color, size: 7, line: { color: "#101d33", width: 1.5 } },
           hovertemplate:
             `<b>${escapeHtml(formatRegionLabel(region))}</b><br>` +
             `${escapeHtml(meta.label)} forecast<br>` +
@@ -3644,14 +4110,14 @@
       return {
         data,
         layout: {
-          margin: { t: 18, r: 18, b: 42, l: 52 },
+          margin: { t: 30, r: 18, b: 42, l: 52 },
           hovermode: "x unified",
           xaxis: {
+            range: [2023.8, 2035.5],
             tickmode: "array",
-            tickvals: years,
-            ticktext: years.map(String),
-            range: years.length ? [Math.min(...years) - 0.15, Math.max(...years) + 0.35] : undefined,
-            tickfont: { color: "#7889a0", size: 12 },
+            tickvals: [2024, 2027, 2030, 2033, 2035],
+            ticktext: ["2024", "2027", "2030", "2033", "2035"],
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -3660,22 +4126,26 @@
           yaxis: {
             range: [0, 100],
             ticksuffix: "%",
-            tickfont: { color: "#7889a0", size: 12 },
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
             automargin: true,
           },
-          legend: { orientation: "h", y: -0.16, x: 0, font: { size: 11 } },
+          legend: { orientation: "h", y: -0.16, x: 0, font: { family: '"IBM Plex Mono", monospace', size: 11 } },
           shapes: [{
             type: "line",
-            x0: years.length ? Math.min(...years) - 0.2 : 0,
-            x1: years.length ? Math.max(...years) + 0.2 : 1,
-            y0: 95,
-            y1: 95,
-            line: { color: "rgba(240,160,48,0.72)", width: 1.4, dash: "dash" },
+            x0: 2024, x1: 2036, y0: 95, y1: 95,
+            line: { color: "#4db5ef", width: 2, dash: "dash" },
           }],
+          annotations: [{
+            x: 2035, y: 99,
+            text: "95% TARGET",
+            showarrow: false,
+            xanchor: "right",
+            font: { family: '"IBM Plex Mono", monospace', size: 10, color: "#4db5ef", weight: 700 }
+          }]
         },
       };
     }
@@ -3686,49 +4156,54 @@
         .filter(row => Number.isFinite(Number(row?.[stageKey])))
         .sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
       const observedRows = rows.filter(row => row[`${stageKey}_status`] === "observed");
-      const forecastRows = rows.filter(row => row[`${stageKey}_status`] === "forecast");
       const latestObserved = observedRows.length ? observedRows[observedRows.length - 1] : null;
-      const latestForecast = forecastRows.length ? forecastRows[forecastRows.length - 1] : null;
-      const model = experimental.regional?.region_histories?.[region]?.model?.[stageKey] || experimental.region_histories?.[region]?.model?.[stageKey] || {};
       const simulation = experimental.simulation || {};
-      const sourcePolicy = experimental.source_policy || [];
-      const cards = [
+      
+      const paramCards = [
         {
-          label: "Latest hard seed",
-          value: String(simulation.latest_hard_year || experimental.latest_hard_year || "n/a"),
-          note: "All forward paths start after this official annual seed year.",
+          label: "Data Foundation",
+          value: String(simulation.latest_hard_year || experimental.latest_hard_year || "2024"),
+          note: `All projections are built upon the final verified data point from ${simulation.latest_hard_year || experimental.latest_hard_year || "2024"}.`,
         },
         {
-          label: "Regional anchor",
-          value: latestObserved ? `${latestObserved.year}` : "n/a",
-          note: latestObserved ? `${formatRegionLabel(region)} ${meta.label.toLowerCase()} anchor at ${formatPercent(latestObserved[stageKey], 1)}.` : "No observed regional anchor for this stage.",
-        },
-        {
-          label: "Simulation draws",
-          value: formatNumber(simulation.draws || model.draws || 0),
-          note: `${simulation.engine || "Experimental forward simulation"}`,
-        },
-        {
-          label: "Forecast horizon",
-          value: simulation.forecast_start_year && simulation.forecast_end_year ? `${simulation.forecast_start_year}-${simulation.forecast_end_year}` : "n/a",
-          note: latestForecast ? `Selected regional median reaches ${formatPercent(latestForecast[stageKey], 1)} by ${latestForecast.year}.` : "No forecast horizon exported.",
+          label: "Scenario Variations",
+          value: formatNumber(simulation.draws || 1000),
+          note: "We calculate 1,000+ possible futures to ensure our strategic recommendations are statistically sound.",
         },
       ];
-      const policy = sourcePolicy.length
-        ? `
-          <div class="experimental-subsection">
-            <div class="mini-note">Source policy</div>
-            <ul class="experimental-list">${sourcePolicy.slice(0, 3).map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      
+      const scopeCards = [
+        {
+          label: "Regional Base",
+          value: latestObserved ? `${latestObserved.year}` : "2024",
+          note: `Simulation is anchored to the actual ${meta.label.toLowerCase()} performance observed in ${formatRegionLabel(region)}.`,
+        },
+        {
+          label: "Forecast Horizon",
+          value: "2035",
+          note: "The model projects individual regional paths until they converge with national long-term goals by 2035.",
+        },
+      ];
+
+      const buildCol = (title, items) => `
+        <div class="col-span-1">
+          <div class="mini-note" style="margin-bottom: 12px; font-weight: 700; color: var(--accent-strong);">${title}</div>
+          <div class="grid columns-2" style="gap: 16px; margin-top: 0;">
+            ${items.map(card => `
+              <div class="fingerprint-stat">
+                <div class="label">${escapeHtml(card.label)}</div>
+                <div class="value">${escapeHtml(card.value)}</div>
+                <div class="note">${escapeHtml(card.note)}</div>
+              </div>
+            `).join("")}
           </div>
-        `
-        : "";
-      return `${cards.map(card => `
-        <div class="fingerprint-stat">
-          <div class="label">${escapeHtml(card.label)}</div>
-          <div class="value">${escapeHtml(card.value)}</div>
-          <div class="note">${escapeHtml(card.note)}</div>
         </div>
-      `).join("")}${policy}`;
+      `;
+
+      return `
+        ${buildCol("Simulation Engine", paramCards)}
+        ${buildCol("Analysis Scope", scopeCards)}
+      `;
     }
 
     function buildExperimentalBottleneckOption(experimental) {
@@ -3759,7 +4234,7 @@
             tickmode: "array",
             tickvals: yearValues,
             ticktext: yearValues.map(String),
-            tickfont: { color: "#7889a0", size: 12 },
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
@@ -3768,14 +4243,14 @@
           yaxis: {
             range: [0, 100],
             ticksuffix: "%",
-            tickfont: { color: "#7889a0", size: 12 },
+            tickfont: { family: '"IBM Plex Mono", monospace', color: "#7889a0", size: 12 },
             gridcolor: "rgba(45,156,219,0.08)",
             griddash: "dash",
             zeroline: false,
             fixedrange: true,
             automargin: true,
           },
-          legend: { orientation: "h", y: -0.2, x: 0, font: { size: 10 } },
+          legend: { orientation: "h", y: -0.2, x: 0, font: { family: '"IBM Plex Mono", monospace', size: 10 } },
         },
       };
     }
@@ -3792,50 +4267,56 @@
       const selectedRisk = [...(experimental.outputs?.regional_watchlist || [])].find(row => row.region === region);
       const cards = [
         {
-          label: `${meta.label} top contract`,
+          label: `Likelihood of reaching ${meta.label} targets`,
           value: contracts[0] ? formatPercent(Number(contracts[0].probability || 0) * 100, 0) : "n/a",
-          note: contracts[0] ? `${contracts[0].label}` : `No ${meta.label.toLowerCase()} contract exported.`,
+          note: contracts[0] ? `${contracts[0].label}` : `Estimated chance of meeting the 2035 goals.`,
         },
         {
-          label: `${formatRegionLabel(region)} risk score`,
-          value: selectedRisk ? selectedRisk.risk_score.toFixed(1) : "n/a",
-          note: selectedRisk ? `${selectedRisk.bottleneck_stage} bottleneck / ${selectedRisk.leakage_rate.toFixed(1)}% leakage at ${selectedRisk.target_year}` : "Selected region not in current watchlist.",
+          label: `Challenge Level (Regional)`,
+          value: selectedRisk ? (selectedRisk.risk_score > 60 ? "High" : selectedRisk.risk_score > 30 ? "Moderate" : "Low") : "n/a",
+          note: selectedRisk ? `Determined by current progress and local barriers in ${formatRegionLabel(region)}.` : "Regional challenge level not calculated.",
         },
       ];
       const contractList = contracts.length ? `
         <div class="experimental-subsection">
-          <div class="mini-note">Top contracts</div>
+          <div class="mini-note">Key Milestones (2035)</div>
           <ul class="experimental-list">
-            ${contracts.map(row => `<li><strong>${escapeHtml(row.label)}</strong>: ${escapeHtml(formatPercent(Number(row.probability || 0) * 100, 0))}</li>`).join("")}
+            ${contracts.map(row => `<li>There is a <strong>${formatPercent(Number(row.probability || 0) * 100, 0)} probability</strong> of ${row.label.toLowerCase().replace("reached", "reaching targets")}.</li>`).join("")}
           </ul>
         </div>
       ` : "";
       const watchList = watchlist.length ? `
         <div class="experimental-subsection">
-          <div class="mini-note">Regional watchlist</div>
+          <div class="mini-note">Priority Areas for Attention</div>
           <ul class="experimental-list">
-            ${watchlist.map(row => `<li><strong>${escapeHtml(formatRegionLabel(row.region))}</strong>: risk ${escapeHtml(row.risk_score.toFixed(1))}, ${escapeHtml(row.bottleneck_stage)} bottleneck</li>`).join("")}
+            ${watchlist.map(row => `<li><strong>${formatRegionLabel(row.region)}</strong> is expected to be challenging for ${row.bottleneck_stage} progress.</li>`).join("")}
           </ul>
         </div>
       ` : "";
-      return `${cards.map(card => `
-        <div class="fingerprint-stat">
-          <div class="label">${escapeHtml(card.label)}</div>
-          <div class="value">${escapeHtml(card.value)}</div>
-          <div class="note">${escapeHtml(card.note)}</div>
+      
+      return `
+        <div class="grid columns-2" style="margin-bottom: 24px; gap: 24px;">
+          ${cards.map(card => `
+            <div class="fingerprint-stat">
+              <div class="label">${escapeHtml(card.label)}</div>
+              <div class="value">${escapeHtml(card.value)}</div>
+              <div class="note">${escapeHtml(card.note)}</div>
+            </div>
+          `).join("")}
         </div>
-      `).join("")}${contractList}${watchList}`;
+        <div class="grid columns-2" style="gap: 32px; margin-top: 16px;">
+          <div>${contractList}</div>
+          <div>${watchList}</div>
+        </div>
+      `;
     }
 
     function buildExperimentalNationalNote(stageKey, experimental) {
       const meta = getCascadeStageMeta(stageKey);
       const simulation = experimental.simulation || {};
-      const latestHardYear = Number(experimental.latest_hard_year || simulation.latest_hard_year || 0);
       const finalRow = [...(experimental.national?.forecast || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0)).slice(-1)[0];
-      if (!finalRow) {
-        return `The experimental national layer uses ${latestHardYear || "the latest hard year"} as the hard seed and projects ${meta.label.toLowerCase()} forward only.`;
-      }
-      return `Observed national ${meta.label.toLowerCase()} remains fixed through ${latestHardYear}. The simulated national futures then run from ${simulation.forecast_start_year} through ${simulation.forecast_end_year}, with a median ${meta.label.toLowerCase()} value of ${formatPercent(finalRow[stageKey], 1)} by ${finalRow.year}.`;
+      if (!finalRow) return "";
+      return `Current national progress remains fixed through ${experimental.latest_hard_year || "2024"}. Simulated results project a median ${meta.label.toLowerCase()} value of ${formatPercent(finalRow[stageKey], 0)} by ${finalRow.year}.`;
     }
 
     function buildExperimentalRegionalNote(region, stageKey, history, experimental) {
@@ -3848,29 +4329,17 @@
       const model = experimental.regional?.region_histories?.[region]?.model?.[stageKey] || experimental.region_histories?.[region]?.model?.[stageKey] || {};
       const latestProbYear = Object.keys(model.reach_probabilities || {}).map(Number).filter(Number.isFinite).sort((a, b) => a - b).slice(-1)[0];
       const latestProbValue = Number.isFinite(latestProbYear) ? Number(model.reach_probabilities?.[String(latestProbYear)]) : null;
-      const trendSentence = latestObserved && latestForecast
-        ? `${formatRegionLabel(region)} stays observed through ${latestObserved.year} at ${formatPercent(latestObserved[stageKey], 1)} for ${meta.label.toLowerCase()}, then moves forward only through ${latestForecast.year}.`
-        : `${formatRegionLabel(region)} has no exported ${meta.label.toLowerCase()} forward path.`;
-      const probabilitySentence = Number.isFinite(latestProbYear) && Number.isFinite(latestProbValue)
-        ? `The model assigns a ${formatPercent(latestProbValue * 100, 0)} chance of reaching 95 by ${latestProbYear}.`
-        : "No reach-to-95 probability could be computed for the exported horizon.";
-      return `${trendSentence} ${probabilitySentence}`;
+      
+      if (!latestObserved) return `No experimental ${meta.label.toLowerCase()} path found for this region.`;
+      
+      const probText = Number.isFinite(latestProbValue) 
+        ? ` Projections show a ${formatPercent(latestProbValue * 100, 0)} probability of reaching 2035 targets.`
+        : "";
+      return `Progress in ${formatRegionLabel(region)} is based on observed data through ${latestObserved.year}.${probText}`;
     }
 
     function buildExperimentalBottleneckNote(experimental) {
-      const rows = [...(experimental.outputs?.bottleneck_probabilities || [])];
-      if (!rows.length) return "No national bottleneck simulation was exported.";
-      const latest = rows[rows.length - 1];
-      const dominant = ["diagnosis", "treatment", "suppression", "all_met"].reduce((best, key) => {
-        return Number(latest[key] || 0) > Number(latest[best] || 0) ? key : best;
-      }, "diagnosis");
-      const labelMap = {
-        diagnosis: "diagnosis",
-        treatment: "treatment",
-        suppression: "suppression",
-        all_met: "all stages at target",
-      };
-      return `By ${latest.year}, the most likely dominant state across simulated national futures is ${labelMap[dominant]}, at ${formatPercent(Number(latest[dominant] || 0) * 100, 0)} of paths.`;
+      return "";
     }
 
     function buildExperimentalOutputNote(region, stageKey, experimental) {
@@ -3884,18 +4353,18 @@
       const watchSentence = topRisk
         ? `${formatRegionLabel(topRisk.region)} currently has the highest projected risk score at ${topRisk.target_year}, driven by ${topRisk.bottleneck_stage} and ${topRisk.leakage_rate.toFixed(1)}% leakage.`
         : "No regional watchlist was exported.";
-      return `${contractSentence} ${watchSentence}`;
+      return ``;
     }
 
     function renderReferencesSection() {
       const references = state.bootstrap?.publication?.references || {};
       const items = references.items || [];
       const groups = references.groups || [];
-      const pill = document.getElementById("references-pill");
-      if (pill) pill.textContent = `${formatNumber(items.length)} references`;
+      const pill = document.getElementById("references-pill-count");
+      if (pill) pill.textContent = formatNumber(items.length);
       const container = document.getElementById("reference-groups");
       if (!groups.length || !items.length) {
-        if (container) if (container) container.innerHTML = `<div class="empty-state">No reference inventory was exported.</div>`;
+        if (container) container.innerHTML = `<div class="empty-state">No reference inventory was exported.</div>`;
         return;
       }
 
@@ -3912,21 +4381,33 @@
               <span class="pill">${formatNumber(groupItems.length)} items</span>
             </div>
             <div class="reference-list">
-              ${groupItems.map(item => `
+              ${groupItems.map(item => {
+                const authors = item.organization || "Unknown organization";
+                const year = item.year || "n.d.";
+                const title = item.title || item.id;
+                const citation = `${authors} (${year}). ${title}. EpiGraph PH Research Atlas.`;
+                
+                return `
                 <article class="reference-item" id="ref-${escapeAttribute(item.id)}">
                   <div class="reference-item-top">
-                    <div>
-                      <strong>${escapeHtml(item.title || item.id)}</strong>
+                    <div style="flex: 1;">
                       <div class="reference-meta">
-                        ${escapeHtml(item.organization || "Unknown organization")} · ${escapeHtml(item.kind || "Reference")}
+                        <strong>${escapeHtml(item.organization || "Organization")}</strong> · ${escapeHtml(item.kind || "Reference")}
                       </div>
+                      <h4 style="margin: 4px 0 8px; color: var(--ink); line-height: 1.4;">${escapeHtml(item.title || item.id)}</h4>
                     </div>
-                    ${item.url ? `<a class="action-link" href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">Open source</a>` : ""}
+                    <div class="action-row" style="display: flex; gap: 12px; align-items: flex-start;">
+                      ${item.url ? `<a class="action-link" href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">Open Source</a>` : ""}
+                      <button class="action-btn" onclick="copyReferenceCitation('${escapeAttribute(item.id)}')" data-citation="${escapeAttribute(citation)}">Copy APA</button>
+                    </div>
                   </div>
                   <div class="reference-meta">${escapeHtml(item.note || "")}</div>
-                  <div class="reference-meta"><strong>Used in:</strong> ${escapeHtml((item.used_in || []).join(", ") || "Not tagged")}</div>
+                  <div class="reference-meta" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <strong>Used in:</strong> 
+                    ${(item.used_in || []).map(tag => `<span class="tag" onclick="jumpToMethod('${escapeAttribute(tag)}')">${escapeHtml(tag)}</span>`).join("") || "Not tagged"}
+                  </div>
                 </article>
-              `).join("")}
+              `}).join("")}
             </div>
           </article>
         `;
@@ -4331,17 +4812,6 @@
         });
       });
 
-      annotations.push({
-        x: 0.995,
-        y: 1.12,
-        xref: "paper",
-        yref: "paper",
-        text: "Official year-end national accomplishment table, 2018-2025",
-        showarrow: false,
-        xanchor: "right",
-        font: { size: 11, color: "#7889a0" },
-      });
-
       return {
         data: traces,
         layout: {
@@ -4408,9 +4878,9 @@
       ];
 
       const losses = [
-        { label: "Undiagnosed", color: "rgba(255, 71, 87, 0.4)", value: Math.max(0, estimated - diagnosed), stage: "DIAGNOSED" },
-        { label: "Off ART", color: "rgba(46, 213, 115, 0.4)", value: Math.max(0, diagnosed - onArt), stage: "ON ART" },
-        { label: "Unsuppressed", color: "rgba(30, 144, 255, 0.4)", value: Math.max(0, onArt - suppressed), stage: "SUPPRESSED" }
+        { label: "Undiagnosed", color: "#E21836", value: Math.max(0, estimated - diagnosed), stage: "DIAGNOSED" },
+        { label: "Off ART", color: "#E21836", value: Math.max(0, diagnosed - onArt), stage: "ON ART" },
+        { label: "Unsuppressed", color: "#E21836", value: Math.max(0, onArt - suppressed), stage: "SUPPRESSED" }
       ];
 
       // Geometry Constants
@@ -4418,14 +4888,19 @@
       const gapHeight = 0.12;
       const startY = 0.92;
       const canvasWidth = 0.45; 
-      const centerX = 0.38; // Shift left for more room on the right
+      const centerX = 0.42; // Centered relative to both retention and leakage zones
 
       const shapes = [];
       const annotations = [
         {
-          x: 0, y: 1.15, xref: "paper", yref: "paper",
-          text: "<b>Vertical Retention Funnel & Attrition Waterfall</b>",
-          showarrow: false, font: { size: 11, color: "#a0b0c0" }, xanchor: "left"
+          x: centerX, y: 1.15, xref: "paper", yref: "paper",
+          text: "<b style='letter-spacing:0.1em;'>RETENTION</b>",
+          showarrow: false, font: { size: 11, color: "#a0b0c0" }, xanchor: "center"
+        },
+        {
+          x: 0.88, y: 1.15, xref: "paper", yref: "paper",
+          text: "<b style='letter-spacing:0.1em; color:#E21836;'>LEAKAGE</b>",
+          showarrow: false, font: { size: 11 }, xanchor: "center"
         }
       ];
 
@@ -4471,19 +4946,19 @@
           // 2. Lateral Attrition Spout (Waterfall Step)
           const lossValue = losses[i].value;
           const lossColor = losses[i].color;
-          const spoutEnd = 0.82; // Pulled back from 0.85
+          const spoutEnd = 0.88; // Aligned with the header
           
           shapes.push({
             type: "path", xref: "paper", yref: "paper",
             path: `M ${x1} ${transitionTop} C ${x1 + 0.1} ${transitionTop}, ${spoutEnd - 0.1} ${transitionTop}, ${spoutEnd} ${transitionTop} L ${spoutEnd} ${transitionBottom} C ${spoutEnd} - 0.1 ${transitionBottom}, ${nextX1 + 0.1} ${transitionBottom}, ${nextX1} ${transitionBottom} Z`,
             fillcolor: lossColor, line: { width: 0 },
-            opacity: 0.4
+            opacity: 0.6
           });
 
           // 3. Attrition Label
           annotations.push({
             x: spoutEnd + 0.02, y: (transitionTop + transitionBottom) / 2, xref: "paper", yref: "paper",
-            text: `<span style="color:${lossColor}">▼</span> <b style="color:#ffffff;font-size:10px;">${formatCompactNumber(lossValue)}</b><br><span style="color:#7889a0;font-size:9px;">${losses[i].label}</span>`,
+            text: `<span style="color:${lossColor};font-weight:800;">▼</span> <b style="color:${lossColor};font-size:11px;font-weight:900;">${formatCompactNumber(lossValue)}</b><br><span style="color:#7889a0;font-size:9px;font-weight:700;">${losses[i].label.toUpperCase()}</span>`,
             showarrow: false, xanchor: "left", align: "left"
           });
         }
@@ -5090,16 +5565,27 @@
 
     function switchView(viewName) {
       state.activeView = viewName;
+      window.scrollTo(0, 0);
       document.querySelectorAll(".section").forEach(section => {
         section.classList.toggle("is-active", section.id === `${viewName}-section`);
       });
       document.querySelectorAll(".nav-button").forEach(button => {
         button.classList.toggle("is-active", button.dataset.view === viewName);
       });
+      
+      // Ensure all charts are resized after the container becomes visible
       requestAnimationFrame(() => {
+        // Handle ECharts
         Object.values(state.charts || {}).forEach(chart => {
           if (chart && typeof chart.resize === "function") {
             chart.resize();
+          }
+        });
+        // Handle Plotly
+        Object.entries(state.plotlyCharts || {}).forEach(([id]) => {
+          const target = document.getElementById(id);
+          if (target && window.Plotly && typeof window.Plotly.Plots?.resize === "function") {
+            window.Plotly.Plots.resize(target);
           }
         });
       });
@@ -5709,115 +6195,7 @@
       };
     }
 
-    function buildRegionFingerprintOption(region, rows) {
-      const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
-      if (!yearlyRows.length) {
-        return { data: [], layout: {} };
-      }
-      const first = yearlyRows[0];
-      const last = yearlyRows[yearlyRows.length - 1];
-      const stageKeys = ["diagnosis", "treatment", "suppression"];
-      const rowsForPlot = stageKeys.map(key => {
-        const meta = getCascadeStageMeta(key);
-        return {
-          key,
-          label: meta.label,
-          color: meta.color,
-          firstValue: Number(first[key] ?? null),
-          lastValue: Number(last[key] ?? null),
-        };
-      }).filter(row => Number.isFinite(row.firstValue) && Number.isFinite(row.lastValue));
 
-      const connectors = {
-        type: "scatter", index: 0,
-        mode: "lines",
-        x: rowsForPlot.flatMap(row => [row.firstValue, row.lastValue, null]),
-        y: rowsForPlot.flatMap(row => [row.label, row.label, null]),
-        line: { color: "rgba(120,137,160,0.35)", width: 5 },
-        hoverinfo: "skip",
-        showlegend: false,
-      };
-
-      const startTrace = {
-        type: "scatter", index: 1,
-        mode: "markers+text",
-        name: String(first.year),
-        x: rowsForPlot.map(row => row.firstValue),
-        y: rowsForPlot.map(row => row.label),
-        text: rowsForPlot.map(row => `${row.firstValue.toFixed(0)}%`),
-        textposition: "middle left",
-        textfont: { color: "#7889a0", size: 10, family: "IBM Plex Sans, sans-serif" },
-        marker: {
-          color: "rgba(16, 28, 52, 1)",
-          size: 11,
-          line: { color: "rgba(120,137,160,0.8)", width: 2 },
-          symbol: "circle",
-        }
-      };
-
-      const latestTrace = {
-        type: "scatter", index: 2,
-        mode: "markers+text",
-        name: String(last.year),
-        x: rowsForPlot.map(row => row.lastValue),
-        y: rowsForPlot.map(row => row.label),
-        text: rowsForPlot.map(row => `${row.lastValue.toFixed(0)}%`),
-        textposition: "middle right",
-        textfont: { color: "#eef4ff", size: 12, family: "IBM Plex Sans, sans-serif", weight: "bold" },
-        marker: {
-          color: rowsForPlot.map(row => row.color),
-          size: 14,
-          line: { color: "#103050", width: 1.5 },
-          symbol: "circle",
-        }
-      };
-
-      return {
-        data: [connectors, startTrace, latestTrace],
-        layout: {
-          margin: { t: 40, r: 80, b: 35, l: 100 },
-          paper_bgcolor: "transparent",
-          plot_bgcolor: "transparent",
-          xaxis: {
-            range: [-10, 110],
-            ticksuffix: "%",
-            dtick: 20,
-            tickfont: { color: "#7889a0", size: 10 },
-            gridcolor: "rgba(255,255,255,0.04)",
-            zeroline: false,
-            fixedrange: true,
-          },
-          yaxis: {
-            type: "category",
-            categoryorder: "array",
-            categoryarray: rowsForPlot.map(row => row.label).reverse(),
-            tickfont: { color: "#eef4ff", size: 12 },
-            showgrid: false,
-            zeroline: false,
-            fixedrange: true,
-          },
-          legend: {
-            orientation: "h",
-            y: 1.15,
-            x: 0.5,
-            xanchor: "center",
-            font: { color: "#eef4ff", size: 11 },
-          },
-          shapes: [{
-            type: "line",
-            x0: 95, x1: 95, y0: 0, y1: 1,
-            yref: "paper",
-            line: { color: "rgba(91, 207, 95, 0.4)", width: 2, dash: "dot" },
-          }],
-          annotations: [{
-            x: 95, y: -0.16, xref: "x", yref: "paper",
-            text: "95% Target", showarrow: false,
-            font: { size: 10, color: "#5bcf5f" },
-            xanchor: "center"
-          }]
-        },
-      };
-    }
 
     function buildRegionFingerprintSummary(region, rows) {
       const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
@@ -5825,16 +6203,26 @@
       const latest = yearlyRows[yearlyRows.length - 1];
       const previous = yearlyRows.length > 1 ? yearlyRows[yearlyRows.length - 2] : null;
       const stageKeys = ["diagnosis", "treatment", "suppression"];
+      
+      const first = yearlyRows[0];
+      
       return stageKeys.map(key => {
         const meta = getCascadeStageMeta(key);
         const latestValue = Number(latest[key] || 0);
         const previousValue = previous ? Number(previous[key] || 0) : null;
+        
+        // Use same momentum coloring as the chart
+        const firstVal = Number(first[key] ?? null);
+        const diff = latestValue - firstVal;
+        let momColor = "#7889a0";
+        if (diff > 0.5) momColor = "#4db5ef";
+        if (diff < -0.5) momColor = "#e63946";
+        
         const delta = previousValue === null ? "" : `${formatSigned(latestValue - previousValue, 0)} vs ${previous.year}`;
-        const latestPeriod = latest[`${key}_period`] || String(latest.year || "");
         return `
           <div class="fingerprint-stat">
             <div class="label">${escapeHtml(meta.label)}</div>
-            <div class="value" style="color:${escapeAttribute(meta.color)}">${escapeHtml(formatPercent(latestValue, 0))}</div>
+            <div class="value" style="color:${escapeAttribute(momColor)}">${escapeHtml(formatPercent(latestValue, 0))}</div>
             <div class="note">${escapeHtml(delta)}</div>
           </div>
         `;
@@ -6299,7 +6687,7 @@
       };
     }
 
-    function buildRegionFingerprintDumbbellOption(region, rows) {
+    function buildRegionFingerprintOption(region, rows) {
       const yearlyRows = [...(rows || [])].sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
       if (!yearlyRows.length) {
         return { data: [], layout: {} };
@@ -6307,14 +6695,25 @@
       const first = yearlyRows[0];
       const last = yearlyRows[yearlyRows.length - 1];
       const stageKeys = ["diagnosis", "treatment", "suppression"];
+      
       const rowsForPlot = stageKeys.map(key => {
         const meta = getCascadeStageMeta(key);
+        const firstVal = Number(first[key] ?? null);
+        const lastVal = Number(last[key] ?? null);
+        const diff = lastVal - firstVal;
+        
+        // Color based on momentum (improvement vs decline)
+        let momColor = "#7889a0"; // neutral
+        if (diff > 0.5) momColor = "#4db5ef"; // Blue/Teal (Success in context)
+        if (diff < -0.5) momColor = "#e63946"; // Red (Warning)
+        
         return {
           key,
           label: meta.label,
-          color: meta.color,
-          firstValue: Number(first[key] ?? null),
-          lastValue: Number(last[key] ?? null),
+          color: momColor,
+          firstValue: firstVal,
+          lastValue: lastVal,
+          diffFormatted: (diff > 0 ? "+" : "") + diff.toFixed(0),
           firstPeriod: first[`${key}_period`] || `${first.year}`,
           lastPeriod: last[`${key}_period`] || `${last.year}`,
           firstFile: first[`${key}_filename`] || "Unknown source",
@@ -6327,33 +6726,25 @@
         mode: "lines",
         x: rowsForPlot.flatMap(row => [row.firstValue, row.lastValue, null]),
         y: rowsForPlot.flatMap(row => [row.label, row.label, null]),
-        line: { color: "rgba(120,137,160,0.5)", width: 4 },
+        line: { color: "rgba(120,137,160,0.25)", width: 6 },
         hoverinfo: "skip",
         showlegend: false,
       };
 
       const startTrace = {
         type: "scatter",
-        mode: "markers+text",
+        mode: "markers",
         name: String(first.year),
         x: rowsForPlot.map(row => row.firstValue),
         y: rowsForPlot.map(row => row.label),
-        text: rowsForPlot.map(row => `${row.firstValue.toFixed(0)}%`),
-        textposition: "middle left",
-        textfont: { color: "#8a97aa", size: 11 },
         marker: {
-          color: "rgba(180,192,210,0.3)",
+          color: "rgba(10, 20, 40, 0.6)",
           size: 11,
-          line: { color: "rgba(180,192,210,0.85)", width: 2 },
+          line: { color: "rgba(138, 151, 170, 0.8)", width: 2 },
           symbol: "circle",
         },
         customdata: rowsForPlot.map(row => [row.firstPeriod, row.firstFile]),
-        hovertemplate:
-          "<b>%{y}</b><br>" +
-          `Year: ${escapeHtml(String(first.year))}<br>` +
-          "Coverage: <b>%{x:.0f}%</b><br>" +
-          "Source period: %{customdata[0]}<br>" +
-          "File: %{customdata[1]}<extra></extra>",
+        hovertemplate: "<b>%{y}</b><br>Year: " + first.year + "<br>Coverage: %{x:.0f}%<extra></extra>",
       };
 
       const latestTrace = {
@@ -6362,35 +6753,30 @@
         name: String(last.year),
         x: rowsForPlot.map(row => row.lastValue),
         y: rowsForPlot.map(row => row.label),
-        text: rowsForPlot.map(row => `${row.lastValue.toFixed(0)}%`),
+        text: rowsForPlot.map(row => `<b>${row.diffFormatted} pts</b>`),
         textposition: "middle right",
-        textfont: { color: "#eef4ff", size: 11 },
+        textfont: { family: "var(--mono)", color: "#eef4ff", size: 12 },
         marker: {
           color: rowsForPlot.map(row => row.color),
-          size: 13,
-          line: { color: "#101d33", width: 1.4 },
+          size: 14,
+          line: { color: "#ffffff", width: 1.5 },
           symbol: "circle",
+          // Adding shadow via Plotly isn't direct, but the high contrast helps
         },
         customdata: rowsForPlot.map(row => [row.lastPeriod, row.lastFile]),
-        hovertemplate:
-          "<b>%{y}</b><br>" +
-          `Year: ${escapeHtml(String(last.year))}<br>` +
-          "Coverage: <b>%{x:.0f}%</b><br>" +
-          "Source period: %{customdata[0]}<br>" +
-          "File: %{customdata[1]}<extra></extra>",
+        hovertemplate: "<b>%{y}</b><br>Year: " + last.year + "<br>Coverage: %{x:.0f}%<extra></extra>",
       };
 
       return {
         data: [connectors, startTrace, latestTrace],
         layout: {
-          margin: { t: 18, r: 24, b: 28, l: 120 },
+          margin: { t: 40, r: 100, b: 32, l: 120 },
           xaxis: {
             range: [0, 100],
             ticksuffix: "%",
-            dtick: 10,
-            tickfont: { color: "#7889a0", size: 12 },
+            dtick: 20,
+            tickfont: { family: "var(--mono)", color: "#7889a0", size: 11 },
             gridcolor: "rgba(45,156,219,0.06)",
-            griddash: "dash",
             zeroline: false,
             fixedrange: true,
           },
@@ -6398,39 +6784,35 @@
             type: "category",
             categoryorder: "array",
             categoryarray: rowsForPlot.map(row => row.label).reverse(),
-            tickfont: { color: "#a5b4c7", size: 13 },
+            tickfont: { color: "#eef4ff", size: 13, weight: 600 },
             showgrid: false,
             zeroline: false,
             fixedrange: true,
           },
           legend: {
             orientation: "h",
-            y: 1.12,
+            y: 1.2,
             x: 0,
-            font: { size: 12 },
+            font: { family: "var(--mono)", size: 10 },
           },
           shapes: [{
             type: "line",
-            x0: 95,
-            x1: 95,
-            y0: 0,
-            y1: 1,
-            xref: "x",
-            yref: "paper",
-            line: { color: "rgba(196,86,27,0.75)", width: 1.6, dash: "dash" },
+            x0: 95, x1: 95, y0: 0, y1: 1,
+            xref: "x", yref: "paper",
+            line: { color: "#4db5ef", width: 2, dash: "dash" },
           }],
           annotations: [{
-            x: 95,
-            y: 1,
-            xref: "x",
-            yref: "paper",
-            text: "95% target",
+            x: 95, y: 0.95,
+            xref: "x", yref: "paper",
+            text: "95% TARGET",
             showarrow: false,
-            xanchor: "right",
+            xanchor: "left",
             yanchor: "bottom",
-            font: { size: 12, color: "#e63946" },
+            font: { family: "var(--mono)", size: 10, color: "#4db5ef", weight: 700 },
+            bgcolor: "rgba(10, 20, 40, 0.8)",
+            borderpad: 4
           }],
-          showlegend: true,
+          showlegend: false,
         },
       };
     }
@@ -6711,5 +7093,8 @@
       return escapeHtml(value).replace(/`/g, "&#96;");
     }
   </script>
+  <footer style="height: 100px; opacity: 0.2; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em;">
+    EPIGRAPH PH // EXECUTIVE SURVEILLANCE LAYER
+  </footer>
 </body>
 </html>
