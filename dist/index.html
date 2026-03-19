@@ -371,6 +371,30 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(45, 156, 219, 0.15);
     }
+    .control-input {
+      width: 100%;
+      background: rgba(16, 28, 52, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font: inherit;
+      color: var(--ink);
+      transition: all 200ms ease;
+    }
+    .control-input::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+    .control-input:hover {
+      border-color: rgba(45, 156, 219, 0.4);
+      background: rgba(45, 156, 219, 0.04);
+    }
+    .control-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(45, 156, 219, 0.08);
+      box-shadow: 0 0 0 2px rgba(45, 156, 219, 0.15);
+    }
     .explorer-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.85fr);
@@ -1787,6 +1811,11 @@
                   <input type="text" id="reference-search" placeholder="Search 40+ sources (organization, title, or tags)..." class="control-input" style="width: 100%; max-width: 600px;">
                 </div>
                 <div class="reference-groups" id="reference-groups"></div>
+                <div id="reference-empty-state" class="empty-state" style="display: none; padding: 40px; text-align: center; background: rgba(16,28,52,0.3); border-radius: 18px; border: 1px dashed var(--line); margin-top: 18px;">
+                  <div style="font-size: 1.5rem; margin-bottom: 8px;">🔍</div>
+                  <div style="font-weight: 700; color: var(--ink);">No matching references found</div>
+                  <div style="color: var(--muted); font-size: 0.88rem; margin-top: 4px;">Try searching for "UNAIDS", "DOH", or "2025".</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1931,8 +1960,8 @@
 
         renderHeaderMeta();
         renderOverview();
-        if (document.getElementById("methodology-pill")) renderMethodologySection();
-        if (document.getElementById("references-pill")) renderReferencesSection();
+        if (document.getElementById("methodology-list")) renderMethodologySection();
+        if (document.getElementById("reference-groups")) renderReferencesSection();
         renderExperimentalSection();
         setupRegionalExplorer();
         setupExperimentalExplorer();
@@ -3672,22 +3701,45 @@
 
     function setupMethodologyExplorer() {
       const searchInput = document.getElementById("reference-search");
+      const emptyState = document.getElementById("reference-empty-state");
       if (!searchInput) return;
 
       searchInput.addEventListener("input", (e) => {
         const query = (e.target.value || "").toLowerCase().trim();
-        const items = document.querySelectorAll(".reference-item");
+        const cards = document.querySelectorAll(".reference-group-card");
+        let anyVisible = false;
         
-        items.forEach(item => {
-          const content = item.textContent.toLowerCase();
-          item.style.display = content.includes(query) ? "block" : "none";
+        cards.forEach(card => {
+          const header = card.querySelector(".card-header");
+          const cardTitle = header ? header.textContent.toLowerCase() : "";
+          const items = card.querySelectorAll(".reference-item");
+          
+          let cardMatches = cardTitle.includes(query);
+          let matchCount = 0;
+
+          items.forEach(item => {
+            const itemText = item.textContent.toLowerCase();
+            const itemMatches = itemText.includes(query);
+            
+            if (query === "" || itemMatches || (cardMatches && query.length > 0)) {
+              item.style.display = "block";
+              matchCount++;
+            } else {
+              item.style.display = "none";
+            }
+          });
+
+          if (query === "" || matchCount > 0 || cardMatches) {
+            card.style.display = "block";
+            anyVisible = true;
+          } else {
+            card.style.display = "none";
+          }
         });
 
-        // Hide empty groups
-        document.querySelectorAll(".reference-group-card").forEach(group => {
-          const visibleItems = [...group.querySelectorAll(".reference-item")].filter(el => el.style.display !== "none");
-          group.style.display = visibleItems.length ? "block" : "none";
-        });
+        if (emptyState) {
+          emptyState.style.display = anyVisible ? "none" : "block";
+        }
       });
     }
 
