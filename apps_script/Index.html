@@ -1610,9 +1610,9 @@
       </div>
       <div class="nav-row">
         <button class="nav-button is-active" data-view="overview" onclick="switchView('overview')">Overview</button>
-        <button class="nav-button" data-view="unaids" onclick="switchView('unaids')">UNAIDS Reference</button>
         <button class="nav-button" data-view="explorer" onclick="switchView('explorer')">Explorer</button>
         <button class="nav-button" data-view="experimental" onclick="switchView('experimental')">Experimental estimates</button>
+        <button class="nav-button" data-view="unaids" onclick="switchView('unaids')">UNAIDS Data</button>
         <button class="nav-button" data-view="methods" onclick="switchView('methods')">Methods &amp; Sources</button>
       </div>
       <div class="status-banner" id="status-banner"></div>
@@ -1782,6 +1782,10 @@
                 Reference Catalog <span class="badge" id="references-pill-count">42</span>
               </button>
             </div>
+          </div>
+
+          <div class="clinical-narrative" style="margin-top: 16px; margin-bottom: 4px;">
+            <span class="log-prefix">See also:</span> The <button onclick="switchView('unaids')" style="background:none;border:none;color:#0077B6;font-weight:700;cursor:pointer;font-family:var(--mono);text-decoration:underline;">UNAIDS Data</button> tab contains official national HIV estimates from the UNAIDS AIDSINFO portal — the global reference baseline that EpiGraph PH regional data is compared against.
           </div>
 
           <!-- Sub-View: Methods -->
