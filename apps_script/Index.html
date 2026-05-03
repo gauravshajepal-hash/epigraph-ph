@@ -129,8 +129,8 @@
       color: var(--accent);
     }
     .status-banner.is-visible { display: block; }
-    .section { display: none; overflow: visible; }
-    .section.is-active { display: block; animation: fadeIn 300ms ease; }
+    .section { visibility: hidden; opacity: 0; position: absolute; overflow: visible; transition: opacity 200ms ease; }
+    .section.is-active { visibility: visible; opacity: 1; position: relative; animation: fadeIn 300ms ease; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -1612,7 +1612,7 @@
         <button class="nav-button is-active" data-view="overview" onclick="switchView('overview')">Overview</button>
         <button class="nav-button" data-view="explorer" onclick="switchView('explorer')">Explorer</button>
         <button class="nav-button" data-view="experimental" onclick="switchView('experimental')">Experimental estimates</button>
-        <button class="nav-button" data-view="unaids" onclick="switchView('unaids')">UNAIDS Data</button>
+        <button class="nav-button" data-view="prevention" onclick="switchView('prevention')">UNAIDS Compass</button>
         <button class="nav-button" data-view="methods" onclick="switchView('methods')">Methods &amp; Sources</button>
       </div>
       <div class="status-banner" id="status-banner"></div>
@@ -1670,7 +1670,7 @@
             </div>
             <span class="pill" id="historical-atlas-pill">Loading</span>
           </div>
-          <p class="publication-shell-note">Only the strongest historical series remain in the Overview. Weak or sparse panels were removed so the annual burden story stays readable and defensible.</p>
+          <p class="publication-shell-note">Decomposed UNAIDS national estimates (1990–2024): PLHIV prevalence, new infections, AIDS-related deaths. Each panel shows one component of the epidemic curve. Source: UNAIDS Estimates 2025.</p>
           <div class="figure-actions" id="publication-historical-board-actions"></div>
           <div class="publication-figure" id="publication-historical-board"></div>
           <div class="atlas-note" id="publication-historical-board-note"></div>
@@ -1680,14 +1680,35 @@
           <div class="card-header">
             <div>
               <div class="eyebrow">Key Populations</div>
-              <div class="shell-headline">Sentinel subgroups with observed windows</div>
+              <div class="shell-headline">Population size estimates over time</div>
             </div>
             <span class="pill" id="population-outcomes-pill">Loading</span>
           </div>
-          <p class="publication-shell-note">The sentinel board keeps subgroup windows explicit. Missing years remain visible as missing rather than being interpolated into a fake continuous series.</p>
+          <p class="publication-shell-note">UNAIDS Key Populations Atlas estimates for the Philippines: men who have sex with men (MSM), transgender women (TGW), sex workers (SW), and people who inject drugs (PWID). Source: UNAIDS Key Populations Atlas 2025.</p>
           <div class="figure-actions" id="publication-key-populations-actions"></div>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
+        </article>
+
+        <!-- PMTCT -->
+        <article class="card publication-card col-span-12">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">PMTCT</div>
+              <div class="shell-headline">Prevention of Mother-to-Child Transmission</div>
+            </div>
+          </div>
+          <p class="mini-note">Decomposed PMTCT cascade. Left: Women needing ARV (blue area) and ARV coverage % (green area line, right axis — modeled estimate). Right: Mother-to-child HIV transmission rate (red area). The "Received ARV" program data was excluded — reflects only a subset of facilities. Source: UNAIDS Estimates 2025.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+            <div>
+              <div class="eyebrow" style="font-size: 0.65rem; margin-bottom: 4px;">Women Needing ARV for PMTCT</div>
+              <div class="chart-host" id="overview-pmtct-need" style="height: 320px;"></div>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.65rem; margin-bottom: 4px;">MTCT Transmission Rate</div>
+              <div class="chart-host" id="overview-pmtct-rate" style="height: 320px;"></div>
+            </div>
+          </div>
         </article>
       </div>
 
@@ -1785,7 +1806,7 @@
           </div>
 
           <div class="clinical-narrative" style="margin-top: 16px; margin-bottom: 4px;">
-            <span class="log-prefix">See also:</span> The <button onclick="switchView('unaids')" style="background:none;border:none;color:#0077B6;font-weight:700;cursor:pointer;font-family:var(--mono);text-decoration:underline;">UNAIDS Data</button> tab contains official national HIV estimates from the UNAIDS AIDSINFO portal — the global reference baseline that EpiGraph PH regional data is compared against.
+            <span class="log-prefix">See also:</span> The <button onclick="switchView('prevention')" style="background:none;border:none;color:#0077B6;font-weight:700;cursor:pointer;font-family:var(--mono);text-decoration:underline;">UNAIDS Data</button> tab contains official national HIV estimates from the UNAIDS AIDSINFO portal — the global reference baseline that EpiGraph PH regional data is compared against.
           </div>
 
           <!-- Sub-View: Methods -->
@@ -1917,16 +1938,17 @@
       </div>
     </section>
 
-    <section class="section" id="unaids-section">
+    <section class="section" id="prevention-section">
       <div class="dashboard-grid">
         <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Official UNAIDS Data</div>
-              <h2>Philippines — UNAIDS Country Indicators</h2>
+              <div class="eyebrow">UNAIDS Compass</div>
+              <h2>UNAIDS Compass Indicators</h2>
             </div>
             <div class="figure-actions">
               <a class="action-link" href="https://aidsinfo.unaids.org/" target="_blank" rel="noopener">Open AIDSINFO Portal</a>
+              <a class="action-link" href="https://aidsinfo.unaids.org/dataset" target="_blank" rel="noopener">Download Datasets</a>
             </div>
           </div>
           <p class="mini-note">
@@ -1946,76 +1968,86 @@
           <p class="mini-note">The complete factsheet with all key HIV indicators for the Philippines is available on the AIDSINFO portal. Click above to view the full interactive summary table with export options.</p>
         </article>
 
+        <!-- Epidemic Overview — combined 2×2 -->
+        <article class="card publication-card col-span-12">
+          <div class="card-header">
+            <div>
+              <div class="eyebrow">Epidemic Overview</div>
+              <h3>Philippines HIV Epidemic — Key Metrics</h3>
+            </div>
+            <a class="action-link" href="https://aidsinfo.unaids.org/" target="_blank" rel="noopener">Open in AIDSINFO</a>
+          </div>
+          <p class="mini-note">Four key metrics from the UNAIDS national estimates, embedded as interactive charts from the AIDSINFO portal. Use the toolbar on each chart to download or zoom. Source: UNAIDS Estimates 2025.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">People Living with HIV</div>
+              <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="People Living with HIV"></iframe>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">New HIV Infections</div>
+              <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="New HIV Infections"></iframe>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">AIDS-Related Deaths</div>
+              <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="AIDS-Related Deaths"></iframe>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">Treatment Cascade 95-95-95</div>
+              <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="Treatment Cascade"></iframe>
+            </div>
+          </div>
+        </article>
+
+        <!-- Prevention &amp; Finance: Condom + PrEP side by side -->
         <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Epidemic Size</div>
-              <h3>People Living with HIV</h3>
-            </div>
-            <div class="figure-actions">
-              <a class="action-link" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" target="_blank" rel="noopener">Open in AIDSINFO</a>
+              <div class="eyebrow">Prevention</div>
+              <h3>Condom Distribution</h3>
             </div>
           </div>
-          <iframe
-            width="100%" height="300" style="border: 0; display: block; border-radius: var(--radius-md);"
-            loading="lazy"
-            src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin"
-            title="UNAIDS — People Living with HIV"
-          ></iframe>
+          <p class="mini-note">Annual condoms distributed (total). Source: UNAIDS GAM 2025.</p>
+          <div class="chart-host" id="unaids-condoms" style="height: 380px; margin-top: 12px;"></div>
         </article>
 
         <article class="card publication-card col-span-6">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Transmission</div>
-              <h3>New HIV Infections</h3>
-            </div>
-            <div class="figure-actions">
-              <a class="action-link" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" target="_blank" rel="noopener">Open in AIDSINFO</a>
+              <div class="eyebrow">Prevention</div>
+              <h3>PrEP Coverage</h3>
             </div>
           </div>
-          <iframe
-            width="100%" height="300" style="border: 0; display: block; border-radius: var(--radius-md);"
-            loading="lazy"
-            src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin"
-            title="UNAIDS — New HIV Infections"
-          ></iframe>
+          <p class="mini-note">People receiving pre-exposure prophylaxis. Source: UNAIDS GAM 2025.</p>
+          <div class="chart-host" id="unaids-prep" style="height: 380px; margin-top: 12px;"></div>
         </article>
 
-        <article class="card publication-card col-span-6">
+        <!-- Expenditure — 4 mini-cards side-by-side -->
+        <article class="card publication-card col-span-12">
           <div class="card-header">
             <div>
-              <div class="eyebrow">Mortality</div>
-              <h3>AIDS-Related Deaths</h3>
-            </div>
-            <div class="figure-actions">
-              <a class="action-link" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" target="_blank" rel="noopener">Open in AIDSINFO</a>
+              <div class="eyebrow">Finance</div>
+              <h3>HIV Expenditure by Source</h3>
             </div>
           </div>
-          <iframe
-            width="100%" height="300" style="border: 0; display: block; border-radius: var(--radius-md);"
-            loading="lazy"
-            src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin"
-            title="UNAIDS — AIDS-Related Deaths"
-          ></iframe>
-        </article>
-
-        <article class="card publication-card col-span-6">
-          <div class="card-header">
+          <p class="mini-note">Country-reported HIV expenditure by funding source (US$). Each card shows one source as an area line chart. Source: UNAIDS GAM 2025.</p>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px;">
             <div>
-              <div class="eyebrow">Treatment Cascade</div>
-              <h3>Treatment Coverage</h3>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">Total</div>
+              <div class="chart-host" id="unaids-expenditure-total" style="height: 240px;"></div>
             </div>
-            <div class="figure-actions">
-              <a class="action-link" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" target="_blank" rel="noopener">Open in AIDSINFO</a>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">Domestic Public</div>
+              <div class="chart-host" id="unaids-expenditure-domestic" style="height: 240px;"></div>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">International</div>
+              <div class="chart-host" id="unaids-expenditure-international" style="height: 240px;"></div>
+            </div>
+            <div>
+              <div class="eyebrow" style="font-size: 0.6rem; margin-bottom: 4px;">Global Fund</div>
+              <div class="chart-host" id="unaids-expenditure-global-fund" style="height: 240px;"></div>
             </div>
           </div>
-          <iframe
-            width="100%" height="300" style="border: 0; display: block; border-radius: var(--radius-md);"
-            loading="lazy"
-            src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin"
-            title="UNAIDS — Treatment Coverage"
-          ></iframe>
         </article>
 
         <article class="card publication-card col-span-12">
@@ -2043,6 +2075,10 @@
                   <td><a href="https://aidsinfo.unaids.org/" target="_blank" rel="noopener">https://aidsinfo.unaids.org/</a></td>
                 </tr>
                 <tr>
+                  <td><strong>Datasets</strong></td>
+                  <td><a href="https://aidsinfo.unaids.org/dataset" target="_blank" rel="noopener">Estimates 2025</a> · <a href="https://aidsinfo.unaids.org/dataset" target="_blank" rel="noopener">GAM 2025</a> · <a href="https://aidsinfo.unaids.org/dataset" target="_blank" rel="noopener">Key Populations 2025</a></td>
+                </tr>
+                <tr>
                   <td><strong>Country Page</strong></td>
                   <td><a href="https://www.unaids.org/en/regionscountries/countries/philippines" target="_blank" rel="noopener">UNAIDS — Philippines</a></td>
                 </tr>
@@ -2062,19 +2098,17 @@
             </table>
           </div>
           <p class="mini-note" style="margin-top: 14px;">
-            All charts in this section are embedded directly from the UNAIDS AIDSINFO portal and remain the intellectual property of UNAIDS.
+            All charts in this section are generated from official UNAIDS AIDSINFO datasets and remain the intellectual property of UNAIDS.
             EpiGraph PH does not modify, resell, or redistribute these visualizations — they are presented here solely for reference and contextual comparison with Philippine DOH surveillance data.
           </p>
-          <div class="clinical-narrative" style="margin-top: 14px;">
-            <span class="log-prefix">Download tip:</span> Click any "Open in AIDSINFO" button above to open the full chart on the AIDSINFO portal.
-            Each chart has a built-in export toolbar (bottom-right) with <strong>PNG</strong>, <strong>PDF</strong>, and <strong>XLS</strong> download options.
-            You can also right-click any embedded chart and choose "Save frame as..." to download the page.
-          </div>
         </article>
       </div>
     </section>
 
   </div>
+  <script>
+    const UNAIDS_CHARTS = {"01_epidemic_curve":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontFamily":"IBM Plex Sans"}},"legend":{"top":0,"right":0,"textStyle":{"color":"#546E7A","fontFamily":"IBM Plex Mono","fontSize":11}},"grid":{"top":40,"right":20,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","formatter":"{value}"}},"series":[{"name":"PLHIV","type":"line","smooth":true,"symbol":"circle","symbolSize":6,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#009ADE"},"data":[41,49,57,71,90,117,151,192,246,314,408,531,693,914,1201,1576,2064,2810,4002,5372,6752,8325,10117,12113,14267,16607,19120,21852,24699,27588,30662,34234,38331,43145,48606]},{"name":"New Infections","type":"line","smooth":true,"symbol":"circle","symbolSize":6,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#E67E22"},"data":[7,11,14,20,28,39,51,64,84,108,146,191,254,343,450,588,766,1116,1699,2084,2340,2793,3329,3896,4444,5074,5760,6459,7148,7812,8663,9824,11103,12660,14320]},{"name":"AIDS Deaths","type":"line","smooth":true,"symbol":"circle","symbolSize":6,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#C62828"},"data":[1,1,1,1,1,1,2,2,3,3,4,6,7,10,12,16,19,23,30,40,50,59,71,81,83,87,97,111,127,144,160,189,222,252,295]}]},"02_cascade_95":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":30,"bottom":50,"left":60},"xAxis":{"type":"category","data":["Diagnosed","On ART","Suppressed"],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontWeight":"bold"}},"yAxis":{"type":"value","max":100,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","formatter":"{value}%"}},"series":[{"name":"Current","type":"bar","barWidth":"40%","itemStyle":{"color":"#009ADE","borderRadius":[6,6,0,0]},"label":{"show":true,"position":"top","formatter":"{c}%","fontWeight":"bold","color":"#2c3e50"},"data":[62.2,65.1,94.3]},{"name":"95% Target","type":"line","lineStyle":{"color":"#C62828","type":"dashed","width":2},"symbol":"none","data":[95,95,95]}]},"03_infections_vs_deaths":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"legend":{"top":0,"right":0,"textStyle":{"color":"#546E7A","fontFamily":"IBM Plex Mono","fontSize":11}},"grid":{"top":40,"right":20,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"series":[{"name":"New HIV Infections","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#E67E22"},"areaStyle":{"opacity":0.1,"color":"#E67E22"},"symbol":"circle","symbolSize":5,"itemStyle":{"color":"#E67E22"},"data":[7,11,14,20,28,39,51,64,84,108,146,191,254,343,450,588,766,1116,1699,2084,2340,2793,3329,3896,4444,5074,5760,6459,7148,7812,8663,9824,11103,12660,14320]},{"name":"AIDS-Related Deaths","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#C62828"},"areaStyle":{"opacity":0.1,"color":"#C62828"},"symbol":"circle","symbolSize":5,"itemStyle":{"color":"#C62828"},"data":[1,1,1,1,1,1,2,2,3,3,4,6,7,10,12,16,19,23,30,40,50,59,71,81,83,87,97,111,127,144,160,189,222,252,295]}]},"04_kp_population_sizes":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontFamily":"IBM Plex Sans"},"valueFormatter":"function(v){return v>=1000?(v/1000).toFixed(1)+'K':v}"},"legend":{"top":0,"right":0,"textStyle":{"color":"#546E7A","fontFamily":"IBM Plex Mono","fontSize":11}},"grid":{"top":40,"right":120,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[2013,2015,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"series":[{"name":"MSM","type":"line","smooth":true,"symbol":"circle","symbolSize":8,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#009ADE"},"data":[529700,531500,830000,680600,687100,693000,800500,1384400]},{"name":"Sex Workers","type":"line","smooth":true,"symbol":"circle","symbolSize":8,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#E67E22"},"data":[92800,152600,210000,227400,229400,231400,127700,127900]},{"name":"Transgender","type":"line","smooth":true,"symbol":"circle","symbolSize":8,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#7B1FA2"},"data":[0,122800,190000,203300,205300,207000,239100,317000]},{"name":"PWID","type":"line","smooth":true,"symbol":"circle","symbolSize":8,"lineStyle":{"width":3},"areaStyle":{"opacity":0.08},"itemStyle":{"color":"#C62828"},"data":[8600,10000,7400,7200,7200,7300,7700,9800]}]},"05_kp_hiv_prevalence":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":30,"bottom":50,"left":60},"xAxis":{"type":"category","data":["MSM","Sex Workers","Transgender","PWID","Prisoners"],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontWeight":"bold","rotate":15}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","formatter":"{value}%"}},"series":[{"name":"HIV Prevalence","type":"bar","barWidth":"50%","itemStyle":{"color":"#009ADE","borderRadius":[6,6,0,0]},"label":{"show":true,"position":"top","formatter":"{c}%","fontWeight":"bold","color":"#2c3e50"},"data":[0,0,0,0,0]}]},"06_kp_art_coverage":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":30,"bottom":50,"left":60},"xAxis":{"type":"category","data":["MSM","Sex Workers","Transgender","PWID"],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontWeight":"bold"}},"yAxis":{"type":"value","max":100,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","formatter":"{value}%"}},"series":[{"name":"ART Coverage","type":"bar","barWidth":"50%","itemStyle":{"borderRadius":[6,6,0,0]},"label":{"show":true,"position":"top","formatter":"{c}%","fontWeight":"bold","color":"#2c3e50"},"data":[{"value":0,"itemStyle":{"color":"#009ADE"}},{"value":0,"itemStyle":{"color":"#E67E22"}},{"value":0,"itemStyle":{"color":"#7B1FA2"}},{"value":0,"itemStyle":{"color":"#C62828"}}]}]},"07_pmtct_cascade":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontFamily":"IBM Plex Sans"}},"legend":{"top":0,"right":0,"textStyle":{"color":"#546E7A","fontFamily":"IBM Plex Mono","fontSize":11}},"grid":{"top":40,"right":60,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":[{"type":"value","name":"Women Needing ARV","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},{"type":"value","name":"% Rate","max":100,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"show":false},"axisLabel":{"color":"#C62828","formatter":"{value}%"}}],"series":[{"name":"Need ARV","type":"bar","barWidth":"40%","itemStyle":{"color":"#009ADE","borderRadius":[4,4,0,0]},"data":[5,6,6,7,8,9,10,12,13,15,16,19,21,23,27,31,37,46,62,88,114,139,166,196,228,268,303,338,78,408,447,491,564,645,734]},{"name":"Coverage %","type":"line","yAxisIndex":1,"smooth":true,"lineStyle":{"width":3,"color":"#27ae60"},"symbol":"circle","symbolSize":7,"itemStyle":{"color":"#27ae60"},"data":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10.0,12.9,11.0,7.1,10.0,11.9,14.0,15.7,85.9,24.0,25.3,17.0,8.0,10.8,16.0]},{"name":"MTCT Rate %","type":"line","yAxisIndex":1,"smooth":true,"lineStyle":{"width":3,"color":"#C62828"},"symbol":"diamond","symbolSize":7,"itemStyle":{"color":"#C62828"},"data":[42.3,44.6,44.3,45.7,47.2,48.2,48.1,47.5,47.6,47.4,47.8,47.5,47.7,48.2,48.4,48.3,48.0,50.5,57.3,55.3,49.3,47.5,47.9,48.6,47.9,47.2,46.4,45.6,44.8,43.1,42.4,44.5,46.2,45.4,44.5]}]},"07a_pmtct_need_arv":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"legend":{"top":0,"right":0,"textStyle":{"color":"#546E7A","fontSize":9}},"grid":{"top":30,"right":60,"bottom":40,"left":60,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":10,"rotate":30}},"yAxis":[{"type":"value","name":"Women","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","fontSize":10}},{"type":"value","name":"%","max":100,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"show":false},"axisLabel":{"color":"#27ae60","fontSize":10,"formatter":"{value}%"}}],"series":[{"name":"Need ARV","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#009ADE"},"symbol":"circle","symbolSize":5,"areaStyle":{"color":"rgba(0, 154, 222, 0.2)"},"itemStyle":{"color":"#009ADE"},"data":[5,6,6,7,8,9,10,12,13,15,16,19,21,23,27,31,37,46,62,88,114,139,166,196,228,268,303,338,78,408,447,491,564,645,734]},{"name":"Coverage %","type":"line","yAxisIndex":1,"smooth":true,"lineStyle":{"width":3,"color":"#27ae60"},"symbol":"circle","symbolSize":6,"areaStyle":{"color":"rgba(39, 174, 96, 0.15)"},"itemStyle":{"color":"#27ae60"},"data":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10.0,12.9,11.0,7.1,10.0,11.9,14.0,15.7,85.9,24.0,25.3,17.0,8.0,10.8,16.0]}]},"07b_pmtct_mtct_rate":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":20,"right":20,"bottom":40,"left":60,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":10,"rotate":30}},"yAxis":{"type":"value","name":"%","min":30,"max":65,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#C62828","fontSize":10,"formatter":"{value}%"}},"series":[{"name":"MTCT Rate","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#C62828"},"symbol":"diamond","symbolSize":6,"areaStyle":{"color":"rgba(198, 40, 40, 0.15)"},"itemStyle":{"color":"#C62828"},"data":[42.3,44.6,44.3,45.7,47.2,48.2,48.1,47.5,47.6,47.4,47.8,47.5,47.7,48.2,48.4,48.3,48.0,50.5,57.3,55.3,49.3,47.5,47.9,48.6,47.9,47.2,46.4,45.6,44.8,43.1,42.4,44.5,46.2,45.4,44.5]}]},"08_art_deaths_averted":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":20,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"series":[{"name":"Deaths Averted","type":"bar","itemStyle":{"color":"#27ae60","borderRadius":[4,4,0,0]},"data":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,19,41,68,98,150,239,337,491,758,1061,1400,1758,2184,2666,3192,3677,4208,4862,5500]}]},"09_epidemic_transition":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":20,"bottom":40,"left":60,"containLabel":true},"xAxis":{"type":"category","data":[],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"visualMap":{"show":false,"pieces":[{"lte":1,"color":"#27ae60"},{"gt":1,"color":"#C62828"}]},"series":[{"name":"Incidence/Mortality Ratio","type":"line","smooth":true,"lineStyle":{"width":3},"areaStyle":{"opacity":0.1},"symbol":"circle","symbolSize":6,"markLine":{"data":[{"yAxis":1,"lineStyle":{"color":"#546E7A","type":"dashed"},"label":{"formatter":"Tipping Point","color":"#546E7A"}}]},"data":[]}]},"10_condom_distribution":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":20,"bottom":40,"left":80,"containLabel":true},"xAxis":{"type":"category","data":[2020,2022,2023],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"series":[{"name":"Condoms","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#009ADE"},"areaStyle":{"opacity":0.1,"color":"#009ADE"},"symbol":"circle","symbolSize":7,"itemStyle":{"color":"#009ADE"},"data":[12390400,4880814,8634740]}]},"11_prep_coverage":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":30,"right":20,"bottom":40,"left":70,"containLabel":true},"xAxis":{"type":"category","data":[2021,2022,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A"}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A"}},"series":[{"name":"PrEP","type":"line","smooth":true,"lineStyle":{"width":3,"color":"#27ae60"},"areaStyle":{"opacity":0.1,"color":"#27ae60"},"symbol":"circle","symbolSize":7,"itemStyle":{"color":"#27ae60"},"data":[4121,11803,22428,36156]}]},"12a_expenditure_total":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontSize":11}},"grid":{"top":15,"right":20,"bottom":30,"left":55,"containLabel":true},"xAxis":{"type":"category","data":[2005,2006,2007,2008,2009,2010,2011,2012,2013,2018,2019,2020,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":9,"rotate":30}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","fontSize":9},"name":"US$"},"series":[{"name":"Total Expenditure","type":"line","smooth":true,"symbol":"circle","symbolSize":4,"lineStyle":{"width":2.5,"color":"#009ADE"},"itemStyle":{"color":"#009ADE"},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"#009ADE50"},{"offset":1,"color":"#009ADE05"}]}},"data":[8054566,8561155,5623741,7734115,12030977,12495865,12645620,9642395,10319421,0,0,0,65539240,60376051]}]},"12b_expenditure_domestic":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontSize":11}},"grid":{"top":15,"right":20,"bottom":30,"left":55,"containLabel":true},"xAxis":{"type":"category","data":[2005,2006,2007,2008,2009,2010,2011,2012,2013,2018,2019,2020,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":9,"rotate":30}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","fontSize":9},"name":"US$"},"series":[{"name":"Domestic Public","type":"line","smooth":true,"symbol":"circle","symbolSize":4,"lineStyle":{"width":2.5,"color":"#E67E22"},"itemStyle":{"color":"#E67E22"},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"#E67E2250"},{"offset":1,"color":"#E67E2205"}]}},"data":[1294358,2662864,1617667,1677637,1870624,3372467,4181055,4654505,4522803,22997400,0,0,39304648,45138777]}]},"12c_expenditure_international":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontSize":11}},"grid":{"top":15,"right":20,"bottom":30,"left":55,"containLabel":true},"xAxis":{"type":"category","data":[2005,2006,2007,2008,2009,2010,2011,2012,2013,2018,2019,2020,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":9,"rotate":30}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","fontSize":9},"name":"US$"},"series":[{"name":"International","type":"line","smooth":true,"symbol":"circle","symbolSize":4,"lineStyle":{"width":2.5,"color":"#27ae60"},"itemStyle":{"color":"#27ae60"},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"#27ae6050"},{"offset":1,"color":"#27ae6005"}]}},"data":[5547308,5023260,3209300,4899207,8763309,5002720,3872142,4964855,5778805,0,0,0,23346951,15181032]}]},"12d_expenditure_global_fund":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50","fontSize":11}},"grid":{"top":15,"right":20,"bottom":30,"left":55,"containLabel":true},"xAxis":{"type":"category","data":[2005,2006,2007,2008,2009,2010,2011,2012,2013,2018,2019,2020,2023,2024],"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":9,"rotate":30}},"yAxis":{"type":"value","axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"splitLine":{"lineStyle":{"color":"rgba(0,0,0,0.06)","type":"dashed"}},"axisLabel":{"color":"#546E7A","fontSize":9},"name":"US$"},"series":[{"name":"Global Fund","type":"line","smooth":true,"symbol":"circle","symbolSize":4,"lineStyle":{"width":2.5,"color":"#7B1FA2"},"itemStyle":{"color":"#7B1FA2"},"areaStyle":{"color":{"type":"linear","x":0,"y":0,"x2":0,"y2":1,"colorStops":[{"offset":0,"color":"#7B1FA250"},{"offset":1,"color":"#7B1FA205"}]}},"data":[1960497,617106,30539,2895410,6687850,3278792,1955077,4341853,3180753,0,0,0,0,0]}]},"13_policy_scorecard":{"backgroundColor":"transparent","tooltip":{"trigger":"axis","backgroundColor":"rgba(255,255,255,0.96)","borderColor":"rgba(0,0,0,0.1)","textStyle":{"color":"#2c3e50"}},"grid":{"top":10,"right":30,"bottom":10,"left":250},"xAxis":{"type":"value","max":1,"show":false},"yAxis":{"type":"category","data":["National AIDS strategy/policy","TDF+3TC (or FTC) + DTG preferred first-line ARVs f...","PrEP available","Needle and syringe programmes operational","Opioid agonist maintenance therapy programmes oper...","Laws protecting against discrimination on the basi...","HIV is a nationally notifiable condition by law","National infant feeding recommendation for HIV-exp..."],"inverse":true,"axisLine":{"lineStyle":{"color":"rgba(0,0,0,0.1)"}},"axisLabel":{"color":"#546E7A","fontSize":10}},"series":[{"type":"bar","barWidth":"60%","itemStyle":{"borderRadius":[0,4,4,0]},"label":{"show":true,"position":"right","formatter":"{value}","color":"#2c3e50","fontWeight":"bold"},"data":[{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}},{"value":0.5,"itemStyle":{"color":"#E67E22"}}]}]}};;;;;;;;;;;;;;
+  </script>
   <script>
     const DEFAULT_LIMIT = 80;
     const state = {
@@ -2132,6 +2166,19 @@
         console.error(error);
         setStatus(error.message || "Failed to boot dashboard.", true);
         renderFailure(error.message || "Failed to boot dashboard.");
+        // UNAIDS charts use inline data — mount them even when main data fails
+        setTimeout(() => {
+          switchView("prevention");
+          setTimeout(() => {
+            mountUnaidsCharts();
+            setTimeout(() => {
+              document.querySelectorAll('#prevention-section .chart-host').forEach(el => {
+                const charts = el.querySelectorAll('svg');
+                if (charts.length) el.dispatchEvent(new Event('resize'));
+              });
+            }, 100);
+          }, 50);
+        }, 500);
       }
     }
 
@@ -2200,7 +2247,7 @@
     function applyInitialViewFromLocation() {
       const search = new URLSearchParams(window.location.search || "");
       const requested = String(search.get("view") || "").toLowerCase();
-      const allowed = new Set(["overview", "explorer", "methods", "experimental", "unaids"]);
+      const allowed = new Set(["overview", "explorer", "methods", "experimental", "prevention"]);
       if (allowed.has(requested)) {
         switchView(requested);
       }
@@ -3771,6 +3818,8 @@
       renderSurprisingFindings();
       renderHistoricalAtlas();
       renderPopulationOutcomes();
+      // Mount UNAIDS charts embedded in Overview cards
+      requestAnimationFrame(() => mountUnaidsCharts());
     }
 
     function renderMethodologySection() {
@@ -5256,26 +5305,38 @@
     }
 
     function renderHistoricalAtlas() {
-      const historical = state.bootstrap?.publication?.series?.historical || {};
       const container = document.getElementById("publication-historical-board");
       if (!container) return;
 
-      const hasData = (historical.cases || []).length > 0 || (historical.plhiv || []).length > 0;
-      if (!hasData) {
-        container.innerHTML = `<div class="empty-state">No historical publication figure is available.</div>`;
-        document.getElementById("historical-atlas-pill").textContent = "unavailable";
+      // Always use UNAIDS epidemic curve data
+      if (UNAIDS_CHARTS && UNAIDS_CHARTS['01_epidemic_curve']) {
+        mountPlotlyChart("publication-historical-board", buildUnaidsHistoricalOption(UNAIDS_CHARTS['01_epidemic_curve']));
+        document.getElementById("historical-atlas-pill").textContent = "UNAIDS 1990–2024";
         return;
       }
 
-      // Migrate to Plotly
-      mountPlotlyChart("publication-historical-board", buildHistoricalAtlasOption(historical));
-      document.getElementById("historical-atlas-pill").textContent = "2015-2025 series";
+      const historical = state.bootstrap?.publication?.series?.historical || {};
+      const hasData = (historical.cases || []).length > 0 || (historical.plhiv || []).length > 0;
+      if (hasData) {
+        mountPlotlyChart("publication-historical-board", buildHistoricalAtlasOption(historical));
+        document.getElementById("historical-atlas-pill").textContent = "2015-2025 series";
+      } else {
+        container.innerHTML = "";
+        document.getElementById("historical-atlas-pill").textContent = "";
+      }
     }
 
     function renderPopulationOutcomes() {
       const keyPop = state.bootstrap?.publication?.series?.key_populations || {};
       const container = document.getElementById("publication-key-populations");
       if (!container) return;
+
+      // Build combined chart: UNAIDS KP data + DOH panels
+      if (UNAIDS_CHARTS && UNAIDS_CHARTS['04_kp_population_sizes']) {
+        mountPlotlyChart("publication-key-populations", buildCombinedKPOption(UNAIDS_CHARTS['04_kp_population_sizes'], keyPop));
+        document.getElementById("population-outcomes-pill").textContent = "UNAIDS KP Atlas + DOH";
+        return;
+      }
 
       const panels = [
         keyPop.pregnant_cumulative || [],
@@ -5284,15 +5345,13 @@
         keyPop.youth_share || [],
       ].filter(rows => rows.length);
 
-      if (!panels.length) {
-        container.innerHTML = `<div class="empty-state">No curated key-population figure is available.</div>`;
-        document.getElementById("population-outcomes-pill").textContent = "unavailable";
-        return;
+      if (panels.length) {
+        mountPlotlyChart("publication-key-populations", buildKeyPopulationOption(keyPop));
+        document.getElementById("population-outcomes-pill").textContent = `${panels.length} series · 2015-2025`;
+      } else {
+        container.innerHTML = "";
+        document.getElementById("population-outcomes-pill").textContent = "";
       }
-
-      // Migrate to Plotly
-      mountPlotlyChart("publication-key-populations", buildKeyPopulationOption(keyPop));
-      document.getElementById("population-outcomes-pill").textContent = `${panels.length} series · 2015-2025`;
     }
 
     function buildTreatmentOutcomeRows(periodLabel) {
@@ -5778,7 +5837,7 @@
       document.querySelectorAll(".nav-button").forEach(button => {
         button.classList.toggle("is-active", button.dataset.view === viewName);
       });
-      
+
       // Ensure all charts are resized after the container becomes visible
       requestAnimationFrame(() => {
         // Handle ECharts
@@ -5794,6 +5853,62 @@
             window.Plotly.Plots.resize(target);
           }
         });
+        // Mount UNAIDS charts if switching to that tab
+        if (viewName === "prevention" && window.echarts && UNAIDS_CHARTS) {
+          mountUnaidsCharts();
+        }
+      });
+      // Additional resize pass after browser has computed layout
+      requestAnimationFrame(() => {
+        if (viewName === "prevention") {
+          const section = document.getElementById("prevention-section");
+          if (section && section.classList.contains("is-active")) {
+            setTimeout(() => {
+              mountUnaidsCharts();
+              // Force resize on all echarts instances
+              if (window.echarts) {
+                document.querySelectorAll('#prevention-section svg[data-opts]').forEach(el => {
+                  const instance = echarts.getInstanceByDom(el);
+                  if (instance) instance.resize();
+                });
+              }
+            }, 100);
+          }
+        }
+      });
+    }
+
+    function mountUnaidsCharts() {
+      if (!window.echarts || !UNAIDS_CHARTS) { console.warn('mountUnaidsCharts skipped:', !window.echarts ? 'no echarts' : 'no UNAIDS_CHARTS'); return; }
+      const mapping = {
+        // Prevention tab
+        'unaids-condoms': '10_condom_distribution',
+        'unaids-prep': '11_prep_coverage',
+        'unaids-expenditure-total': '12a_expenditure_total',
+        'unaids-expenditure-domestic': '12b_expenditure_domestic',
+        'unaids-expenditure-international': '12c_expenditure_international',
+        'unaids-expenditure-global-fund': '12d_expenditure_global_fund',
+        // Overview tab — decomposed PMTCT
+        'overview-pmtct-need': '07a_pmtct_need_arv',
+        'overview-pmtct-rate': '07b_pmtct_mtct_rate',
+      };
+      Object.entries(mapping).forEach(([elId, chartKey]) => {
+        const el = document.getElementById(elId);
+        const opt = UNAIDS_CHARTS[chartKey];
+        if (!el) { console.warn('Element not found:', elId); return; }
+        if (!opt) { console.warn('Chart config missing:', chartKey); return; }
+        if (el.querySelector('svg')) return;
+        // Ensure container has explicit pixel dimensions before init
+        const style = window.getComputedStyle(el);
+        const h = parseInt(el.style.height) || 340;
+        const w = el.clientWidth || el.parentElement.clientWidth || el.offsetWidth || 800;
+        if (!el.style.height || parseInt(el.style.height) !== h) {
+          el.style.height = h + 'px';
+        }
+        const chart = echarts.init(el, null, { renderer: 'svg' });
+        chart.setOption(opt, true);
+        chart.resize();
+        window.addEventListener('resize', () => chart.resize());
       });
     }
 
@@ -6107,7 +6222,7 @@
         paper_bgcolor: "transparent",
         plot_bgcolor: "transparent",
         hovermode: "closest",
-        annotations: series.map((s, i) => ({
+        annotations: allSeries.map((s, i) => ({
           text: s.label,
           showarrow: false,
           x: 0.5,
@@ -6210,6 +6325,156 @@
 
       return { data, layout };
     }
+    function buildCombinedKPOption(unaidsData, keyPop) {
+      var kpColors = ["#009ADE", "#E67E22", "#27ae60", "#7B1FA2", "#00897B", "#e63946"];
+      var unaidsYears = unaidsData.xAxis.data || [];
+      var unaidsSeries = unaidsData.series || [];
+      var panels = [];
+      var labels = [];
+
+      // All 4 UNAIDS KP groups: MSM, Sex Workers, Transgender, PWID
+      for (var ui = 0; ui < Math.min(unaidsSeries.length, 4); ui++) {
+        var s = unaidsSeries[ui];
+        if (!s) continue;
+        var rgb = kpColors[ui].replace("#", "");
+        var r = parseInt(rgb.substring(0, 2), 16);
+        var g = parseInt(rgb.substring(2, 4), 16);
+        var b = parseInt(rgb.substring(4, 6), 16);
+        var ax = ui === 0 ? "x" : "x" + (ui + 1);
+        var ay = ui === 0 ? "y" : "y" + (ui + 1);
+        panels.push({
+          type: "scatter", mode: "markers+lines",
+          name: s.name, x: unaidsYears, y: s.data,
+          xaxis: ax, yaxis: ay,
+          line: { color: kpColors[ui], width: 2.5 },
+          marker: { size: 5 },
+          fill: "tozeroy", fillcolor: "rgba(" + r + "," + g + "," + b + ",0.25)",
+          hovertemplate: "<b>" + s.name + "</b><br>Year: %{x}<br>Estimate: <b>%{y:,.0f}</b><extra></extra>"
+        });
+        labels.push(s.name);
+      }
+
+      // DOH panels: OFW, Youth (panels 5 & 6)
+      var dohPanels = [
+        { key: "ofw_cumulative", label: "OFW Cumulative Burden", color: kpColors[4] },
+        { key: "youth_share", label: "Youth Share (%)", color: kpColors[5] }
+      ];
+
+      dohPanels.forEach(function(dp, di) {
+        var rows = keyPop[dp.key] || [];
+        if (!rows.length) return;
+        var pi = unaidsSeries.length + di;
+        var rgb = dp.color.replace("#", "");
+        var r = parseInt(rgb.substring(0, 2), 16);
+        var g = parseInt(rgb.substring(2, 4), 16);
+        var b = parseInt(rgb.substring(4, 6), 16);
+        var ax = pi === 0 ? "x" : "x" + (pi + 1);
+        var ay = pi === 0 ? "y" : "y" + (pi + 1);
+        panels.push({
+          type: "scatter", mode: "markers+lines",
+          name: dp.label,
+          x: rows.map(function(rw) { return rw.year; }),
+          y: rows.map(function(rw) { return Number(rw.value || 0); }),
+          xaxis: ax, yaxis: ay,
+          line: { color: dp.color, width: 2.5 },
+          marker: { size: 5 },
+          fill: "tozeroy", fillcolor: "rgba(" + r + "," + g + "," + b + ",0.25)",
+          hovertemplate: "<b>" + dp.label + "</b><br>Year: %{x}<br>Value: <b>%{y:,.1f}</b><extra></extra>"
+        });
+        labels.push(dp.label);
+      });
+
+      var totalPanels = panels.length;
+      var cols = 3;
+      var rows = Math.ceil(totalPanels / cols);
+
+      var layout = {
+        grid: { rows: rows, columns: cols, pattern: "independent" },
+        margin: { t: 40, r: 30, b: 50, l: 50 },
+        showlegend: false, paper_bgcolor: "transparent", plot_bgcolor: "transparent",
+        hovermode: "closest",
+        annotations: labels.map(function(lbl, i) {
+          return {
+            text: lbl, showarrow: false, x: 0.5, y: 1.08,
+            xref: i === 0 ? "x domain" : "x" + (i + 1) + " domain",
+            yref: i === 0 ? "y domain" : "y" + (i + 1) + " domain",
+            font: { size: 10, color: "#2c3e50" }
+          };
+        })
+      };
+
+      for (var li = 1; li <= totalPanels; li++) {
+        layout[li === 1 ? "xaxis" : "xaxis" + li] = { gridcolor: "rgba(0,0,0,0.03)", zeroline: false, showgrid: true, tickfont: { color: "#546E7A", size: 8 } };
+        layout[li === 1 ? "yaxis" : "yaxis" + li] = { gridcolor: "rgba(0,0,0,0.03)", zeroline: false, showgrid: true, tickfont: { color: "#546E7A", size: 8 } };
+      }
+
+      return { data: panels, layout };
+    }
+
+    function buildUnaidsHistoricalOption(data) {
+      const years = data.xAxis.data || [];
+      const series = data.series || [];
+      // Compute cumulative infections from new infections
+      const newInfData = (series.find(s => s.name === 'New Infections') || {}).data || [];
+      let cumSum = 0;
+      const cumulativeCases = newInfData.map(v => { cumSum += (v || 0); return cumSum; });
+      const allSeries = [
+        { name: 'PLHIV', data: (series.find(s => s.name === 'PLHIV') || {}).data || [], color: '#009ADE' },
+        { name: 'New Infections', data: newInfData, color: '#E67E22' },
+        { name: 'AIDS Deaths', data: (series.find(s => s.name === 'AIDS Deaths') || {}).data || [], color: '#e63946' },
+        { name: 'Cumulative Cases', data: cumulativeCases, color: '#00897B' }
+      ];
+
+      const plotlyData = allSeries.map((s, i) => {
+        const rgb = s.color.replace("#", "");
+        const r = parseInt(rgb.substring(0, 2), 16);
+        const g = parseInt(rgb.substring(2, 4), 16);
+        const b = parseInt(rgb.substring(4, 6), 16);
+        return {
+          type: "scatter",
+          mode: "markers+lines",
+          name: s.name,
+          x: years,
+          y: s.data,
+          xaxis: i === 0 ? "x" : `x${i + 1}`,
+          yaxis: i === 0 ? "y" : `y${i + 1}`,
+          line: { color: s.color, width: 2.5 },
+          marker: { size: 4 },
+          fill: "tozeroy",
+          fillcolor: "rgba(" + r + "," + g + "," + b + ",0.12)",
+          hovertemplate: `<b>${s.name}</b><br>Year: %{x}<br>Value: <b>%{y:,.0f}</b><extra></extra>`
+        };
+      });
+
+      const layout = {
+        grid: { rows: 2, columns: 2, pattern: "independent" },
+        margin: { t: 40, r: 30, b: 50, l: 50 },
+        showlegend: false,
+        paper_bgcolor: "transparent",
+        plot_bgcolor: "transparent",
+        hovermode: "closest",
+        annotations: allSeries.map((s, i) => ({
+          text: s.name,
+          showarrow: false,
+          x: 0.5, y: 1.1,
+          xref: i === 0 ? "x domain" : `x${i + 1} domain`,
+          yref: i === 0 ? "y domain" : `y${i + 1} domain`,
+          font: { size: 12, color: "#2c3e50" }
+        }))
+      };
+
+      [1, 2, 3, 4].forEach(i => {
+        const xK = i === 1 ? "xaxis" : `xaxis${i}`;
+        const yK = i === 1 ? "yaxis" : `yaxis${i}`;
+        layout[xK] = { gridcolor: "rgba(0,0,0,0.03)", zeroline: false, showgrid: true, tickfont: { color: "#546E7A", size: 9 }, range: [1989.5, 2025.5] };
+        layout[yK] = { gridcolor: "rgba(0,0,0,0.03)", zeroline: false, showgrid: true, tickfont: { color: "#546E7A", size: 9 } };
+      });
+
+      return { data: plotlyData, layout };
+    }
+
+    
+
 
     function setupRegionalExplorer() {
       const regional = state.bootstrap?.publication?.series?.regional_yearly || {};
