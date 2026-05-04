@@ -1996,28 +1996,28 @@
           </div>
           <p class="mini-note">Four key metrics from the UNAIDS national estimates, embedded as interactive charts from the AIDSINFO portal. Use the toolbar on each chart to download or zoom. Source: UNAIDS Estimates 2025.</p>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-            <div style="max-height: 340px; overflow-y: auto;">
+            <div style="overflow: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">People Living with HIV</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="People Living with HIV"></iframe>
             </div>
-            <div style="max-height: 340px; overflow-y: auto;">
+            <div style="overflow: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">New HIV Infections</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="New HIV Infections"></iframe>
             </div>
-            <div style="max-height: 340px; overflow-y: auto;">
+            <div style="overflow: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">AIDS-Related Deaths</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="AIDS-Related Deaths"></iframe>
             </div>
-            <div style="max-height: 340px; overflow-y: auto;">
+            <div style="overflow: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">Treatment Cascade 95-95-95</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
@@ -5977,18 +5977,24 @@
 
     // Click-to-expand: clicking any chart opens it full-screen in a new tab
     document.addEventListener('click', function(e) {
-      // Skip if clicking on chart toolbar, axis, buttons etc.
       var tag = e.target.tagName;
       if (tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'INPUT' || tag === 'OPTION') return;
-      if (e.target.closest && (e.target.closest('.card-header') || e.target.closest('.figure-actions') || e.target.closest('a'))) return;
       
-      var target = e.target;
-      while (target && target !== document.body) {
-        if (target.classList && (target.classList.contains('chart-host') || target.classList.contains('publication-figure'))) {
-          expandChart(target);
-          return;
-        }
-        target = target.parentElement;
+      // Use closest() to properly traverse SVG/HTML DOM
+      if (e.target.closest) {
+        var header = e.target.closest('.card-header');
+        var actions = e.target.closest('.figure-actions');
+        if (header || actions) return;
+      }
+      
+      var el = e.target.closest ? e.target.closest('.chart-host, .publication-figure') : null;
+      if (el) {
+        expandChart(el);
+        return;
+      }
+      // Also check iframe click
+      if (e.target.tagName === 'IFRAME') {
+        window.open(e.target.src, '_blank', 'width=1200,height=800');
       }
     });
 
