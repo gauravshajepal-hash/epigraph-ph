@@ -5,6 +5,7 @@
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-deployed-009ADE?style=flat-square)](https://gauravshajepal-hash.github.io/epigraph-ph/)
 [![UNAIDS Data](https://img.shields.io/badge/UNAIDS%20Data-2025-0077B6?style=flat-square)](https://aidsinfo.unaids.org/)
 [![License](https://img.shields.io/badge/license-MIT-27ae60?style=flat-square)](LICENSE)
+[![Charts](https://img.shields.io/badge/charts-18%2B%20ECharts%20%2B%20Plotly-E67E22?style=flat-square)](https://gauravshajepal-hash.github.io/epigraph-ph/)
 
 **EpiGraph PH** is an interactive, publication‑grade surveillance dashboard for the Philippines HIV epidemic. It integrates **DOH/HARP regional surveillance data** with **UNAIDS national estimates** to surface sub‑national inequalities, programmatic drift, and long‑run epidemiological burden.
 
@@ -14,16 +15,16 @@
 
 ### 1. Overview
 
-The landing view summarizing national performance, regional inequality, and historical context.
+The landing view summarizing national performance, regional inequality, and historical context — all charts powered by **UNAIDS 1990–2024 estimates**.
 
 | Card | Description |
 |------|-------------|
 | **National Cascade** | Year‑end target board (Diagnosis → Treatment → Suppression) using DOH/HARP 2018–2025 |
 | **Regional Inequality** | Cross‑sectional regional stage matrix sorted by distance to 95‑95‑95 targets |
 | **Anomalies** | Performance versus burden quadrant — gap between observed suppression and model expectation |
-| **Historical View** | UNAIDS national estimates 1990–2024: PLHIV, New Infections, AIDS Deaths, Cumulative Cases in a 2×2 subplot grid |
-| **Key Populations** | Mixed UNAIDS KP Atlas + DOH data: MSM, Sex Workers, Transgender Women, PWID, OFW Burden, Youth Share — 3×2 grid with area charts |
-| **PMTCT** | Decomposed cascade: Women Needing ARV + Coverage % (dual‑axis area) and MTCT Rate trend |
+| **Historical View** | UNAIDS national estimates 1990–2024: PLHIV, New Infections, AIDS Deaths, Cumulative Cases in a 2×2 Plotly subplot grid — *UNAIDS data replaces DOH data as primary source* |
+| **Key Populations** | Mixed UNAIDS KP Atlas + DOH: MSM, Sex Workers, Transgender Women, PWID, OFW Burden, Youth Share in a 3×2 area-chart grid |
+| **PMTCT** | Decomposed cascade: Women Needing ARV (area) + Coverage % (area line, dual‑axis) and MTCT Rate (area line) — *"Received ARV" excluded due to incomplete program data* |
 
 ### 2. Explorer
 
@@ -51,14 +52,14 @@ Forward‑looking projections and strategic simulations.
 
 ### 4. UNAIDS Compass
 
-Curated UNAIDS reference data — epidemic metrics, prevention, and finance.
+Curated UNAIDS reference data — epidemic metrics, prevention, and finance. *Formerly "UNAIDS Data" — renamed to reflect expanded scope.*
 
 | Card | Content |
 |------|---------|
 | **Key Indicators** | Link to full Philippines factsheet on AIDSINFO portal |
-| **Epidemic Overview** | 2×2 grid of interactive AIDSINFO iframes: PLHIV, New HIV Infections, AIDS‑Related Deaths, Treatment Cascade 95‑95‑95 |
-| **Prevention** | Condom distribution (annual total) and PrEP coverage — side‑by‑side line charts |
-| **Finance** | HIV expenditure by source: Total, Domestic Public, International, Global Fund — 4 mini area‑line charts showing US$ trends over time |
+| **Epidemic Overview** | 2×2 grid of interactive AIDSINFO iframes: PLHIV, New HIV Infections, AIDS‑Related Deaths, Treatment Cascade 95‑95‑95 — each with `↗ Open Full Chart` link and horizontal scroll for full x‑axis visibility |
+| **Prevention** | Condom distribution (annual total) and PrEP coverage — side‑by‑side col‑span‑6 line charts |
+| **Finance** | HIV expenditure by source: Total, Domestic Public, International, Global Fund — 4 mini area‑line charts in one card showing US$ trends over time |
 | **Attribution** | Data source citation, UNAIDS AIDSINFO portal links, and usage notes |
 
 ### 5. Methods & Sources
@@ -71,6 +72,20 @@ Full analytical infrastructure documentation.
 | **Reference Catalog** | 42+ source documents with direct PDF links |
 | **Source Inventory** | Comprehensive table of all data sources, URLs, and metadata |
 | **Cross‑Referencing** | Links to UNAIDS Compass tab for official national estimates |
+
+---
+
+## 🖱️ Click-to-Expand
+
+**Every chart in the dashboard is click‑to‑expand.** Click anywhere on any chart (ECharts, Plotly, or iframe) to open it full‑screen in a new tab at **1100×700px** — ideal for screenshots, presentations, and detailed inspection.
+
+| Chart Type | Expand Behavior |
+|-----------|----------------|
+| **ECharts** (`.chart-host`) | Cloned with full option set — interactive at full size |
+| **Plotly** (`.publication-figure`) | Data + layout extracted and re‑rendered at 700px height, responsive |
+| **AIDSINFO iframes** | Opens the full AIDSINFO portal page in a new tab |
+
+Hover any chart to see a subtle ↗ indicator in the top‑right corner.
 
 ---
 
@@ -105,14 +120,20 @@ epigraph-ph/
 ### Rendering Pipeline
 
 ```
-UNAIDS_CHARTS (inline JSON, 18 charts)
+UNAIDS_CHARTS (inline JSON, 18 ECharts configs)
     │
     ├──→ ECharts mountUnaidsCharts()
     │       ├── Overview: overview-pmtct-need, overview-pmtct-rate
-    │       └── Compass: unaids-condoms, unaids-prep, unaids-expenditure-*
+    │       └── UNAIDS Compass: unaids-condoms, unaids-prep, unaids-expenditure-*
     │
-    └──→ Plotly buildUnaidsHistoricalOption()
-            └── Overview: publication-historical-board (2×2 subplot)
+    ├──→ Plotly buildUnaidsHistoricalOption()
+    │       └── Overview: publication-historical-board (2×2 subplot, 1990–2024)
+    │
+    ├──→ Plotly buildCombinedKPOption()
+    │       └── Overview: publication-key-populations (3×2 area grid, UNAIDS + DOH)
+    │
+    └──→ AIDSINFO iframes
+            └── UNAIDS Compass: 4 embedded iframes (2×2 grid, 720px width, horizontal scroll)
 ```
 
 ---
@@ -121,21 +142,23 @@ UNAIDS_CHARTS (inline JSON, 18 charts)
 
 Eighteen interactive ECharts and Plotly figures sourced from UNAIDS AIDSINFO 2025 datasets:
 
-| # | Chart | Data Source | Rendering |
-|---|-------|------------|-----------|
-| 01 | Epidemic Curve (PLHIV, New Infections, Deaths) | Estimates 2025 | Plotly 2×2 |
-| 02 | 95‑95‑95 Treatment Cascade | Estimates 2025 | ECharts |
-| 03 | New Infections vs AIDS Deaths | Estimates 2025 | ECharts |
-| 04 | Key Population Size Estimates | KP Atlas 2025 | Plotly 3×2 |
-| 05 | KP HIV Prevalence | KP Atlas 2025 | ECharts |
-| 06 | KP ART Coverage | KP Atlas 2025 | ECharts |
-| 07 | PMTCT Cascade (Need ARV + Coverage + MTCT Rate) | Estimates 2025 | ECharts |
-| 08 | Deaths Averted by ART | Estimates 2025 | ECharts |
-| 09 | Epidemic Transition Points | Estimates 2025 | ECharts |
-| 10 | Condom Distribution | GAM 2025 | ECharts |
-| 11 | PrEP Coverage | GAM 2025 | ECharts |
-| 12 | Expenditure by Source (×4) | GAM 2025 | ECharts |
-| 13 | Policy & Legal Scorecard | NCPI 2025 | ECharts |
+| # | Chart | Data Source | Rendering | Tab |
+|---|-------|------------|-----------|-----|
+| 01 | Epidemic Curve (PLHIV, New Infections, Deaths) | Estimates 2025 | Plotly 2×2 | Overview |
+| 02 | 95‑95‑95 Treatment Cascade | Estimates 2025 | ECharts | Compass (iframe) |
+| 03 | New Infections vs AIDS Deaths | Estimates 2025 | ECharts | Overview |
+| 04 | Key Population Size Estimates | KP Atlas 2025 | Plotly 3×2 | Overview |
+| 05 | KP HIV Prevalence | KP Atlas 2025 | ECharts | — |
+| 06 | KP ART Coverage | KP Atlas 2025 | ECharts | — |
+| 07 | PMTCT Cascade (Need ARV + Coverage + MTCT Rate) | Estimates 2025 | ECharts dual | Overview |
+| 08 | Deaths Averted by ART | Estimates 2025 | ECharts | — |
+| 09 | Epidemic Transition Points | Estimates 2025 | ECharts | — |
+| 10 | Condom Distribution | GAM 2025 | ECharts line | Compass |
+| 11 | PrEP Coverage | GAM 2025 | ECharts line | Compass |
+| 12a-d | Expenditure by Source (Total, Domestic Public, International, Global Fund) | GAM 2025 | ECharts area ×4 | Compass |
+| 13 | Policy & Legal Scorecard | NCPI 2025 | ECharts | — |
+
+> Charts marked `—` are available in the `UNAIDS_CHARTS` inline data but not currently displayed in a tab.
 
 ---
 
@@ -161,6 +184,7 @@ All UNAIDS data is presented with attribution as intellectual property of the Jo
 - **Publication‑grade** figure styling with consistent color palettes per metric
 - **Responsive grid** (12‑column CSS Grid) adapting from desktop to mobile
 - **Fade‑in animations** and hover transitions for polished UX
+- **Click‑to‑expand** on all charts — open any visualization full‑screen in a new tab
 
 ---
 
@@ -198,11 +222,12 @@ open http://localhost:8088/index.html
 
 ## 📝 Notes
 
-- **UNAIDS Compass** (formerly "UNAIDS Data") was renamed to reflect its expanded scope: epidemic metrics + prevention + finance
+- **UNAIDS Compass** (formerly "UNAIDS Data" → "Prevention & Finance") was renamed to reflect its expanded scope: epidemic metrics + prevention + finance in one tab
 - The **Historical View** and **Key Populations** cards in the Overview now prioritize UNAIDS national estimates over DOH data, with DOH panels retained where available
-- PMTCT "Received ARV" program data was excluded due to incomplete facility‑level reporting (12–116 reported vs 375–734 estimated need)
+- PMTCT **"Received ARV"** program data was excluded due to incomplete facility‑level reporting (12–116 reported recipients vs 375–734 estimated need)
 - All expenditure values are in **US Dollars (US$)** as reported to UNAIDS GAM
 - The 18 inline ECharts/Plotly configurations are embedded as `const UNAIDS_CHARTS` in the single‑page HTML — no external chart data fetches required
+- **Epidemic Overview** iframes render at 720px fixed width with horizontal scroll on each wrapper to accommodate full x‑axis through 2024
 
 ---
 
