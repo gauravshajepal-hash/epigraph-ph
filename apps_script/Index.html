@@ -2025,9 +2025,6 @@
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="Treatment Cascade"></iframe>
             </div>
           </div>
-              <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="Treatment Cascade"></iframe>
-            </div>
-          </div>
         </article>
 
         <!-- Prevention &amp; Finance: Condom + PrEP side by side -->
@@ -5980,17 +5977,15 @@
 
     // Click-to-expand: clicking any chart opens it full-screen in a new tab
     document.addEventListener('click', function(e) {
+      // Skip if clicking on chart toolbar, axis, buttons etc.
+      var tag = e.target.tagName;
+      if (tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'INPUT' || tag === 'OPTION') return;
+      if (e.target.closest && (e.target.closest('.card-header') || e.target.closest('.figure-actions') || e.target.closest('a'))) return;
+      
       var target = e.target;
-      // Walk up to find chart-host, publication-figure, or iframe
       while (target && target !== document.body) {
         if (target.classList && (target.classList.contains('chart-host') || target.classList.contains('publication-figure'))) {
-          e.preventDefault();
           expandChart(target);
-          return;
-        }
-        if (target.tagName === 'IFRAME') {
-          e.preventDefault();
-          window.open(target.src, '_blank', 'width=1200,height=800');
           return;
         }
         target = target.parentElement;
