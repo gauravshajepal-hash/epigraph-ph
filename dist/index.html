@@ -222,7 +222,22 @@
       background: #ffffff;
       border: 1px solid rgba(0,0,0,0.06);
       overflow: hidden;
+      cursor: pointer;
+      position: relative;
     }
+    .chart-host:hover { border-color: rgba(0,154,222,0.3); box-shadow: 0 0 0 2px rgba(0,154,222,0.08); }
+    .chart-host::after {
+      content: "↗";
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.85rem;
+      color: rgba(0,0,0,0.2);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 200ms;
+    }
+    .chart-host:hover::after { opacity: 1; }
     .chart-host.spark {
       height: 48px;
       margin-top: 10px;
@@ -306,7 +321,9 @@
       border: 1px solid var(--panel-border);
       background: #ffffff;
       overflow: hidden;
+      cursor: pointer;
     }
+    .publication-figure:hover { border-color: rgba(0,154,222,0.3); box-shadow: 0 0 0 2px rgba(0,154,222,0.08); }
     .publication-figure svg:not(.main-svg) {
       display: block;
       width: 100%;
@@ -1979,28 +1996,28 @@
           </div>
           <p class="mini-note">Four key metrics from the UNAIDS national estimates, embedded as interactive charts from the AIDSINFO portal. Use the toolbar on each chart to download or zoom. Source: UNAIDS Estimates 2025.</p>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-            <div>
+            <div style="max-height: 340px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">People Living with HIV</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=558156c6828b98603f4f12ad&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="People Living with HIV"></iframe>
             </div>
-            <div>
+            <div style="max-height: 340px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">New HIV Infections</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815981b9568074415370af&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="New HIV Infections"></iframe>
             </div>
-            <div>
+            <div style="max-height: 340px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">AIDS-Related Deaths</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
               </div>
               <iframe src="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=55815a8db9568074415370b4&gr=PHL&lt=gmin" style="width:100%;height:280px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;" loading="lazy" title="AIDS-Related Deaths"></iframe>
             </div>
-            <div>
+            <div style="max-height: 340px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div class="eyebrow" style="font-size: 0.6rem;">Treatment Cascade 95-95-95</div>
                 <a class="action-link" style="font-size: 0.65rem; padding: 2px 8px;" href="https://aidsinfo.unaids.org?did=5581277ae9beccab3bd5a44e&r=world&t=2015&tb=g&bt=gnli&ts=0,0&gid=5971f5bb5207baf123d5f2b3&gr=PHL&lt=gmin" target="_blank" rel="noopener">↗ Open Full Chart</a>
@@ -5959,6 +5976,62 @@
       document.getElementById("methods-section").innerHTML = "";
       const experimental = document.getElementById("experimental-section");
       if (experimental) experimental.innerHTML = "";
+    }
+
+    // Click-to-expand: clicking any chart opens it full-screen in a new tab
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      // Walk up to find chart-host, publication-figure, or iframe
+      while (target && target !== document.body) {
+        if (target.classList && (target.classList.contains('chart-host') || target.classList.contains('publication-figure'))) {
+          e.preventDefault();
+          expandChart(target);
+          return;
+        }
+        if (target.tagName === 'IFRAME') {
+          e.preventDefault();
+          window.open(target.src, '_blank', 'width=1200,height=800');
+          return;
+        }
+        target = target.parentElement;
+      }
+    });
+
+    function expandChart(container) {
+      // Try ECharts first
+      if (window.echarts) {
+        var ec = echarts.getInstanceByDom(container);
+        if (ec) {
+          var opt = ec.getOption();
+          var w = window.open('', '_blank', 'width=1200,height=900');
+          w.document.write('<!DOCTYPE html><html><head><meta charset=UTF-8><title>EpiGraph PH - Expanded Chart</title><script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"><\/script><style>body{margin:40px;background:#f5f7fa;display:flex;justify-content:center;align-items:flex-start;min-height:90vh}#chart{width:100%;max-width:1100px;height:700px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,0.06)}<\/style></head><body><div id="chart"></div><script>var c=echarts.init(document.getElementById("chart"),null,{renderer:"svg"});c.setOption(' + JSON.stringify(opt) + ');window.addEventListener("resize",function(){c.resize();});<\/script></body></html>');
+          w.document.close();
+          return;
+        }
+      }
+      // Try Plotly
+      if (window.Plotly) {
+        var plotGraphs = container.querySelectorAll('.js-plotly-plot, .plotly, svg.main-svg');
+        if (plotGraphs.length > 0) {
+          var title = container.querySelector('h3, .shell-headline') ? container.querySelector('h3, .shell-headline').textContent : 'EpiGraph PH';
+          container.querySelectorAll('.js-plotly-plot').forEach(function(g) {
+            try {
+              var gd = g.querySelector ? g : document.getElementById(g.id || '');
+              if (gd && gd._fullLayout) {
+                var w = window.open('', '_blank', 'width=1200,height=900');
+                w.document.write('<!DOCTYPE html><html><head><meta charset=UTF-8><title>EpiGraph PH - Expanded Chart</title><script src="https://cdn.plot.ly/plotly-2.35.2.min.js"><\/script><style>body{margin:40px;background:#f5f7fa;display:flex;justify-content:center;align-items:flex-start;min-height:90vh}#chart{width:100%;max-width:1100px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,0.06);overflow:hidden}<\/style></head><body><div id="chart"></div><script>var d=' + JSON.stringify(gd.data) + ';var l=' + JSON.stringify(gd.layout) + ';l.width=null;l.height=700;Plotly.newPlot("chart",d,l,{responsive:true});<\/script></body></html>');
+                w.document.close();
+              }
+            } catch(e) {}
+          });
+          return;
+        }
+      }
+      // Fallback: open iframe if present
+      var iframe = container.querySelector('iframe');
+      if (iframe) {
+        window.open(iframe.src, '_blank', 'width=1200,height=800');
+      }
     }
 
     function setStatus(message, isError) {
