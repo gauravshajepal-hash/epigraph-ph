@@ -1780,14 +1780,14 @@
               <h3>Regional stage matrix</h3>
               <p class="analytic-subtitle">Each cell shows diagnosis/ART/suppression coverage for one region. Darker = further from 95% target. Rows sorted from closest to furthest from target.</p>
               <div class="chart-host tall" id="regional-year-chart"></div>
-              <div class="atlas-note" id="regional-year-note"></div>
+              <div class="atlas-note" id="regional-year-note">Hover cells to see exact coverage. Darker colors mean further from 95%.</div>
             </div>
             <div class="atlas-card">
               <h3>Selected region fingerprint</h3>
               <p class="analytic-subtitle">Shows how one region's cascade stage coverage has changed year-over-year. Concentric rings mark distance from the 95% target.</p>
               <div class="fingerprint-summary" id="regional-history-kpis"></div>
               <div class="chart-host fingerprint" id="regional-history-chart"></div>
-              <div class="atlas-note" id="regional-history-note"></div>
+              <div class="atlas-note" id="regional-history-note">Each axis = one cascade stage. Rings = distance to 95%. Closer to center = closer to target.</div>
             </div>
 
             <!-- Row 2: Anomalies & Rankings -->
@@ -1803,13 +1803,13 @@
               </div>
               <div class="summary-stack" id="anomaly-summary" style="margin: 12px 0 20px 0; font-size: 0.75rem;"></div>
               <div class="chart-host scatter" id="anomaly-quadrant-chart" style="height: 650px;"></div>
-              <div class="atlas-note" id="anomaly-quadrant-note"></div>
+              <div class="atlas-note" id="anomaly-quadrant-note">Height of bar = how much a region beats or misses expectation. Bubble size = people lost from treatment.</div>
             </div>
             <div class="atlas-card">
               <h3>Regional rank delta</h3>
               <p class="analytic-subtitle">Compact before-vs-after ranking on selected stage.</p>
               <div class="chart-host rank-compact" id="regional-rank-chart"></div>
-              <div class="atlas-note" id="regional-rank-note"></div>
+              <div class="atlas-note" id="regional-rank-note">Shows which regions moved up or down the ranking for the selected stage between years.</div>
             </div>
           </div>
         </article>
@@ -7471,6 +7471,7 @@
     }
 
     function buildImpactBridgeOption(residualRows, leakageRows, year) {
+      // ── Step 1: pick one residual per region (worst = largest |residual|) ──
       const strongestResidualByRegion = new Map();
       (residualRows || []).forEach(row => {
         const existing = strongestResidualByRegion.get(row.region);
@@ -7479,16 +7480,65 @@
         }
       });
 
+      // ── Step 2: merge with leakage data ──
       const leakageByRegion = new Map((leakageRows || []).map(row => [row.region, row]));
+
+      // Pre-compute median residual to classify tiers
+      const allResiduals = Array.from(strongestResidualByRegion.values()).map(r => Number(r.value || 0));
+      const sortedRes = [...allResiduals].sort((a, b) => a - b);
+      const medianRes = sortedRes.length % 2 === 0
+        ? (sortedRes[sortedRes.length / 2 - 1] + sortedRes[sortedRes.length / 2]) / 2
+        : sortedRes[Math.floor(sortedRes.length / 2)];
+
       const merged = Array.from(leakageByRegion.values()).map(leakage => {
         const residual = strongestResidualByRegion.get(leakage.region) || { value: 0, expected: 0, observed: 0, stage: 'suppression' };
-        
         const burden = Number(leakage.ltfu || 0) + Number(leakage.not_on_treatment || 0);
         const alive = Number(leakage.alive || 0);
         const denom = alive + burden;
         const leakageRate = denom > 0 ? (burden / denom) * 100 : 0;
         const resValue = Number(residual.value || 0);
-        
+
+        // ── Step 3: composite alert tier ──
+        // burdenTier: 0 = small (<25th pct), 1 = medium, 2 = large (>75th pct)
+        const allBurden = Array.from(leakageByRegion.values()).map(l => Number(l.ltfu || 0) + Number(l.not_on_treatment || 0));
+        const sortedBur = [...allBurden].sort((a, b) => a - b);
+        const p25 = sortedBur[Math.floor(sortedBur.length * 0.25)];
+        const p75 = sortedBur[Math.floor(sortedBur.length * 0.75)];
+
+        let burdenTier = 0;
+        if (burden > p75) burdenTier = 2;
+        else if (burden > p25) burdenTier = 1;
+
+        let resTier = 0;
+        if (resValue < 0) {
+          if (resValue < medianRes - 5) resTier = 2;   // strong deficit
+          else resTier = 1;                             // mild deficit
+        } else {
+          if (resValue < 3) resTier = 1;               // marginal frontier
+          else resTier = 2;                              // strong frontier
+        }
+
+        // composite tier for color
+        let compositeTier = 0; // 0=ok, 1=watch, 2=alert
+        if (resValue < 0) {
+          compositeTier = burdenTier >= 1 ? 2 : 1; // big leakage + deficit = alert
+        } else {
+          compositeTier = resValue < 3 && burdenTier >= 2 ? 1 : (resValue >= 5 && burdenTier >= 1 ? 2 : 0);
+        }
+
+        // Color by COMPOSITE tier, not just sign of residual
+        // 2 = dark red (ALERT: high burden + deficit OR high burden + marginal frontier)
+        // 1 = amber (WATCH: moderate concern)
+        // 0 = normal green/gray
+        const colorMap = [
+          "#546E7A",  // 0 = no alert (neutral gray — true frontier but low burden)
+          "#E67E22",  // 1 = watch (amber — moderate concern)
+          "#C62828",  // 2 = alert (dark red — high concern)
+        ];
+
+        // Bar color still shows residual direction
+        const barColor = resValue >= 0 ? "#00897B" : "#C62828";
+
         return {
           rawRegion: leakage.region,
           region: formatRegionLabel(leakage.region),
@@ -7496,122 +7546,110 @@
           residual: resValue,
           burden,
           leakageRate,
-          impactScore: burden, // Sort strictly by burden for ranking
-          color: resValue >= 0 ? "#00897B" : "#C62828",
+          impactScore: burden,
+          compositeTier,
+          barColor,
+          color: colorMap[compositeTier],
           expected: Number(residual.expected || 0),
           observed: Number(residual.observed || 0),
         };
       }).filter(Boolean).sort((a, b) => b.impactScore - a.impactScore);
 
-      const top12 = merged.slice().reverse(); // Reverse for bottom-to-top Plotly y-axis
-      
+      const top12 = merged.slice().reverse();
+
       const traces = [];
-      
-      // 1. Horizontal baseline at 0
+
+      // 1. Baseline
       traces.push({
-        x: [-0.5, top12.length - 0.5],
-        y: [0, 0],
-        mode: "lines",
-        line: { color: "rgba(255,255,255,0.15)", width: 1, dash: "dot" },
-        showlegend: false,
-        hoverinfo: "skip"
+        x: [-0.5, top12.length - 0.5], y: [0, 0],
+        mode: "lines", line: { color: "rgba(255,255,255,0.15)", width: 1, dash: "dot" },
+        showlegend: false, hoverinfo: "skip"
       });
 
-      // 2. The Bridges (Vertical lines)
+      // 2. Bridges (bars)
       top12.forEach((row, i) => {
         traces.push({
-          x: [i, i],
-          y: [0, row.residual],
-          mode: "lines",
-          line: { color: row.color, width: 2 },
-          hoverinfo: "skip",
-          showlegend: false
+          x: [i, i], y: [0, row.residual],
+          mode: "lines", line: { color: row.barColor, width: 2.5 },
+          hoverinfo: "skip", showlegend: false
         });
       });
 
-      // 3. The Impact Markers (Bubbles)
+      // 3. Bubbles with composite color
       const maxBurden = Math.max(...top12.map(r => r.burden), 1);
       const sizeref = (2.0 * maxBurden) / (26 ** 2);
-      
+
       const minRes = Math.min(...top12.map(r => r.residual));
       const maxRes = Math.max(...top12.map(r => r.residual));
-      const yRangeMin = minRes - 8;
-      const yRangeMax = maxRes + 8;
+      const yRangeMin = Math.min(minRes - 8, -15);
+      const yRangeMax = Math.max(maxRes + 8, 15);
 
+      const tierLabel = ["OK", "WATCH", "ALERT"];
       traces.push({
-          x: top12.map((_, i) => i),
-          y: top12.map(row => row.residual),
-          mode: "markers",
-          cliponaxis: false,
-          marker: {
-            size: top12.map(row => row.burden),
-            sizemode: "area",
-            sizeref: sizeref,
-            sizemin: 4,
-            color: top12.map(row => row.color),
-            line: { color: "rgba(16, 29, 51, 0.8)", width: 1.5 },
-            opacity: 1.0
-          },
-          customdata: top12.map(row => [
-            row.region, 
-            row.stage, 
-            row.observed.toFixed(1) + "%", 
-            row.expected.toFixed(1) + "%",
-            row.burden.toLocaleString()
-          ]),
-          hovertemplate: 
-            "<b>%{customdata[0]}</b><br>" +
-            "Stage: %{customdata[1]}<br>" +
-            "Gap: <b>%{y:+.1f} pts</b><br>" +
-            "Observed/Expected: %{customdata[2]} / %{customdata[3]}<br>" +
-            "Impact Burden: <b>%{customdata[4]}</b><extra></extra>"
+        x: top12.map((_, i) => i),
+        y: top12.map(row => row.residual),
+        mode: "markers", cliponaxis: false,
+        marker: {
+          size: top12.map(row => row.burden),
+          sizemode: "area", sizeref: sizeref, sizemin: 5,
+          color: top12.map(row => row.color),
+          line: { color: "rgba(16,29,51,0.8)", width: 1.5 },
+          opacity: 1.0
+        },
+        customdata: top12.map(row => [
+          row.region, row.stage,
+          row.observed.toFixed(1) + "%", row.expected.toFixed(1) + "%",
+          row.burden.toLocaleString(),
+          tierLabel[row.compositeTier],
+          row.barColor === "#C62828" ? "below expected" : "at/above expected"
+        ]),
+        hovertemplate:
+          "<b>%{customdata[0]}</b><br>" +
+          "Status: <b>%{customdata[5]}</b><br>" +
+          "Stage: %{customdata[1]}<br>" +
+          "Performance: %{customdata[6]}<br>" +
+          "Gap: <b>%{y:+.1f} pts</b><br>" +
+          "Obs/Exp: %{customdata[2]} / %{customdata[3]}<br>" +
+          "Off-ART: <b>%{customdata[4]}</b><extra></extra>"
       });
+
+      // Y-axis reference lines at ±5 (weak/strong frontier threshold)
+      const shapes = [
+        {
+          type: "line", xref: "paper", yref: "y",
+          x0: 0, x1: 1, y0: -5, y1: -5,
+          line: { color: "rgba(192,192,192,0.3)", width: 1, dash: "dash" }
+        },
+        {
+          type: "line", xref: "paper", yref: "y",
+          x0: 0, x1: 1, y0: 3, y1: 3,
+          line: { color: "rgba(192,192,192,0.3)", width: 1, dash: "dash" }
+        }
+      ];
 
       return {
         data: traces,
         layout: {
           margin: { t: 60, r: 15, b: 90, l: 65 },
           xaxis: {
-            showgrid: false,
-            zeroline: false,
-            showticklabels: true,
+            showgrid: false, zeroline: false, showticklabels: true,
             tickvals: top12.map((_, i) => i),
             ticktext: top12.map(row => row.region),
-            tickangle: -45,
-            tickfont: { color: "#546E7A", size: 10 },
-            fixedrange: true,
-            range: [-0.6, top12.length - 0.4]
+            tickangle: -45, tickfont: { color: "#546E7A", size: 10 },
+            fixedrange: true, range: [-0.6, top12.length - 0.4]
           },
           yaxis: {
-            title: { text: "Performance Gap (Points vs Expected)", font: { size: 10, color: "#546E7A" } },
-            gridcolor: "rgba(0,0,0,0.03)",
-            zeroline: false,
+            title: { text: "Performance Gap (pts vs expected)", font: { size: 10, color: "#546E7A" } },
+            gridcolor: "rgba(0,0,0,0.03)", zeroline: false,
             tickfont: { color: "#546E7A", size: 10 },
-            fixedrange: true,
-            range: [yRangeMin, yRangeMax]
+            fixedrange: true, range: [yRangeMin, yRangeMax]
           },
-          paper_bgcolor: "transparent",
-          plot_bgcolor: "transparent",
-          showlegend: false,
-          shapes: [
-            {
-              type: "rect",
-              xref: "paper", yref: "y",
-              x0: 0, x1: 1, y0: yRangeMin, y1: 0,
-              fillcolor: "rgba(255,92,92,0.02)", line: { width: 0 },
-              layer: "below"
-            },
-            {
-              type: "rect",
-              xref: "paper", yref: "y",
-              x0: 0, x1: 1, y0: 0, y1: yRangeMax,
-              fillcolor: "rgba(0,212,170,0.02)", line: { width: 0 },
-              layer: "below"
-            }
-          ],
+          paper_bgcolor: "transparent", plot_bgcolor: "transparent", showlegend: false,
+          shapes,
           annotations: [
-             { x: 0.02, y: 0.01, xref: "paper", yref: "paper", xanchor: "left", text: "EFFICIENCY DEFICIT", showarrow: false, font: { size: 9, color: "#C62828", weight: "bold" }, opacity: 0.5 },
-             { x: 0.02, y: 0.99, xref: "paper", yref: "paper", xanchor: "left", text: "STRATEGIC FRONTIER", showarrow: false, font: { size: 9, color: "#00897B", weight: "bold" }, opacity: 0.5 }
+            { x: 0.02, y: 0.01, xref: "paper", yref: "paper", xanchor: "left", text: "DEFICIT ▼", showarrow: false, font: { size: 9, color: "#C62828", weight: "bold" }, opacity: 0.6 },
+            { x: 0.02, y: 0.99, xref: "paper", yref: "paper", xanchor: "left", text: "FRONTIER ▲", showarrow: false, font: { size: 9, color: "#00897B", weight: "bold" }, opacity: 0.6 },
+            { x: 0.78, y: 0.01, xref: "paper", yref: "paper", xanchor: "left", text: "— marginal frontier (<3 pts)", showarrow: false, font: { size: 8, color: "#C0392B", weight: "normal" }, opacity: 0.5 },
           ]
         }
       };

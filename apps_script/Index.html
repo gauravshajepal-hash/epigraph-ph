@@ -1780,36 +1780,37 @@
               <h3>Regional stage matrix</h3>
               <p class="analytic-subtitle">Each cell shows diagnosis/ART/suppression coverage for one region. Darker = further from 95% target. Rows sorted from closest to furthest from target.</p>
               <div class="chart-host tall" id="regional-year-chart"></div>
-              <div class="atlas-note" id="regional-year-note"></div>
+              <div class="atlas-note" id="regional-year-note">Hover cells to see exact coverage. Darker colors mean further from 95%.</div>
             </div>
             <div class="atlas-card">
               <h3>Selected region fingerprint</h3>
               <p class="analytic-subtitle">Shows how one region's cascade stage coverage has changed year-over-year. Concentric rings mark distance from the 95% target.</p>
               <div class="fingerprint-summary" id="regional-history-kpis"></div>
               <div class="chart-host fingerprint" id="regional-history-chart"></div>
-              <div class="atlas-note" id="regional-history-note"></div>
+              <div class="atlas-note" id="regional-history-note">Each axis = one cascade stage. Rings = distance to 95%. Closer to center = closer to target.</div>
             </div>
 
             <!-- Row 2: Anomalies & Rankings -->
             <div class="atlas-card">
               <div style="margin-bottom: 4px;">
                 <h3>Impact Bridge Matrix</h3>
-                <p class="analytic-subtitle">Vertical bars show whether a region beats or misses the expected suppression rate given its diagnosis coverage. Bubble size = total patients no longer on ART.</p>
+                <p class="analytic-subtitle">Bubble color = composite alert level (ALERT/WATCH/OK). Bar height = performance gap vs expected. Bubble size = patients no longer on ART.</p>
               </div>
               <div class="chart-guide" style="margin-bottom:8px">
-                <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>Bubble = patients off ART (burden)</span>
-                <span class="guide-badge"><span class="guide-dot" style="background:#C62828"></span>▼ bar = below expected (deficit)</span>
-                <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>▲ bar = above expected (frontier)</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#C62828"></span>● ALERT = high off-ART + bad gap</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#E67E22"></span>● WATCH = moderate concern</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#546E7A"></span>● OK = low burden or strong frontier</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>Bar = performance gap (▼ deficit / ▲ frontier)</span>
               </div>
               <div class="summary-stack" id="anomaly-summary" style="margin: 12px 0 20px 0; font-size: 0.75rem;"></div>
               <div class="chart-host scatter" id="anomaly-quadrant-chart" style="height: 650px;"></div>
-              <div class="atlas-note" id="anomaly-quadrant-note"></div>
+              <div class="atlas-note" id="anomaly-quadrant-note">Height of bar = how much a region beats or misses expectation. Bubble size = people lost from treatment.</div>
             </div>
             <div class="atlas-card">
               <h3>Regional rank delta</h3>
               <p class="analytic-subtitle">Compact before-vs-after ranking on selected stage.</p>
               <div class="chart-host rank-compact" id="regional-rank-chart"></div>
-              <div class="atlas-note" id="regional-rank-note"></div>
+              <div class="atlas-note" id="regional-rank-note">Shows which regions moved up or down the ranking for the selected stage between years.</div>
             </div>
           </div>
         </article>
