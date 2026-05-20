@@ -1696,7 +1696,7 @@
             </div>
             <span class="pill" id="historical-atlas-pill">Loading</span>
           </div>
-          <p class="publication-shell-note">Decomposed UNAIDS national estimates (1990–2024): PLHIV prevalence, new infections, AIDS-related deaths. Each panel shows one component of the epidemic curve. Source: UNAIDS Estimates 2025.</p>
+          <p class="publication-shell-note">Decomposed UNAIDS national estimates (1990–2024): PLHIV prevalence, new infections, AIDS-related deaths, and cumulative cases. Hover each panel to inspect values. Source: UNAIDS Estimates 2025.</p>
           <div class="figure-actions" id="publication-historical-board-actions"></div>
           <div class="publication-figure" id="publication-historical-board"></div>
           <div class="atlas-note" id="publication-historical-board-note"></div>
@@ -1710,7 +1710,7 @@
             </div>
             <span class="pill" id="population-outcomes-pill">Loading</span>
           </div>
-          <p class="publication-shell-note">UNAIDS Key Populations Atlas estimates for the Philippines: men who have sex with men (MSM), transgender women (TGW), sex workers (SW), and people who inject drugs (PWID). Source: UNAIDS Key Populations Atlas 2025.</p>
+          <p class="publication-shell-note">Top 4 panels: UNAIDS population size estimates (MSM, TGW, sex workers, PWID). Bottom 2 panels: DOH-reported OFW cumulative burden and youth share of all cases. Source: UNAIDS KP Atlas 2025 + DOH HASP.</p>
           <div class="figure-actions" id="publication-key-populations-actions"></div>
           <div class="publication-figure" id="publication-key-populations"></div>
           <div class="atlas-note" id="publication-key-populations-note"></div>
@@ -1778,13 +1778,13 @@
             <!-- Row 1: Distribution & Fingerprint -->
             <div class="atlas-card">
               <h3>Regional stage matrix</h3>
-              <p class="analytic-subtitle">Sorted by distance to target. Column colors match cascade stages.</p>
+              <p class="analytic-subtitle">Each cell shows diagnosis/ART/suppression coverage for one region. Darker = further from 95% target. Rows sorted from closest to furthest from target.</p>
               <div class="chart-host tall" id="regional-year-chart"></div>
               <div class="atlas-note" id="regional-year-note"></div>
             </div>
             <div class="atlas-card">
               <h3>Selected region fingerprint</h3>
-              <p class="analytic-subtitle">Current vs target [95-95-95] with YoY movement.</p>
+              <p class="analytic-subtitle">Shows how one region's cascade stage coverage has changed year-over-year. Concentric rings mark distance from the 95% target.</p>
               <div class="fingerprint-summary" id="regional-history-kpis"></div>
               <div class="chart-host fingerprint" id="regional-history-chart"></div>
               <div class="atlas-note" id="regional-history-note"></div>
@@ -1918,7 +1918,7 @@
             <div class="card-header">
               <h3>National forward scenarios</h3>
             </div>
-            <p class="analytic-subtitle">Observed national trend and the distribution of simulated futures for the selected stage.</p>
+            <p class="analytic-subtitle">Gray lines = simulation outcomes. Dark line = observed trend. Choose a focus stage (Diagnosis / ART / Suppression) to see how prioritizing one target affects the overall cascade.</p>
             <div class="chart-host tall" id="experimental-national-chart"></div>
             <div class="card-note" id="experimental-national-note"></div>
           </article>
@@ -1939,7 +1939,7 @@
             <div class="card-header">
               <h3>Strategic Hurdles to 2035</h3>
             </div>
-            <p class="analytic-subtitle">Identifying the biggest challenges that could slow down our progress toward the 95-95-95 goals.</p>
+            <p class="analytic-subtitle">Shows the biggest regional gaps and estimated difficulty of closing them. Larger circles = bigger gap to target. Color = which cascade stage is most challenged.</p>
             <div class="chart-host" id="experimental-bottleneck-chart" style="height: 320px;"></div>
             <div class="insight-box" id="experimental-bottleneck-insight">
               <h4>Strategic Insight</h4>
@@ -1952,7 +1952,7 @@
             <div class="card-header">
               <h3>Success Scores & Regional Watchlist</h3>
             </div>
-            <p class="analytic-subtitle">Probability of achieving targets and regions requiring the most strategic attention.</p>
+            <p class="analytic-subtitle">Probabilistic assessment of hitting 95-95-95 targets under current trajectories. Regions with low probability need priority intervention.</p>
             <div id="experimental-output-summary" style="margin-top: 16px;"></div>
             <div class="card-note" id="experimental-output-note"></div>
           </article>
