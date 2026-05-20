@@ -2419,9 +2419,38 @@
 
     function mountPlotlyChart(id, spec) {
       const target = document.getElementById(id);
-      if (!target) return;
+      if (!target) { console.warn("[EpiGraph] mountPlotlyChart: no element", id); return; }
       disposePlotlyChart(id);
       if (!window.Plotly) {
+        target.innerHTML = `<div class="empty-state">Interactive chart engine unavailable.</div>`;
+        return;
+      }
+      try {
+        const data = spec?.data || [];
+        const layout = {
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)",
+          margin: { t: 16, r: 12, b: 32, l: 48 },
+          font: { family: "IBM Plex Sans, sans-serif", color: "#546E7A", size: 12 },
+          legend: window.innerWidth < 640 ? { orientation: 'h', y: -0.2 } : { orientation: 'v' },
+          hoverlabel: {
+            bgcolor: "rgba(255,255,255,0.96)",
+            bordercolor: "rgba(0,0,0,0.1)",
+            font: { family: "IBM Plex Sans, sans-serif", color: "#2c3e50", size: 12 },
+          },
+          ...spec?.layout,
+        };
+        const config = {
+          responsive: true,
+          displayModeBar: false,
+          ...spec?.config,
+        };
+        window.Plotly.newPlot(target, data, layout, config);
+        state.plotlyCharts[id] = true;
+      } catch(e) {
+        console.error("[EpiGraph] Plotly.newPlot error for", id, e);
+        target.innerHTML = `<div class="empty-state" style="color:#C62828">Render error: ${e.message}</div>`;
+      }
         target.innerHTML = `<div class="empty-state">Interactive chart engine unavailable.</div>`;
         return;
       }
@@ -5284,6 +5313,8 @@
       const container = document.getElementById("publication-national-cascade");
       if (!container) return;
 
+      console.log("[EpiGraph] renderNationalCascade called, rows:", rows.length);
+
       if (!rows.length) {
         container.innerHTML = `<div class="empty-state">No curated national cascade data is available.</div>`;
         document.getElementById("national-cascade-pill").textContent = "unavailable";
@@ -5293,6 +5324,8 @@
       const orderedRows = ["first_95", "second_95", "third_95"]
         .map(seriesId => rows.find(row => row.series_id === seriesId))
         .filter(Boolean);
+
+      console.log("[EpiGraph] orderedRows:", orderedRows.length, orderedRows.map(r => r?.series_id));
 
       container.innerHTML = `
         <div class="national-cascade-shell">
@@ -5316,8 +5349,24 @@
       `;
 
       requestAnimationFrame(() => {
-        mountPlotlyChart("national-cascade-timeline", buildNationalCascadeTimelineOption(orderedRows));
-        mountPlotlyChart("national-cascade-waterfall", buildNationalCascadeWaterfallOption(national, orderedRows));
+        try {
+          const timelineSpec = buildNationalCascadeTimelineOption(orderedRows);
+          console.log("[EpiGraph] timeline traces:", timelineSpec?.data?.length, "layout keys:", Object.keys(timelineSpec?.layout || {}));
+          mountPlotlyChart("national-cascade-timeline", timelineSpec);
+        } catch(e) {
+          console.error("[EpiGraph] timeline error:", e);
+          const t = document.getElementById("national-cascade-timeline");
+          if (t) t.innerHTML = `<div class="empty-state" style="color:#C62828">Chart error: ${e.message}</div>`;
+        }
+        try {
+          const waterfallSpec = buildNationalCascadeWaterfallOption(national, orderedRows);
+          console.log("[EpiGraph] waterfall shapes:", waterfallSpec?.layout?.shapes?.length);
+          mountPlotlyChart("national-cascade-waterfall", waterfallSpec);
+        } catch(e) {
+          console.error("[EpiGraph] waterfall error:", e);
+          const w = document.getElementById("national-cascade-waterfall");
+          if (w) w.innerHTML = `<div class="empty-state" style="color:#C62828">Chart error: ${e.message}</div>`;
+        }
       });
 
       const latest = orderedRows.map(row => `${shortGoalLabel(row.label)} ${formatPercent(row.latest_value, 0)}`).join(" / ");
