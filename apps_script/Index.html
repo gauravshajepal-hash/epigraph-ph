@@ -5102,12 +5102,16 @@
         });
 
         const latest = annual[annual.length - 1];
-        const staggerX = 0.12 * (orderedRows.findIndex(r => r.series_id === row.series_id) - 1);
         const yBase = Number(latest.value || 0);
-        const yStagger = (index % 2 === 0 ? -5 : 5);
+        const labelSlots = {
+          diagnosis: { xOffset: 0.05, yOffset: -13 },
+          treatment: { xOffset: 0.18, yOffset: 7 },
+          suppression: { xOffset: 0.34, yOffset: 5 },
+        };
+        const slot = labelSlots[meta.stageKey] || { xOffset: 0.14, yOffset: 0 };
         annotations.push({
-          x: Number(latest.year) + 0.14 + staggerX,
-          y: yBase + yStagger,
+          x: Number(latest.year) + slot.xOffset,
+          y: yBase + slot.yOffset,
           xref: "x",
           yref: "y",
           text: `<b>${meta.label}</b><br><b>${Math.round(yBase)}%</b>`,
@@ -5122,7 +5126,7 @@
       return {
         data: traces,
         layout: {
-          margin: { t: 24, r: 135, b: 38, l: 58 },
+          margin: { t: 24, r: 175, b: 38, l: 58 },
           legend: {
             orientation: "h",
             y: 1.16,
@@ -5130,7 +5134,7 @@
             font: { size: 12, color: "#546E7A" },
           },
           xaxis: {
-            range: [2017.0, 2026.7],
+            range: [2017.0, 2026.9],
             tickvals: [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
             ticktext: ["2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026 Q1"],
             tickfont: { color: "#546E7A", size: 12 },

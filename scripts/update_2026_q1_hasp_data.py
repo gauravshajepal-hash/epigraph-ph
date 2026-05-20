@@ -1582,6 +1582,64 @@ def update_html(path: Path) -> None:
     )
     text = text.replace("orderedRows.forEach((row) => {", "orderedRows.forEach((row, index) => {")
     text = text.replace("const yStagger = (i % 2 === 0 ? -5 : 5);", "const yStagger = (index % 2 === 0 ? -5 : 5);")
+    text = text.replace(
+        """        const latest = annual[annual.length - 1];
+        const staggerX = 0.12 * (orderedRows.findIndex(r => r.series_id === row.series_id) - 1);
+        const yBase = Number(latest.value || 0);
+        const yStagger = (index % 2 === 0 ? -5 : 5);
+        annotations.push({
+          x: Number(latest.year) + 0.14 + staggerX,
+          y: yBase + yStagger,
+          xref: "x",
+          yref: "y",
+          text: `<b>${meta.label}</b><br><b>${Math.round(yBase)}%</b>`,
+          showarrow: false,
+          xanchor: "left",
+          yanchor: "middle",
+          font: { size: 10, color: meta.color },
+          borderpad: 2,
+        });""",
+        """        const latest = annual[annual.length - 1];
+        const yBase = Number(latest.value || 0);
+        const labelSlots = {
+          diagnosis: { xOffset: 0.05, yOffset: -13 },
+          treatment: { xOffset: 0.18, yOffset: 7 },
+          suppression: { xOffset: 0.34, yOffset: 5 },
+        };
+        const slot = labelSlots[meta.stageKey] || { xOffset: 0.14, yOffset: 0 };
+        annotations.push({
+          x: Number(latest.year) + slot.xOffset,
+          y: yBase + slot.yOffset,
+          xref: "x",
+          yref: "y",
+          text: `<b>${meta.label}</b><br><b>${Math.round(yBase)}%</b>`,
+          showarrow: false,
+          xanchor: "left",
+          yanchor: "middle",
+          font: { size: 10, color: meta.color },
+          borderpad: 2,
+        });""",
+    )
+    text = text.replace(
+        "margin: { t: 24, r: 135, b: 38, l: 58 },",
+        "margin: { t: 24, r: 175, b: 38, l: 58 },",
+    )
+    text = text.replace(
+        "range: [2017.0, 2026.7],",
+        "range: [2017.0, 2026.9],",
+    )
+    text = text.replace(
+        "diagnosis: { xOffset: 0.05, yOffset: -8.5 },",
+        "diagnosis: { xOffset: 0.05, yOffset: -13 },",
+    )
+    text = text.replace(
+        "treatment: { xOffset: 0.18, yOffset: 6.5 },",
+        "treatment: { xOffset: 0.18, yOffset: 7 },",
+    )
+    text = text.replace(
+        "suppression: { xOffset: 0.34, yOffset: 1.5 },",
+        "suppression: { xOffset: 0.34, yOffset: 5 },",
+    )
     text = re.sub(r'\n\s*console\.log\("\[EpiGraph\] (?:renderNationalCascade called|orderedRows|timeline traces|waterfall shapes)[^\n]*\);', "", text)
     text = text.replace(
         "Four key metrics from the UNAIDS national estimates, embedded as interactive charts from the AIDSINFO portal. Use the toolbar on each chart to download or zoom. Source: UNAIDS Estimates 2025.",
