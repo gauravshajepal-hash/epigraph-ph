@@ -1,0 +1,1497 @@
+{
+  "source_pdf": "/home/gaurav/Desktop/2026_Q1 HIV & AIDS Surveillance of the Philippines.pdf",
+  "source_url": "https://gauravshajepal-hash.github.io/epigraph-ph/data/sources/2026_Q1_HIV_AIDS_Surveillance_of_the_Philippines.pdf",
+  "period": "2026 Q1",
+  "national_cascade": {
+    "estimated_plhiv": 288000,
+    "diagnosed_plhiv": 157350,
+    "diagnosed_pct": 55,
+    "on_art": 108367,
+    "on_art_pct": 69,
+    "vl_tested": 61413,
+    "vl_tested_pct_of_on_art": 57,
+    "vl_tested_pct_of_eligible": 59,
+    "vl_suppressed": 59540,
+    "vl_suppressed_pct_of_tested": 97,
+    "suppressed_pct_of_on_art": 55,
+    "vl_unsuppressed": 1873,
+    "eligible_for_vl": 103825,
+    "target_diagnosed": 273600,
+    "target_on_art": 259920,
+    "target_suppressed": 246924,
+    "gap_undiagnosed": 116250,
+    "gap_to_art": 86553,
+    "gap_return_to_art": 40928,
+    "gap_to_vl_test": 185511,
+    "gap_to_suppression": 187384
+  },
+  "prep_quarterly": [
+    [
+      "2023 Q1",
+      3893
+    ],
+    [
+      "2023 Q2",
+      4375
+    ],
+    [
+      "2023 Q3",
+      4358
+    ],
+    [
+      "2023 Q4",
+      4090
+    ],
+    [
+      "2024 Q1",
+      5265
+    ],
+    [
+      "2024 Q2",
+      6972
+    ],
+    [
+      "2024 Q3",
+      6606
+    ],
+    [
+      "2024 Q4",
+      6847
+    ],
+    [
+      "2025 Q1",
+      8600
+    ],
+    [
+      "2025 Q2",
+      8816
+    ],
+    [
+      "2025 Q3",
+      7662
+    ],
+    [
+      "2025 Q4",
+      7097
+    ],
+    [
+      "2026 Q1",
+      8229
+    ]
+  ],
+  "diagnosis": {
+    "new_cases": 4633,
+    "new_cases_male": 4381,
+    "new_cases_female": 252,
+    "new_cases_male_pct": 95,
+    "new_cases_female_pct": 5,
+    "new_cases_age_min": 2,
+    "new_cases_age_max": 77,
+    "new_cases_age_median": 28,
+    "new_cases_age_missing": 88,
+    "new_cases_yoy_change_pct": 9,
+    "advanced_hiv_disease": 1104,
+    "advanced_hiv_disease_pct": 24,
+    "non_advanced_hiv": 3529,
+    "non_advanced_missing_criteria": 1196,
+    "non_advanced_missing_criteria_pct": 33,
+    "average_cases_per_day": 51,
+    "average_cases_per_day_change_pct": -11,
+    "cumulative_cases": 168079,
+    "cumulative_male": 158670,
+    "cumulative_male_pct": 94,
+    "cumulative_female": 9399,
+    "cumulative_female_pct": 6,
+    "sex_missing": 10,
+    "cumulative_age_missing": 211,
+    "crcls_reporting": 195,
+    "crcl_confirmed_pct": 58
+  },
+  "monthly_cases": {
+    "2023": [
+      1443,
+      1289,
+      2076,
+      1236,
+      1249,
+      1516,
+      1553,
+      1570,
+      1567,
+      1499,
+      1277,
+      950
+    ],
+    "2024": [
+      1081,
+      1159,
+      1161,
+      1218,
+      1334,
+      2761,
+      1652,
+      1570,
+      1362,
+      1549,
+      1305,
+      1355
+    ],
+    "2025": [
+      1807,
+      1689,
+      1583,
+      1606,
+      1594,
+      1715,
+      2176,
+      1607,
+      1708,
+      1537,
+      1330,
+      1407
+    ],
+    "2026": [
+      1690,
+      1407,
+      1536
+    ]
+  },
+  "monthly_averages": {
+    "2023": 1435,
+    "2024": 1459,
+    "2025": 1647,
+    "2026": 1544
+  },
+  "new_cases_by_region": [
+    [
+      "NCR",
+      989,
+      21
+    ],
+    [
+      "4A",
+      808,
+      17
+    ],
+    [
+      "3",
+      551,
+      12
+    ],
+    [
+      "12",
+      277,
+      6
+    ],
+    [
+      "11",
+      263,
+      6
+    ],
+    [
+      "7",
+      228,
+      5
+    ],
+    [
+      "6",
+      216,
+      5
+    ],
+    [
+      "1",
+      191,
+      4
+    ],
+    [
+      "10",
+      183,
+      4
+    ],
+    [
+      "5",
+      158,
+      3
+    ],
+    [
+      "9",
+      137,
+      3
+    ],
+    [
+      "NIR",
+      133,
+      3
+    ],
+    [
+      "2",
+      108,
+      2
+    ],
+    [
+      "4B",
+      101,
+      2
+    ],
+    [
+      "8",
+      101,
+      2
+    ],
+    [
+      "CARAGA",
+      84,
+      2
+    ],
+    [
+      "BARMM",
+      42,
+      1
+    ],
+    [
+      "CAR",
+      37,
+      1
+    ]
+  ],
+  "region_cumulative_cases": [
+    [
+      "NCR",
+      23951,
+      25,
+      52054,
+      31,
+      39
+    ],
+    [
+      "4A",
+      16982,
+      18,
+      28211,
+      17,
+      19
+    ],
+    [
+      "3",
+      10721,
+      11,
+      17760,
+      11,
+      18
+    ],
+    [
+      "7",
+      5960,
+      6,
+      12137,
+      7,
+      8
+    ],
+    [
+      "11",
+      5329,
+      6,
+      9464,
+      6,
+      5
+    ],
+    [
+      "6",
+      4634,
+      5,
+      7162,
+      4,
+      9
+    ],
+    [
+      "12",
+      3210,
+      3,
+      5046,
+      3,
+      10
+    ],
+    [
+      "1",
+      3219,
+      3,
+      4892,
+      3,
+      10
+    ],
+    [
+      "10",
+      3055,
+      3,
+      4667,
+      3,
+      10
+    ],
+    [
+      "NIR",
+      3029,
+      3,
+      4548,
+      3,
+      7
+    ],
+    [
+      "5",
+      2647,
+      3,
+      3977,
+      2,
+      9
+    ],
+    [
+      "9",
+      2117,
+      2,
+      3107,
+      2,
+      13
+    ],
+    [
+      "2",
+      2120,
+      2,
+      3077,
+      2,
+      8
+    ],
+    [
+      "4B",
+      2176,
+      2,
+      3059,
+      2,
+      5
+    ],
+    [
+      "8",
+      2036,
+      2,
+      3052,
+      2,
+      6
+    ],
+    [
+      "CARAGA",
+      1598,
+      2,
+      2373,
+      1,
+      9
+    ],
+    [
+      "CAR",
+      868,
+      1,
+      1465,
+      1,
+      7
+    ],
+    [
+      "BARMM",
+      564,
+      1,
+      766,
+      1,
+      3
+    ]
+  ],
+  "mode_of_transmission": {
+    "q1": {
+      "total_with_mot": 4619,
+      "male": 4367,
+      "female": 252,
+      "sexual_contact": [
+        4214,
+        91
+      ],
+      "sexual_contact_male": 3993,
+      "sexual_contact_female": 221,
+      "male_male": 3095,
+      "male_male_female": 567,
+      "male_female": 552,
+      "male_female_male": 331,
+      "male_female_female": 221,
+      "needle": 2,
+      "needle_male": 1,
+      "needle_female": 1,
+      "mother_to_child": 13,
+      "mother_to_child_male": 9,
+      "mother_to_child_female": 4,
+      "blood_products": 0,
+      "needlestick": 0
+    },
+    "since_2020": {
+      "total_with_mot": 94272,
+      "male": 89385,
+      "female": 4887,
+      "sexual_contact": 90190,
+      "sexual_contact_male": 85662,
+      "sexual_contact_female": 4528,
+      "male_male": 63349,
+      "male_male_female": 15964,
+      "male_female": 10877,
+      "male_female_male": 6349,
+      "male_female_female": 4528,
+      "needle": 459,
+      "needle_male": 430,
+      "needle_female": 29,
+      "mother_to_child": 245,
+      "mother_to_child_male": 128,
+      "mother_to_child_female": 117,
+      "blood_products": 0,
+      "needlestick": 0
+    },
+    "cumulative": {
+      "total_with_mot": 167966,
+      "male": 158562,
+      "female": 9394,
+      "missing_mot": 4133,
+      "sexual_contact": 160712,
+      "sexual_contact_pct": 96,
+      "sexual_contact_male": 152003,
+      "sexual_contact_female": 8709,
+      "male_male": 102136,
+      "male_male_female": 36171,
+      "male_female": 22405,
+      "male_female_male": 13696,
+      "male_female_female": 8709,
+      "needle": 2647,
+      "needle_pct": 2,
+      "needle_male": 2490,
+      "needle_female": 157,
+      "mother_to_child": 444,
+      "mother_to_child_male": 233,
+      "mother_to_child_female": 211,
+      "blood_products": 19,
+      "blood_products_male": 5,
+      "blood_products_female": 14,
+      "needlestick": 3,
+      "needlestick_male": 2,
+      "needlestick_female": 1
+    }
+  },
+  "advanced_hiv_disease": {
+    "cumulative_count": 50805,
+    "cumulative_pct": 31,
+    "missing_criteria_count": 44264,
+    "missing_criteria_pct": 28,
+    "annual_pct": {
+      "2011": 9,
+      "2012": 13,
+      "2013": 17,
+      "2014": 23,
+      "2015": 28,
+      "2016": 32,
+      "2017": 32,
+      "2018": 36,
+      "2019": 35,
+      "2020": 37,
+      "2021": 31,
+      "2022": 36,
+      "2023": 35,
+      "2024": 29,
+      "2025": 24,
+      "2026": 24
+    }
+  },
+  "art": {
+    "newly_enrolled": 4716,
+    "first_line": 4665,
+    "first_line_pct": 99,
+    "second_line": 1,
+    "second_line_pct": 1,
+    "other_line": 50,
+    "other_line_pct": 1,
+    "age_under_15": 22,
+    "age_under_15_pct": 1,
+    "age_15_24": 1534,
+    "age_15_24_pct": 33,
+    "age_25_34": 2175,
+    "age_25_34_pct": 46,
+    "age_35_49": 887,
+    "age_35_49_pct": 19,
+    "age_50_plus": 98,
+    "age_50_plus_pct": 2,
+    "median_baseline_cd4": 182,
+    "missing_baseline_cd4": 2806,
+    "on_art": 108367,
+    "current_age_min": 1,
+    "current_age_max": 84,
+    "current_age_median": 33,
+    "on_art_male": 104207,
+    "on_art_female": 4159,
+    "on_art_sex_missing": 1,
+    "ever_enrolled_total": 146164,
+    "currently_receiving_pct_of_ever_enrolled": 74,
+    "on_art_first_line": 106292,
+    "on_art_first_line_pct": 98,
+    "on_art_second_line": 965,
+    "on_art_second_line_pct": 1,
+    "on_art_other_line": 1110,
+    "on_art_other_line_pct": 1,
+    "no_longer_receiving": 30666,
+    "no_longer_receiving_pct": 21,
+    "lost_to_follow_up": 30644,
+    "stopped": 4,
+    "transferred_overseas": 18,
+    "dead": 7131
+  },
+  "treatment_outcome_by_facility_region": [
+    [
+      "NCR",
+      43052,
+      14425,
+      1752,
+      0,
+      0,
+      59229,
+      24
+    ],
+    [
+      "7",
+      7646,
+      3007,
+      709,
+      0,
+      0,
+      11362,
+      26
+    ],
+    [
+      "4A",
+      13163,
+      2642,
+      681,
+      1,
+      0,
+      16487,
+      16
+    ],
+    [
+      "3",
+      9895,
+      2216,
+      1100,
+      5,
+      1,
+      13217,
+      17
+    ],
+    [
+      "11",
+      6774,
+      2034,
+      336,
+      0,
+      0,
+      9144,
+      22
+    ],
+    [
+      "12",
+      3680,
+      844,
+      159,
+      0,
+      0,
+      4683,
+      18
+    ],
+    [
+      "10",
+      2755,
+      780,
+      201,
+      0,
+      0,
+      3736,
+      21
+    ],
+    [
+      "NIR",
+      2644,
+      647,
+      392,
+      0,
+      0,
+      3683,
+      18
+    ],
+    [
+      "6",
+      5049,
+      634,
+      594,
+      7,
+      0,
+      6284,
+      10
+    ],
+    [
+      "4B",
+      1338,
+      603,
+      115,
+      0,
+      0,
+      2056,
+      29
+    ],
+    [
+      "8",
+      1371,
+      568,
+      122,
+      0,
+      0,
+      2061,
+      28
+    ],
+    [
+      "5",
+      1986,
+      564,
+      224,
+      0,
+      0,
+      2774,
+      20
+    ],
+    [
+      "1",
+      2340,
+      423,
+      173,
+      0,
+      0,
+      2936,
+      14
+    ],
+    [
+      "9",
+      1710,
+      407,
+      166,
+      4,
+      0,
+      2287,
+      18
+    ],
+    [
+      "CAR",
+      1296,
+      263,
+      83,
+      0,
+      0,
+      1642,
+      16
+    ],
+    [
+      "CARAGA",
+      1392,
+      241,
+      122,
+      0,
+      3,
+      1758,
+      14
+    ],
+    [
+      "2",
+      1880,
+      223,
+      147,
+      1,
+      0,
+      2251,
+      10
+    ],
+    [
+      "BARMM",
+      395,
+      119,
+      55,
+      0,
+      0,
+      569,
+      21
+    ]
+  ],
+  "viral_load_by_facility_region": [
+    [
+      "NCR",
+      43054,
+      22979,
+      53,
+      22455,
+      98
+    ],
+    [
+      "4A",
+      13163,
+      8168,
+      62,
+      7945,
+      97
+    ],
+    [
+      "3",
+      9895,
+      6145,
+      62,
+      5940,
+      97
+    ],
+    [
+      "7",
+      7646,
+      3831,
+      50,
+      3736,
+      98
+    ],
+    [
+      "11",
+      6774,
+      4005,
+      59,
+      3871,
+      97
+    ],
+    [
+      "6",
+      5049,
+      3548,
+      70,
+      3463,
+      98
+    ],
+    [
+      "12",
+      3680,
+      1405,
+      38,
+      1322,
+      94
+    ],
+    [
+      "10",
+      2755,
+      1693,
+      61,
+      1603,
+      95
+    ],
+    [
+      "NIR",
+      2644,
+      1801,
+      68,
+      1763,
+      98
+    ],
+    [
+      "1",
+      2340,
+      1228,
+      52,
+      1174,
+      96
+    ],
+    [
+      "5",
+      1986,
+      1384,
+      70,
+      1280,
+      92
+    ],
+    [
+      "2",
+      1880,
+      1434,
+      76,
+      1386,
+      97
+    ],
+    [
+      "9",
+      1710,
+      932,
+      55,
+      894,
+      96
+    ],
+    [
+      "CARAGA",
+      1392,
+      765,
+      55,
+      687,
+      90
+    ],
+    [
+      "8",
+      1371,
+      559,
+      41,
+      530,
+      95
+    ],
+    [
+      "4B",
+      1338,
+      380,
+      28,
+      374,
+      98
+    ],
+    [
+      "CAR",
+      1296,
+      866,
+      67,
+      848,
+      98
+    ],
+    [
+      "BARMM",
+      395,
+      289,
+      73,
+      268,
+      93
+    ]
+  ],
+  "viral_load_annual": {
+    "years": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ],
+    "plhiv_on_art": [
+      39162,
+      43367,
+      51863,
+      63221,
+      75300,
+      90568,
+      100671,
+      108367
+    ],
+    "vl_tested": [
+      11269,
+      7675,
+      17129,
+      17957,
+      31330,
+      41746,
+      58887,
+      61413
+    ],
+    "vl_suppressed": [
+      9240,
+      6457,
+      14547,
+      15851,
+      27468,
+      36633,
+      57182,
+      59540
+    ],
+    "pct_tested": [
+      29,
+      18,
+      33,
+      25,
+      42,
+      46,
+      59,
+      57
+    ],
+    "pct_suppressed": [
+      82,
+      84,
+      85,
+      88,
+      88,
+      88,
+      97,
+      97
+    ]
+  },
+  "mortality": {
+    "new_deaths": 477,
+    "new_deaths_yoy_change_pct": 2,
+    "cumulative_deaths": 10727,
+    "deaths_2020_2026": 5387,
+    "cumulative_deaths_with_ahd": 5105,
+    "cumulative_deaths_with_ahd_pct": 48,
+    "death_age_0_14": 72,
+    "death_age_0_14_pct": 1,
+    "death_age_15_24": 1486,
+    "death_age_15_24_pct": 14,
+    "death_age_25_34": 4783,
+    "death_age_25_34_pct": 45,
+    "death_age_35_49": 2811,
+    "death_age_35_49_pct": 26,
+    "death_age_50_plus": 574,
+    "death_age_50_plus_pct": 5,
+    "death_age_missing_pct": 9,
+    "q1_death_age_known_total": 204,
+    "q1_death_age_missing_inferred": 273,
+    "q1_death_age": {
+      "age_0_14": [
+        2,
+        1
+      ],
+      "age_15_24": [
+        24,
+        12
+      ],
+      "age_25_34": [
+        98,
+        48
+      ],
+      "age_35_49": [
+        61,
+        30
+      ],
+      "age_50_plus": [
+        19,
+        10
+      ]
+    }
+  },
+  "pregnant_women": {
+    "q1_reported": 42,
+    "q1_age_min": 15,
+    "q1_age_max": 36,
+    "q1_age_median": 24,
+    "q1_yoy_change_pct": 8,
+    "cumulative_reported": 1220,
+    "past_year_diagnosed": 236,
+    "past_year_age_15_24": 125,
+    "past_year_age_15_24_pct": 53,
+    "past_year_age_25_34": 85,
+    "past_year_age_25_34_pct": 36,
+    "past_year_age_35_49": 26,
+    "past_year_age_35_49_pct": 11,
+    "alive": 236,
+    "initiated_art": 181,
+    "initiated_art_pct": 77,
+    "on_art": 132,
+    "on_art_pct_of_diagnosed": 56,
+    "retained_art_pct_of_initiated": 73,
+    "vl_tested": 47,
+    "vl_tested_pct": 36,
+    "vl_suppressed": 38,
+    "vl_suppressed_pct": 81
+  },
+  "transgender_women": {
+    "q1_reported": 29,
+    "q1_age_15_24": 9,
+    "q1_age_15_24_pct": 31,
+    "q1_age_25_34": 12,
+    "q1_age_25_34_pct": 41,
+    "q1_age_35_49": 7,
+    "q1_age_35_49_pct": 24,
+    "q1_age_50_plus": 1,
+    "q1_age_50_plus_pct": 3,
+    "q1_age_min": 20,
+    "q1_age_max": 67,
+    "q1_age_median": 29,
+    "cumulative_diagnosed": 3026,
+    "cumulative_sexual_contact": 2984,
+    "cumulative_sexual_contact_pct": 99,
+    "cumulative_needle": 6,
+    "cumulative_mtct": 1,
+    "cumulative_mot_missing": 34,
+    "cumulative_age_15_24": 865,
+    "cumulative_age_15_24_pct": 29,
+    "cumulative_age_25_34": 1487,
+    "cumulative_age_25_34_pct": 49,
+    "cumulative_age_35_49": 598,
+    "cumulative_age_35_49_pct": 20,
+    "cumulative_age_50_plus": 75,
+    "cumulative_age_50_plus_pct": 2,
+    "cumulative_age_missing": 1,
+    "cumulative_age_min": 15,
+    "cumulative_age_max": 75,
+    "cumulative_age_median": 28,
+    "alive": 2789,
+    "alive_pct": 92,
+    "initiated_art": 2608,
+    "initiated_art_pct": 94,
+    "on_art": 1814,
+    "on_art_pct": 65,
+    "vl_tested": 1073,
+    "vl_tested_pct": 59,
+    "vl_suppressed": 914,
+    "vl_suppressed_pct": 85
+  },
+  "migrant_workers": {
+    "q1_reported": 223,
+    "q1_age_min": 19,
+    "q1_age_max": 64,
+    "q1_age_median": 34,
+    "q1_male": 205,
+    "q1_male_pct": 92,
+    "q1_female": 18,
+    "q1_female_pct": 8,
+    "q1_sexual_contact": 211,
+    "q1_sexual_contact_pct": 95,
+    "q1_male_male": 144,
+    "q1_male_male_pct": 64,
+    "q1_male_male_female": 32,
+    "q1_male_male_female_pct": 14,
+    "q1_male_female": 35,
+    "q1_male_female_pct": 16,
+    "q1_mot_missing": 12,
+    "q1_mot_missing_pct": 5,
+    "q1_yoy_change_pct": 17,
+    "five_year_change_pct": 11,
+    "cumulative_reported": 11579,
+    "cumulative_reported_pct": 7,
+    "cumulative_sexual_contact": 11332,
+    "cumulative_sexual_contact_pct": 98,
+    "cumulative_needle": 20,
+    "cumulative_blood": 9,
+    "cumulative_needlestick": 4,
+    "cumulative_mot_missing": 210,
+    "cumulative_mot_missing_pct": 2,
+    "alive": 10892,
+    "alive_pct": 94,
+    "initiated_art": 9097,
+    "initiated_art_pct": 84,
+    "on_art": 6823,
+    "on_art_pct": 63,
+    "vl_tested": 3964,
+    "vl_tested_pct": 58,
+    "vl_suppressed": 3586,
+    "vl_suppressed_pct": 90
+  },
+  "transactional_sex": {
+    "q1_reported": 500,
+    "q1_reported_pct": 11,
+    "q1_male": 488,
+    "q1_male_pct": 98,
+    "q1_female": 12,
+    "q1_female_pct": 2,
+    "q1_age_min": 15,
+    "q1_age_max": 77,
+    "q1_age_median": 34,
+    "since_2020": 11154,
+    "since_2020_pct_of_total": 59,
+    "cumulative_reported": 18774,
+    "cumulative_male": 18252,
+    "cumulative_male_pct": 97,
+    "cumulative_female": 522,
+    "cumulative_female_pct": 3,
+    "cumulative_accepted": 6383,
+    "cumulative_accepted_pct": 34,
+    "cumulative_paid": 9330,
+    "cumulative_paid_pct": 50,
+    "cumulative_both": 3061,
+    "cumulative_both_pct": 16,
+    "alive": 17401,
+    "alive_pct": 93,
+    "initiated_art": 15968,
+    "initiated_art_pct": 92,
+    "on_art": 11631,
+    "on_art_pct": 67,
+    "vl_tested": 6745,
+    "vl_tested_pct": 58,
+    "vl_suppressed": 6522,
+    "vl_suppressed_pct": 97
+  },
+  "transactional_sex_table": [
+    [
+      "accepted",
+      177,
+      173,
+      4,
+      "15-52 (25)",
+      3952,
+      3807,
+      145,
+      "14-63 (26)",
+      6383,
+      6058,
+      325,
+      "12-68 (26)"
+    ],
+    [
+      "paid_for_sex_only",
+      225,
+      223,
+      2,
+      "17-77 (34)",
+      5266,
+      5236,
+      30,
+      "15-80 (33)",
+      9330,
+      9275,
+      55,
+      "13-80 (32)"
+    ],
+    [
+      "engaged_in_both",
+      98,
+      92,
+      6,
+      "16-71 (31)",
+      1936,
+      1881,
+      55,
+      "14-73 (29)",
+      3061,
+      2919,
+      142,
+      "14-73 (29)"
+    ]
+  ],
+  "regional_cascade": [
+    [
+      "1",
+      9500,
+      4619,
+      49,
+      3217,
+      70,
+      1795,
+      56,
+      1735,
+      97,
+      54
+    ],
+    [
+      "2",
+      5800,
+      2853,
+      49,
+      2231,
+      78,
+      1571,
+      70,
+      1528,
+      97,
+      68
+    ],
+    [
+      "3",
+      34300,
+      16253,
+      47,
+      11445,
+      70,
+      6982,
+      61,
+      6766,
+      97,
+      59
+    ],
+    [
+      "4A",
+      50000,
+      26620,
+      53,
+      18517,
+      70,
+      10806,
+      58,
+      10525,
+      97,
+      57
+    ],
+    [
+      "4B",
+      4900,
+      2840,
+      58,
+      1810,
+      64,
+      673,
+      37,
+      662,
+      98,
+      37
+    ],
+    [
+      "5",
+      7200,
+      3634,
+      50,
+      2581,
+      71,
+      1646,
+      64,
+      1554,
+      94,
+      60
+    ],
+    [
+      "6",
+      13400,
+      6358,
+      47,
+      5115,
+      80,
+      3523,
+      69,
+      3437,
+      98,
+      67
+    ],
+    [
+      "7",
+      21400,
+      11318,
+      53,
+      6563,
+      58,
+      3497,
+      53,
+      3401,
+      97,
+      52
+    ],
+    [
+      "8",
+      5400,
+      2852,
+      53,
+      1823,
+      64,
+      859,
+      47,
+      827,
+      96,
+      45
+    ],
+    [
+      "9",
+      4900,
+      2889,
+      59,
+      1995,
+      69,
+      1065,
+      53,
+      1030,
+      97,
+      52
+    ],
+    [
+      "10",
+      8000,
+      4356,
+      54,
+      3043,
+      70,
+      1821,
+      60,
+      1733,
+      95,
+      57
+    ],
+    [
+      "11",
+      16700,
+      9026,
+      54,
+      6035,
+      67,
+      3584,
+      59,
+      3459,
+      97,
+      57
+    ],
+    [
+      "12",
+      9000,
+      4797,
+      53,
+      3612,
+      75,
+      1580,
+      44,
+      1524,
+      96,
+      42
+    ],
+    [
+      "BARMM",
+      1200,
+      716,
+      60,
+      447,
+      62,
+      266,
+      60,
+      254,
+      95,
+      57
+    ],
+    [
+      "CAR",
+      2700,
+      1383,
+      51,
+      1011,
+      73,
+      695,
+      69,
+      681,
+      98,
+      67
+    ],
+    [
+      "CARAGA",
+      3900,
+      2197,
+      56,
+      1645,
+      75,
+      937,
+      57,
+      859,
+      92,
+      52
+    ],
+    [
+      "NCR",
+      81300,
+      49567,
+      61,
+      31309,
+      63,
+      17170,
+      55,
+      16757,
+      98,
+      54
+    ],
+    [
+      "NIR",
+      8300,
+      3971,
+      48,
+      2948,
+      74,
+      1927,
+      65,
+      1889,
+      98,
+      64
+    ]
+  ],
+  "age_cascade": [
+    [
+      "children_under_15",
+      1700,
+      392,
+      23,
+      269,
+      69,
+      165,
+      61,
+      125,
+      78,
+      37
+    ],
+    [
+      "youth_15_24",
+      63800,
+      14361,
+      23,
+      10580,
+      74,
+      5322,
+      50,
+      5050,
+      95,
+      48
+    ],
+    [
+      "adults_25_plus",
+      222500,
+      142391,
+      64,
+      94567,
+      66,
+      55002,
+      58,
+      53503,
+      97,
+      57
+    ]
+  ],
+  "key_population_cascade": [
+    [
+      "msm",
+      220000,
+      130081,
+      59,
+      92030,
+      71,
+      53213,
+      58,
+      51742,
+      97,
+      56
+    ],
+    [
+      "pwid",
+      2900,
+      2169,
+      75,
+      524,
+      24,
+      275,
+      52,
+      265,
+      96,
+      51
+    ],
+    [
+      "other_males",
+      42900,
+      12297,
+      29,
+      6716,
+      55,
+      3673,
+      55,
+      3600,
+      98,
+      54
+    ],
+    [
+      "other_females",
+      20600,
+      8139,
+      40,
+      3880,
+      48,
+      2263,
+      58,
+      2074,
+      92,
+      53
+    ]
+  ]
+}

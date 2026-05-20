@@ -1,7 +1,7 @@
 {
   "kpis": {
     "claims": 5593,
-    "observations": 5898,
+    "observations": 6432,
     "review_queue": 2333,
     "tracked_diseases": 3
   },
@@ -3595,8 +3595,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2023 Q2",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 10,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 11,
         "percent_points": [
           {
             "period": "2023 Q2",
@@ -3659,6 +3659,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 61.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "count_points": [
@@ -3717,8 +3723,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 153207.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 157350.0
           }
-        ]
+        ],
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0
       },
       {
         "series_id": "second_95",
@@ -3735,8 +3750,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2024 Q1",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 7,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 8,
         "percent_points": [
           {
             "period": "2024 Q1",
@@ -3781,6 +3796,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 66.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 69.0
           }
         ],
         "count_points": [
@@ -3849,8 +3870,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 65197.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 108367.0
           }
-        ]
+        ],
+        "latest_period": "2026 Q1",
+        "latest_value": 69.0,
+        "gap_to_target": 26.0
       },
       {
         "series_id": "third_95",
@@ -3867,8 +3897,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2023 Q4",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 9,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 10,
         "percent_points": [
           {
             "period": "2023 Q4",
@@ -3925,6 +3955,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 57.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "count_points": [
@@ -3994,8 +4030,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 57184.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 59540.0
           }
-        ]
+        ],
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0
       }
     ],
     "goal_forecasts": [
@@ -4075,13 +4120,19 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 61.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "model_type": "theil_sen",
-        "point_count": 10,
-        "latest_period": "2025 Q4",
-        "latest_value": 61.0,
-        "gap_to_target": 34.0,
+        "point_count": 11,
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0,
         "trajectory": "volatile",
         "deadline_status": "missed",
         "projected_target_period": "",
@@ -4149,13 +4200,19 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 66.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 69.0
           }
         ],
         "model_type": "theil_sen",
-        "point_count": 7,
-        "latest_period": "2025 Q4",
-        "latest_value": 66.0,
-        "gap_to_target": 29.0,
+        "point_count": 8,
+        "latest_period": "2026 Q1",
+        "latest_value": 69.0,
+        "gap_to_target": 26.0,
         "trajectory": "volatile",
         "deadline_status": "missed",
         "projected_target_period": "",
@@ -4235,14 +4292,20 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 57.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "model_type": "theil_sen",
-        "point_count": 9,
-        "latest_period": "2025 Q4",
-        "latest_value": 57.0,
-        "gap_to_target": 38.0,
-        "trajectory": "improving",
+        "point_count": 10,
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0,
+        "trajectory": "volatile",
         "deadline_status": "missed",
         "projected_target_period": "2029 Q3",
         "projected_target_year": 2029.47,
@@ -4268,8 +4331,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2023 Q2",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 10,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 11,
         "percent_points": [
           {
             "period": "2023 Q2",
@@ -4332,6 +4395,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 61.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "count_points": [
@@ -4390,11 +4459,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 153207.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 157350.0
           }
         ],
-        "latest_period": "2025 Q4",
-        "latest_value": 61.0,
-        "gap_to_target": 34.0,
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0,
         "trajectory": "volatile",
         "deadline_status": "missed",
         "projected_target_period": "",
@@ -4418,8 +4493,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2024 Q1",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 7,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 8,
         "percent_points": [
           {
             "period": "2024 Q1",
@@ -4464,6 +4539,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 66.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 69.0
           }
         ],
         "count_points": [
@@ -4532,11 +4613,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 65197.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 108367.0
           }
         ],
-        "latest_period": "2025 Q4",
-        "latest_value": 66.0,
-        "gap_to_target": 29.0,
+        "latest_period": "2026 Q1",
+        "latest_value": 69.0,
+        "gap_to_target": 26.0,
         "trajectory": "volatile",
         "deadline_status": "missed",
         "projected_target_period": "",
@@ -4560,8 +4647,8 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2023 Q4",
-        "coverage_end": "2025 Q4",
-        "coverage_point_count": 9,
+        "coverage_end": "2026 Q1",
+        "coverage_point_count": 10,
         "percent_points": [
           {
             "period": "2023 Q4",
@@ -4618,6 +4705,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 57.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 55.0
           }
         ],
         "count_points": [
@@ -4687,11 +4780,17 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 57184.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 59540.0
           }
         ],
-        "latest_period": "2025 Q4",
-        "latest_value": 57.0,
-        "gap_to_target": 38.0,
+        "latest_period": "2026 Q1",
+        "latest_value": 55.0,
+        "gap_to_target": 40.0,
         "trajectory": "improving",
         "deadline_status": "missed",
         "projected_target_period": "2029 Q3",
@@ -4714,11 +4813,11 @@
         "period_granularity": "cumulative",
         "period_scope": "cumulative",
         "coverage_start": "1984-2018-01",
-        "coverage_end": "1984-2021-12",
-        "point_count": 27,
-        "latest_value": 94337.0,
-        "latest_period": "1984-2021-12",
-        "delta": 3377.0,
+        "coverage_end": "1984-2026 Q1",
+        "point_count": 28,
+        "latest_value": 168079.0,
+        "latest_period": "1984-2026 Q1",
+        "delta": 89520.0,
         "points": [
           {
             "period": "1984-2018-01",
@@ -4784,12 +4883,6 @@
             "sample_count": 2
           },
           {
-            "period": "1984-2019 Q4",
-            "region": "Philippines",
-            "subgroup": "",
-            "value": 74807.0
-          },
-          {
             "period": "1984-2019-01",
             "region": "Philippines",
             "subgroup": "",
@@ -4838,18 +4931,6 @@
             "value": 71778.0
           },
           {
-            "period": "1984-2020 Q1",
-            "region": "Philippines",
-            "subgroup": "",
-            "value": 77625.0
-          },
-          {
-            "period": "1984-2020 Q2",
-            "region": "Philippines",
-            "subgroup": "",
-            "value": 78559.0
-          },
-          {
             "period": "1984-2020-11",
             "region": "Philippines",
             "subgroup": "",
@@ -4884,6 +4965,30 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 94337.0
+          },
+          {
+            "period": "1984-2019 Q4",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 74807.0
+          },
+          {
+            "period": "1984-2020 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 77625.0
+          },
+          {
+            "period": "1984-2020 Q2",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 78559.0
+          },
+          {
+            "period": "1984-2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 168079.0
           }
         ]
       },
@@ -4899,11 +5004,11 @@
         "period_granularity": "quarter",
         "period_scope": "snapshot",
         "coverage_start": "2023 Q2",
-        "coverage_end": "2025 Q4",
-        "point_count": 10,
-        "latest_value": 100671.0,
-        "latest_period": "2025 Q4",
-        "delta": 5115.0,
+        "coverage_end": "2026 Q1",
+        "point_count": 11,
+        "latest_value": 108367.0,
+        "latest_period": "2026 Q1",
+        "delta": 7696.0,
         "points": [
           {
             "period": "2023 Q2",
@@ -4966,6 +5071,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 100671.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 108367.0
           }
         ]
       },
@@ -4981,11 +5092,11 @@
         "period_granularity": "month",
         "period_scope": "snapshot",
         "coverage_start": "2015-01",
-        "coverage_end": "2022-05",
-        "point_count": 36,
-        "latest_value": 21.0,
-        "latest_period": "2022-05",
-        "delta": 8.0,
+        "coverage_end": "2026 Q1",
+        "point_count": 37,
+        "latest_value": 477.0,
+        "latest_period": "2026 Q1",
+        "delta": 456.0,
         "points": [
           {
             "period": "2015-01",
@@ -5202,6 +5313,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 21.0
+          },
+          {
+            "period": "2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 477.0
           }
         ]
       }
@@ -5219,11 +5336,11 @@
         "period_granularity": "cumulative",
         "period_scope": "cumulative",
         "coverage_start": "1984-2010-03",
-        "coverage_end": "1984-2014-10",
-        "point_count": 51,
-        "latest_value": 93.0,
-        "latest_period": "1984-2014-10",
-        "delta": 0.0,
+        "coverage_end": "1984-2026 Q1",
+        "point_count": 52,
+        "latest_value": 96.0,
+        "latest_period": "1984-2026 Q1",
+        "delta": 3.0,
         "points": [
           {
             "period": "1984-2010-03",
@@ -5530,6 +5647,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 93.0
+          },
+          {
+            "period": "1984-2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 96.0
           }
         ]
       },
@@ -5545,11 +5668,11 @@
         "period_granularity": "cumulative",
         "period_scope": "cumulative",
         "coverage_start": "1984-2010-03",
-        "coverage_end": "1984-2024 Q2",
-        "point_count": 51,
-        "latest_value": 360.0,
-        "latest_period": "1984-2024 Q2",
-        "delta": 294.0,
+        "coverage_end": "1984-2026 Q1",
+        "point_count": 52,
+        "latest_value": 444.0,
+        "latest_period": "1984-2026 Q1",
+        "delta": 84.0,
         "points": [
           {
             "period": "1984-2010-03",
@@ -5856,6 +5979,12 @@
             "region": "Philippines",
             "subgroup": "",
             "value": 360.0
+          },
+          {
+            "period": "1984-2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 444.0
           }
         ]
       },
@@ -5871,11 +6000,11 @@
         "period_granularity": "month",
         "period_scope": "snapshot",
         "coverage_start": "2016-03",
-        "coverage_end": "2021-12",
-        "point_count": 38,
-        "latest_value": 1273.5,
-        "latest_period": "2021-12",
-        "delta": 14.0,
+        "coverage_end": "1984-2026 Q1",
+        "point_count": 39,
+        "latest_value": 2647.0,
+        "latest_period": "1984-2026 Q1",
+        "delta": 1373.5,
         "points": [
           {
             "period": "2016-03",
@@ -6125,6 +6254,12 @@
             "subgroup": "",
             "value": 1273.5,
             "sample_count": 2
+          },
+          {
+            "period": "1984-2026 Q1",
+            "region": "Philippines",
+            "subgroup": "",
+            "value": 2647.0
           }
         ]
       }
@@ -6136,103 +6271,103 @@
         "metric_type": "diagnosis_coverage",
         "proxy": false,
         "note": "",
-        "period_label": "2025 Q4",
+        "period_label": "2026 Q1",
         "target_value": 95.0,
         "unit": "percent",
-        "spread": 22.0,
-        "median_value": 59.0,
-        "leader_region": "BARMM",
-        "laggard_region": "3",
+        "spread": 14.0,
+        "median_value": 53.0,
+        "leader_region": "NCR",
+        "laggard_region": "6",
         "regions": [
           {
-            "region": "BARMM",
-            "value": 75.0,
-            "gap_to_target": 20.0
-          },
-          {
-            "region": "4B",
-            "value": 66.0,
-            "gap_to_target": 29.0
-          },
-          {
-            "region": "9",
-            "value": 66.0,
-            "gap_to_target": 29.0
-          },
-          {
             "region": "NCR",
-            "value": 66.0,
-            "gap_to_target": 29.0
-          },
-          {
-            "region": "CARAGA",
-            "value": 64.0,
-            "gap_to_target": 31.0
-          },
-          {
-            "region": "10",
             "value": 61.0,
             "gap_to_target": 34.0
           },
           {
-            "region": "8",
-            "value": 61.0,
-            "gap_to_target": 34.0
-          },
-          {
-            "region": "11",
+            "region": "BARMM",
             "value": 60.0,
             "gap_to_target": 35.0
           },
           {
-            "region": "12",
+            "region": "9",
             "value": 59.0,
             "gap_to_target": 36.0
           },
           {
-            "region": "4A",
-            "value": 59.0,
-            "gap_to_target": 36.0
-          },
-          {
-            "region": "CAR",
-            "value": 59.0,
-            "gap_to_target": 36.0
-          },
-          {
-            "region": "2",
+            "region": "4B",
             "value": 58.0,
             "gap_to_target": 37.0
           },
           {
-            "region": "7",
-            "value": 58.0,
-            "gap_to_target": 37.0
-          },
-          {
-            "region": "5",
-            "value": 57.0,
-            "gap_to_target": 38.0
-          },
-          {
-            "region": "1",
+            "region": "CARAGA",
             "value": 56.0,
             "gap_to_target": 39.0
           },
           {
-            "region": "NIR",
-            "value": 55.0,
-            "gap_to_target": 40.0
-          },
-          {
-            "region": "6",
+            "region": "10",
             "value": 54.0,
             "gap_to_target": 41.0
           },
           {
-            "region": "3",
+            "region": "11",
+            "value": 54.0,
+            "gap_to_target": 41.0
+          },
+          {
+            "region": "12",
             "value": 53.0,
             "gap_to_target": 42.0
+          },
+          {
+            "region": "4A",
+            "value": 53.0,
+            "gap_to_target": 42.0
+          },
+          {
+            "region": "7",
+            "value": 53.0,
+            "gap_to_target": 42.0
+          },
+          {
+            "region": "8",
+            "value": 53.0,
+            "gap_to_target": 42.0
+          },
+          {
+            "region": "CAR",
+            "value": 51.0,
+            "gap_to_target": 44.0
+          },
+          {
+            "region": "5",
+            "value": 50.0,
+            "gap_to_target": 45.0
+          },
+          {
+            "region": "1",
+            "value": 49.0,
+            "gap_to_target": 46.0
+          },
+          {
+            "region": "2",
+            "value": 49.0,
+            "gap_to_target": 46.0
+          },
+          {
+            "region": "NIR",
+            "value": 48.0,
+            "gap_to_target": 47.0
+          },
+          {
+            "region": "3",
+            "value": 47.0,
+            "gap_to_target": 48.0
+          },
+          {
+            "region": "6",
+            "value": 47.0,
+            "gap_to_target": 48.0
           }
         ]
       },
@@ -6242,33 +6377,53 @@
         "metric_type": "art_coverage",
         "proxy": false,
         "note": "",
-        "period_label": "2025 Q4",
+        "period_label": "2026 Q1",
         "target_value": 95.0,
         "unit": "percent",
-        "spread": 28.0,
-        "median_value": 68.0,
+        "spread": 22.0,
+        "median_value": 70.0,
         "leader_region": "6",
-        "laggard_region": "11",
+        "laggard_region": "7",
         "regions": [
           {
             "region": "6",
-            "value": 79.0,
-            "gap_to_target": 16.0
+            "value": 80.0,
+            "gap_to_target": 15.0
           },
           {
             "region": "2",
+            "value": 78.0,
+            "gap_to_target": 17.0
+          },
+          {
+            "region": "12",
+            "value": 75.0,
+            "gap_to_target": 20.0
+          },
+          {
+            "region": "CARAGA",
+            "value": 75.0,
+            "gap_to_target": 20.0
+          },
+          {
+            "region": "NIR",
             "value": 74.0,
             "gap_to_target": 21.0
           },
           {
-            "region": "NIR",
+            "region": "CAR",
             "value": 73.0,
             "gap_to_target": 22.0
           },
           {
-            "region": "CAR",
+            "region": "5",
             "value": 71.0,
             "gap_to_target": 24.0
+          },
+          {
+            "region": "1",
+            "value": 70.0,
+            "gap_to_target": 25.0
           },
           {
             "region": "10",
@@ -6276,69 +6431,49 @@
             "gap_to_target": 25.0
           },
           {
-            "region": "CARAGA",
+            "region": "3",
+            "value": 70.0,
+            "gap_to_target": 25.0
+          },
+          {
+            "region": "4A",
+            "value": 70.0,
+            "gap_to_target": 25.0
+          },
+          {
+            "region": "9",
             "value": 69.0,
             "gap_to_target": 26.0
           },
           {
-            "region": "12",
-            "value": 68.0,
-            "gap_to_target": 27.0
-          },
-          {
-            "region": "3",
-            "value": 68.0,
-            "gap_to_target": 27.0
-          },
-          {
-            "region": "4A",
-            "value": 68.0,
-            "gap_to_target": 27.0
-          },
-          {
-            "region": "5",
-            "value": 68.0,
-            "gap_to_target": 27.0
-          },
-          {
-            "region": "1",
+            "region": "11",
             "value": 67.0,
             "gap_to_target": 28.0
           },
           {
             "region": "4B",
-            "value": 65.0,
-            "gap_to_target": 30.0
-          },
-          {
-            "region": "9",
-            "value": 65.0,
-            "gap_to_target": 30.0
+            "value": 64.0,
+            "gap_to_target": 31.0
           },
           {
             "region": "8",
-            "value": 61.0,
-            "gap_to_target": 34.0
+            "value": 64.0,
+            "gap_to_target": 31.0
           },
           {
             "region": "NCR",
-            "value": 61.0,
-            "gap_to_target": 34.0
+            "value": 63.0,
+            "gap_to_target": 32.0
           },
           {
             "region": "BARMM",
-            "value": 58.0,
-            "gap_to_target": 37.0
+            "value": 62.0,
+            "gap_to_target": 33.0
           },
           {
             "region": "7",
-            "value": 57.0,
-            "gap_to_target": 38.0
-          },
-          {
-            "region": "11",
-            "value": 51.0,
-            "gap_to_target": 44.0
+            "value": 58.0,
+            "gap_to_target": 37.0
           }
         ]
       },
@@ -6348,51 +6483,51 @@
         "metric_type": "suppression_among_on_art",
         "proxy": false,
         "note": "",
-        "period_label": "2025 Q4",
+        "period_label": "2026 Q1",
         "target_value": 95.0,
         "unit": "percent",
-        "spread": 35.0,
-        "median_value": 56.5,
-        "leader_region": "6",
-        "laggard_region": "12",
+        "spread": 31.0,
+        "median_value": 57.0,
+        "leader_region": "2",
+        "laggard_region": "4B",
         "regions": [
-          {
-            "region": "6",
-            "value": 72.0,
-            "gap_to_target": 23.0
-          },
           {
             "region": "2",
             "value": 68.0,
             "gap_to_target": 27.0
           },
           {
+            "region": "6",
+            "value": 67.0,
+            "gap_to_target": 28.0
+          },
+          {
             "region": "CAR",
-            "value": 65.0,
-            "gap_to_target": 30.0
+            "value": 67.0,
+            "gap_to_target": 28.0
           },
           {
             "region": "NIR",
-            "value": 65.0,
-            "gap_to_target": 30.0
-          },
-          {
-            "region": "3",
             "value": 64.0,
             "gap_to_target": 31.0
           },
           {
             "region": "5",
-            "value": 61.0,
-            "gap_to_target": 34.0
-          },
-          {
-            "region": "11",
             "value": 60.0,
             "gap_to_target": 35.0
           },
           {
+            "region": "3",
+            "value": 59.0,
+            "gap_to_target": 36.0
+          },
+          {
             "region": "10",
+            "value": 57.0,
+            "gap_to_target": 38.0
+          },
+          {
+            "region": "11",
             "value": 57.0,
             "gap_to_target": 38.0
           },
@@ -6402,47 +6537,47 @@
             "gap_to_target": 38.0
           },
           {
-            "region": "1",
-            "value": 56.0,
-            "gap_to_target": 39.0
-          },
-          {
             "region": "BARMM",
-            "value": 56.0,
-            "gap_to_target": 39.0
+            "value": 57.0,
+            "gap_to_target": 38.0
           },
           {
-            "region": "CARAGA",
-            "value": 56.0,
-            "gap_to_target": 39.0
-          },
-          {
-            "region": "7",
-            "value": 55.0,
-            "gap_to_target": 40.0
+            "region": "1",
+            "value": 54.0,
+            "gap_to_target": 41.0
           },
           {
             "region": "NCR",
-            "value": 55.0,
-            "gap_to_target": 40.0
+            "value": 54.0,
+            "gap_to_target": 41.0
           },
           {
-            "region": "8",
-            "value": 47.0,
-            "gap_to_target": 48.0
+            "region": "7",
+            "value": 52.0,
+            "gap_to_target": 43.0
           },
           {
             "region": "9",
-            "value": 44.0,
-            "gap_to_target": 51.0
+            "value": 52.0,
+            "gap_to_target": 43.0
           },
           {
-            "region": "4B",
-            "value": 41.0,
-            "gap_to_target": 54.0
+            "region": "CARAGA",
+            "value": 52.0,
+            "gap_to_target": 43.0
+          },
+          {
+            "region": "8",
+            "value": 45.0,
+            "gap_to_target": 50.0
           },
           {
             "region": "12",
+            "value": 42.0,
+            "gap_to_target": 53.0
+          },
+          {
+            "region": "4B",
             "value": 37.0,
             "gap_to_target": 58.0
           }
@@ -6451,112 +6586,97 @@
     ],
     "regional_scorecard": {
       "periods": {
-        "diagnosis_coverage": "2025 Q4",
-        "treatment_coverage": "2025 Q4",
-        "viral_suppression": "2025 Q4"
+        "diagnosis_coverage": "2026 Q1",
+        "treatment_coverage": "2026 Q1",
+        "viral_suppression": "2026 Q1"
       },
       "rows": [
         {
-          "region": "6",
-          "metric_count": 3,
-          "mean_gap_to_target": 26.67,
-          "values": {
-            "diagnosis_coverage": 54.0,
-            "treatment_coverage": 79.0,
-            "viral_suppression": 72.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 41.0,
-            "treatment_coverage": 16.0,
-            "viral_suppression": 23.0
-          }
-        },
-        {
           "region": "2",
           "metric_count": 3,
-          "mean_gap_to_target": 28.33,
+          "mean_gap_to_target": 30.0,
           "values": {
-            "diagnosis_coverage": 58.0,
-            "treatment_coverage": 74.0,
+            "diagnosis_coverage": 49.0,
+            "treatment_coverage": 78.0,
             "viral_suppression": 68.0
           },
           "gaps": {
-            "diagnosis_coverage": 37.0,
-            "treatment_coverage": 21.0,
+            "diagnosis_coverage": 46.0,
+            "treatment_coverage": 17.0,
             "viral_suppression": 27.0
+          }
+        },
+        {
+          "region": "6",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.33,
+          "values": {
+            "diagnosis_coverage": 47.0,
+            "treatment_coverage": 80.0,
+            "viral_suppression": 67.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 48.0,
+            "treatment_coverage": 15.0,
+            "viral_suppression": 28.0
           }
         },
         {
           "region": "CAR",
           "metric_count": 3,
-          "mean_gap_to_target": 30.0,
+          "mean_gap_to_target": 31.33,
           "values": {
-            "diagnosis_coverage": 59.0,
-            "treatment_coverage": 71.0,
-            "viral_suppression": 65.0
+            "diagnosis_coverage": 51.0,
+            "treatment_coverage": 73.0,
+            "viral_suppression": 67.0
           },
           "gaps": {
-            "diagnosis_coverage": 36.0,
-            "treatment_coverage": 24.0,
-            "viral_suppression": 30.0
+            "diagnosis_coverage": 44.0,
+            "treatment_coverage": 22.0,
+            "viral_suppression": 28.0
           }
         },
         {
           "region": "NIR",
           "metric_count": 3,
-          "mean_gap_to_target": 30.67,
+          "mean_gap_to_target": 33.0,
           "values": {
-            "diagnosis_coverage": 55.0,
-            "treatment_coverage": 73.0,
-            "viral_suppression": 65.0
+            "diagnosis_coverage": 48.0,
+            "treatment_coverage": 74.0,
+            "viral_suppression": 64.0
           },
           "gaps": {
-            "diagnosis_coverage": 40.0,
-            "treatment_coverage": 22.0,
-            "viral_suppression": 30.0
-          }
-        },
-        {
-          "region": "BARMM",
-          "metric_count": 3,
-          "mean_gap_to_target": 32.0,
-          "values": {
-            "diagnosis_coverage": 75.0,
-            "treatment_coverage": 58.0,
-            "viral_suppression": 56.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 20.0,
-            "treatment_coverage": 37.0,
-            "viral_suppression": 39.0
+            "diagnosis_coverage": 47.0,
+            "treatment_coverage": 21.0,
+            "viral_suppression": 31.0
           }
         },
         {
           "region": "CARAGA",
           "metric_count": 3,
-          "mean_gap_to_target": 32.0,
+          "mean_gap_to_target": 34.0,
           "values": {
-            "diagnosis_coverage": 64.0,
-            "treatment_coverage": 69.0,
-            "viral_suppression": 56.0
+            "diagnosis_coverage": 56.0,
+            "treatment_coverage": 75.0,
+            "viral_suppression": 52.0
           },
           "gaps": {
-            "diagnosis_coverage": 31.0,
-            "treatment_coverage": 26.0,
-            "viral_suppression": 39.0
+            "diagnosis_coverage": 39.0,
+            "treatment_coverage": 20.0,
+            "viral_suppression": 43.0
           }
         },
         {
           "region": "10",
           "metric_count": 3,
-          "mean_gap_to_target": 32.33,
+          "mean_gap_to_target": 34.67,
           "values": {
-            "diagnosis_coverage": 61.0,
+            "diagnosis_coverage": 54.0,
             "treatment_coverage": 70.0,
             "viral_suppression": 57.0
           },
           "gaps": {
-            "diagnosis_coverage": 34.0,
+            "diagnosis_coverage": 41.0,
             "treatment_coverage": 25.0,
             "viral_suppression": 38.0
           }
@@ -6564,320 +6684,335 @@
         {
           "region": "5",
           "metric_count": 3,
-          "mean_gap_to_target": 33.0,
+          "mean_gap_to_target": 34.67,
           "values": {
-            "diagnosis_coverage": 57.0,
-            "treatment_coverage": 68.0,
-            "viral_suppression": 61.0
+            "diagnosis_coverage": 50.0,
+            "treatment_coverage": 71.0,
+            "viral_suppression": 60.0
           },
           "gaps": {
-            "diagnosis_coverage": 38.0,
-            "treatment_coverage": 27.0,
-            "viral_suppression": 34.0
-          }
-        },
-        {
-          "region": "3",
-          "metric_count": 3,
-          "mean_gap_to_target": 33.33,
-          "values": {
-            "diagnosis_coverage": 53.0,
-            "treatment_coverage": 68.0,
-            "viral_suppression": 64.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 42.0,
-            "treatment_coverage": 27.0,
-            "viral_suppression": 31.0
+            "diagnosis_coverage": 45.0,
+            "treatment_coverage": 24.0,
+            "viral_suppression": 35.0
           }
         },
         {
           "region": "4A",
           "metric_count": 3,
-          "mean_gap_to_target": 33.67,
+          "mean_gap_to_target": 35.0,
           "values": {
-            "diagnosis_coverage": 59.0,
-            "treatment_coverage": 68.0,
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 70.0,
             "viral_suppression": 57.0
           },
           "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 25.0,
+            "viral_suppression": 38.0
+          }
+        },
+        {
+          "region": "9",
+          "metric_count": 3,
+          "mean_gap_to_target": 35.0,
+          "values": {
+            "diagnosis_coverage": 59.0,
+            "treatment_coverage": 69.0,
+            "viral_suppression": 52.0
+          },
+          "gaps": {
             "diagnosis_coverage": 36.0,
-            "treatment_coverage": 27.0,
+            "treatment_coverage": 26.0,
+            "viral_suppression": 43.0
+          }
+        },
+        {
+          "region": "BARMM",
+          "metric_count": 3,
+          "mean_gap_to_target": 35.33,
+          "values": {
+            "diagnosis_coverage": 60.0,
+            "treatment_coverage": 62.0,
+            "viral_suppression": 57.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 35.0,
+            "treatment_coverage": 33.0,
+            "viral_suppression": 38.0
+          }
+        },
+        {
+          "region": "11",
+          "metric_count": 3,
+          "mean_gap_to_target": 35.67,
+          "values": {
+            "diagnosis_coverage": 54.0,
+            "treatment_coverage": 67.0,
+            "viral_suppression": 57.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 41.0,
+            "treatment_coverage": 28.0,
             "viral_suppression": 38.0
           }
         },
         {
           "region": "NCR",
           "metric_count": 3,
-          "mean_gap_to_target": 34.33,
+          "mean_gap_to_target": 35.67,
           "values": {
-            "diagnosis_coverage": 66.0,
-            "treatment_coverage": 61.0,
-            "viral_suppression": 55.0
+            "diagnosis_coverage": 61.0,
+            "treatment_coverage": 63.0,
+            "viral_suppression": 54.0
           },
           "gaps": {
-            "diagnosis_coverage": 29.0,
-            "treatment_coverage": 34.0,
-            "viral_suppression": 40.0
+            "diagnosis_coverage": 34.0,
+            "treatment_coverage": 32.0,
+            "viral_suppression": 41.0
+          }
+        },
+        {
+          "region": "3",
+          "metric_count": 3,
+          "mean_gap_to_target": 36.33,
+          "values": {
+            "diagnosis_coverage": 47.0,
+            "treatment_coverage": 70.0,
+            "viral_suppression": 59.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 48.0,
+            "treatment_coverage": 25.0,
+            "viral_suppression": 36.0
           }
         },
         {
           "region": "1",
           "metric_count": 3,
-          "mean_gap_to_target": 35.33,
+          "mean_gap_to_target": 37.33,
           "values": {
-            "diagnosis_coverage": 56.0,
-            "treatment_coverage": 67.0,
-            "viral_suppression": 56.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 39.0,
-            "treatment_coverage": 28.0,
-            "viral_suppression": 39.0
-          }
-        },
-        {
-          "region": "9",
-          "metric_count": 3,
-          "mean_gap_to_target": 36.67,
-          "values": {
-            "diagnosis_coverage": 66.0,
-            "treatment_coverage": 65.0,
-            "viral_suppression": 44.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 29.0,
-            "treatment_coverage": 30.0,
-            "viral_suppression": 51.0
-          }
-        },
-        {
-          "region": "4B",
-          "metric_count": 3,
-          "mean_gap_to_target": 37.67,
-          "values": {
-            "diagnosis_coverage": 66.0,
-            "treatment_coverage": 65.0,
-            "viral_suppression": 41.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 29.0,
-            "treatment_coverage": 30.0,
+            "diagnosis_coverage": 49.0,
+            "treatment_coverage": 70.0,
             "viral_suppression": 54.0
-          }
-        },
-        {
-          "region": "11",
-          "metric_count": 3,
-          "mean_gap_to_target": 38.0,
-          "values": {
-            "diagnosis_coverage": 60.0,
-            "treatment_coverage": 51.0,
-            "viral_suppression": 60.0
           },
           "gaps": {
-            "diagnosis_coverage": 35.0,
-            "treatment_coverage": 44.0,
-            "viral_suppression": 35.0
-          }
-        },
-        {
-          "region": "7",
-          "metric_count": 3,
-          "mean_gap_to_target": 38.33,
-          "values": {
-            "diagnosis_coverage": 58.0,
-            "treatment_coverage": 57.0,
-            "viral_suppression": 55.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 37.0,
-            "treatment_coverage": 38.0,
-            "viral_suppression": 40.0
-          }
-        },
-        {
-          "region": "8",
-          "metric_count": 3,
-          "mean_gap_to_target": 38.67,
-          "values": {
-            "diagnosis_coverage": 61.0,
-            "treatment_coverage": 61.0,
-            "viral_suppression": 47.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 34.0,
-            "treatment_coverage": 34.0,
-            "viral_suppression": 48.0
+            "diagnosis_coverage": 46.0,
+            "treatment_coverage": 25.0,
+            "viral_suppression": 41.0
           }
         },
         {
           "region": "12",
           "metric_count": 3,
-          "mean_gap_to_target": 40.33,
+          "mean_gap_to_target": 38.33,
           "values": {
-            "diagnosis_coverage": 59.0,
-            "treatment_coverage": 68.0,
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 75.0,
+            "viral_suppression": 42.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 20.0,
+            "viral_suppression": 53.0
+          }
+        },
+        {
+          "region": "7",
+          "metric_count": 3,
+          "mean_gap_to_target": 40.67,
+          "values": {
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 58.0,
+            "viral_suppression": 52.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 37.0,
+            "viral_suppression": 43.0
+          }
+        },
+        {
+          "region": "8",
+          "metric_count": 3,
+          "mean_gap_to_target": 41.0,
+          "values": {
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 64.0,
+            "viral_suppression": 45.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 31.0,
+            "viral_suppression": 50.0
+          }
+        },
+        {
+          "region": "4B",
+          "metric_count": 3,
+          "mean_gap_to_target": 42.0,
+          "values": {
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 64.0,
             "viral_suppression": 37.0
           },
           "gaps": {
-            "diagnosis_coverage": 36.0,
-            "treatment_coverage": 27.0,
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 31.0,
             "viral_suppression": 58.0
           }
         }
       ],
       "top_performing": [
         {
-          "region": "6",
-          "metric_count": 3,
-          "mean_gap_to_target": 26.67,
-          "values": {
-            "diagnosis_coverage": 54.0,
-            "treatment_coverage": 79.0,
-            "viral_suppression": 72.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 41.0,
-            "treatment_coverage": 16.0,
-            "viral_suppression": 23.0
-          }
-        },
-        {
           "region": "2",
           "metric_count": 3,
-          "mean_gap_to_target": 28.33,
+          "mean_gap_to_target": 30.0,
           "values": {
-            "diagnosis_coverage": 58.0,
-            "treatment_coverage": 74.0,
+            "diagnosis_coverage": 49.0,
+            "treatment_coverage": 78.0,
             "viral_suppression": 68.0
           },
           "gaps": {
-            "diagnosis_coverage": 37.0,
-            "treatment_coverage": 21.0,
+            "diagnosis_coverage": 46.0,
+            "treatment_coverage": 17.0,
             "viral_suppression": 27.0
+          }
+        },
+        {
+          "region": "6",
+          "metric_count": 3,
+          "mean_gap_to_target": 30.33,
+          "values": {
+            "diagnosis_coverage": 47.0,
+            "treatment_coverage": 80.0,
+            "viral_suppression": 67.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 48.0,
+            "treatment_coverage": 15.0,
+            "viral_suppression": 28.0
           }
         },
         {
           "region": "CAR",
           "metric_count": 3,
-          "mean_gap_to_target": 30.0,
+          "mean_gap_to_target": 31.33,
           "values": {
-            "diagnosis_coverage": 59.0,
-            "treatment_coverage": 71.0,
-            "viral_suppression": 65.0
+            "diagnosis_coverage": 51.0,
+            "treatment_coverage": 73.0,
+            "viral_suppression": 67.0
           },
           "gaps": {
-            "diagnosis_coverage": 36.0,
-            "treatment_coverage": 24.0,
-            "viral_suppression": 30.0
+            "diagnosis_coverage": 44.0,
+            "treatment_coverage": 22.0,
+            "viral_suppression": 28.0
           }
         },
         {
           "region": "NIR",
           "metric_count": 3,
-          "mean_gap_to_target": 30.67,
+          "mean_gap_to_target": 33.0,
           "values": {
-            "diagnosis_coverage": 55.0,
-            "treatment_coverage": 73.0,
-            "viral_suppression": 65.0
+            "diagnosis_coverage": 48.0,
+            "treatment_coverage": 74.0,
+            "viral_suppression": 64.0
           },
           "gaps": {
-            "diagnosis_coverage": 40.0,
-            "treatment_coverage": 22.0,
-            "viral_suppression": 30.0
+            "diagnosis_coverage": 47.0,
+            "treatment_coverage": 21.0,
+            "viral_suppression": 31.0
           }
         },
         {
-          "region": "BARMM",
+          "region": "CARAGA",
           "metric_count": 3,
-          "mean_gap_to_target": 32.0,
+          "mean_gap_to_target": 34.0,
           "values": {
-            "diagnosis_coverage": 75.0,
-            "treatment_coverage": 58.0,
-            "viral_suppression": 56.0
+            "diagnosis_coverage": 56.0,
+            "treatment_coverage": 75.0,
+            "viral_suppression": 52.0
           },
           "gaps": {
-            "diagnosis_coverage": 20.0,
-            "treatment_coverage": 37.0,
-            "viral_suppression": 39.0
+            "diagnosis_coverage": 39.0,
+            "treatment_coverage": 20.0,
+            "viral_suppression": 43.0
           }
         }
       ],
       "largest_gaps": [
         {
-          "region": "12",
+          "region": "4B",
           "metric_count": 3,
-          "mean_gap_to_target": 40.33,
+          "mean_gap_to_target": 42.0,
           "values": {
-            "diagnosis_coverage": 59.0,
-            "treatment_coverage": 68.0,
+            "diagnosis_coverage": 58.0,
+            "treatment_coverage": 64.0,
             "viral_suppression": 37.0
           },
           "gaps": {
-            "diagnosis_coverage": 36.0,
-            "treatment_coverage": 27.0,
+            "diagnosis_coverage": 37.0,
+            "treatment_coverage": 31.0,
             "viral_suppression": 58.0
           }
         },
         {
           "region": "8",
           "metric_count": 3,
-          "mean_gap_to_target": 38.67,
+          "mean_gap_to_target": 41.0,
           "values": {
-            "diagnosis_coverage": 61.0,
-            "treatment_coverage": 61.0,
-            "viral_suppression": 47.0
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 64.0,
+            "viral_suppression": 45.0
           },
           "gaps": {
-            "diagnosis_coverage": 34.0,
-            "treatment_coverage": 34.0,
-            "viral_suppression": 48.0
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 31.0,
+            "viral_suppression": 50.0
           }
         },
         {
           "region": "7",
           "metric_count": 3,
+          "mean_gap_to_target": 40.67,
+          "values": {
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 58.0,
+            "viral_suppression": 52.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 37.0,
+            "viral_suppression": 43.0
+          }
+        },
+        {
+          "region": "12",
+          "metric_count": 3,
           "mean_gap_to_target": 38.33,
           "values": {
-            "diagnosis_coverage": 58.0,
-            "treatment_coverage": 57.0,
-            "viral_suppression": 55.0
+            "diagnosis_coverage": 53.0,
+            "treatment_coverage": 75.0,
+            "viral_suppression": 42.0
           },
           "gaps": {
-            "diagnosis_coverage": 37.0,
-            "treatment_coverage": 38.0,
-            "viral_suppression": 40.0
+            "diagnosis_coverage": 42.0,
+            "treatment_coverage": 20.0,
+            "viral_suppression": 53.0
           }
         },
         {
-          "region": "11",
+          "region": "1",
           "metric_count": 3,
-          "mean_gap_to_target": 38.0,
+          "mean_gap_to_target": 37.33,
           "values": {
-            "diagnosis_coverage": 60.0,
-            "treatment_coverage": 51.0,
-            "viral_suppression": 60.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 35.0,
-            "treatment_coverage": 44.0,
-            "viral_suppression": 35.0
-          }
-        },
-        {
-          "region": "4B",
-          "metric_count": 3,
-          "mean_gap_to_target": 37.67,
-          "values": {
-            "diagnosis_coverage": 66.0,
-            "treatment_coverage": 65.0,
-            "viral_suppression": 41.0
-          },
-          "gaps": {
-            "diagnosis_coverage": 29.0,
-            "treatment_coverage": 30.0,
+            "diagnosis_coverage": 49.0,
+            "treatment_coverage": 70.0,
             "viral_suppression": 54.0
+          },
+          "gaps": {
+            "diagnosis_coverage": 46.0,
+            "treatment_coverage": 25.0,
+            "viral_suppression": 41.0
           }
         }
       ]
@@ -6886,7 +7021,7 @@
       {
         "chart_id": "diagnosis_vs_treatment",
         "label": "Diagnosis vs treatment coverage",
-        "period_label": "2025 Q4",
+        "period_label": "2026 Q1",
         "x_metric": "diagnosis_coverage",
         "y_metric": "art_coverage",
         "x_label": "Diagnosis coverage",
@@ -6895,141 +7030,141 @@
         "points": [
           {
             "region": "3",
-            "x": 53.0,
-            "y": 68.0,
+            "x": 47.0,
+            "y": 70.0,
             "quadrant": "low-high"
           },
           {
             "region": "6",
-            "x": 54.0,
-            "y": 79.0,
+            "x": 47.0,
+            "y": 80.0,
             "quadrant": "low-high"
           },
           {
             "region": "NIR",
-            "x": 55.0,
-            "y": 73.0,
-            "quadrant": "low-high"
-          },
-          {
-            "region": "1",
-            "x": 56.0,
-            "y": 67.0,
-            "quadrant": "low-low"
-          },
-          {
-            "region": "5",
-            "x": 57.0,
-            "y": 68.0,
-            "quadrant": "low-high"
-          },
-          {
-            "region": "2",
-            "x": 58.0,
+            "x": 48.0,
             "y": 74.0,
             "quadrant": "low-high"
           },
           {
-            "region": "7",
-            "x": 58.0,
-            "y": 57.0,
-            "quadrant": "low-low"
+            "region": "1",
+            "x": 49.0,
+            "y": 70.0,
+            "quadrant": "low-high"
           },
           {
-            "region": "12",
-            "x": 59.0,
-            "y": 68.0,
-            "quadrant": "high-high"
+            "region": "2",
+            "x": 49.0,
+            "y": 78.0,
+            "quadrant": "low-high"
           },
           {
-            "region": "4A",
-            "x": 59.0,
-            "y": 68.0,
-            "quadrant": "high-high"
+            "region": "5",
+            "x": 50.0,
+            "y": 71.0,
+            "quadrant": "low-high"
           },
           {
             "region": "CAR",
-            "x": 59.0,
-            "y": 71.0,
-            "quadrant": "high-high"
+            "x": 51.0,
+            "y": 73.0,
+            "quadrant": "low-high"
           },
           {
-            "region": "11",
-            "x": 60.0,
-            "y": 51.0,
-            "quadrant": "high-low"
-          },
-          {
-            "region": "10",
-            "x": 61.0,
+            "region": "4A",
+            "x": 53.0,
             "y": 70.0,
             "quadrant": "high-high"
           },
           {
+            "region": "7",
+            "x": 53.0,
+            "y": 58.0,
+            "quadrant": "high-low"
+          },
+          {
             "region": "8",
-            "x": 61.0,
-            "y": 61.0,
+            "x": 53.0,
+            "y": 64.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "12",
+            "x": 53.0,
+            "y": 75.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "10",
+            "x": 54.0,
+            "y": 70.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "11",
+            "x": 54.0,
+            "y": 67.0,
             "quadrant": "high-low"
           },
           {
             "region": "CARAGA",
-            "x": 64.0,
-            "y": 69.0,
+            "x": 56.0,
+            "y": 75.0,
             "quadrant": "high-high"
           },
           {
             "region": "4B",
-            "x": 66.0,
-            "y": 65.0,
+            "x": 58.0,
+            "y": 64.0,
             "quadrant": "high-low"
           },
           {
             "region": "9",
-            "x": 66.0,
-            "y": 65.0,
-            "quadrant": "high-low"
-          },
-          {
-            "region": "NCR",
-            "x": 66.0,
-            "y": 61.0,
+            "x": 59.0,
+            "y": 69.0,
             "quadrant": "high-low"
           },
           {
             "region": "BARMM",
-            "x": 75.0,
-            "y": 58.0,
+            "x": 60.0,
+            "y": 62.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "NCR",
+            "x": 61.0,
+            "y": 63.0,
             "quadrant": "high-low"
           }
         ],
-        "spearman_r": -0.501,
-        "median_x": 59.0,
-        "median_y": 68.0,
+        "spearman_r": -0.608,
+        "median_x": 53.0,
+        "median_y": 70.0,
         "fit_line": [
           {
-            "x": 53.0,
-            "y": 73.9
+            "x": 47.0,
+            "y": 74.36
           },
           {
-            "x": 75.0,
-            "y": 62.86
+            "x": 61.0,
+            "y": 63.38
           }
         ],
-        "fit_r_squared": 0.0,
-        "fit_model_type": "theil_sen",
+        "fit_r_squared": "",
+        "fit_model_type": "ols_linear",
         "above_fit": {
-          "region": "6",
-          "residual": 5.6
+          "region": "CARAGA",
+          "residual": 7.7
         },
         "below_fit": {
-          "region": "11",
-          "residual": -19.39
+          "region": "7",
+          "residual": -11.65
         }
       },
       {
         "chart_id": "treatment_vs_suppression",
         "label": "Treatment vs viral suppression",
-        "period_label": "2025 Q4",
+        "period_label": "2026 Q1",
         "x_metric": "art_coverage",
         "y_metric": "suppression_among_on_art",
         "x_label": "Treatment coverage",
@@ -7037,82 +7172,64 @@
         "proxy": false,
         "points": [
           {
-            "region": "11",
-            "x": 51.0,
-            "y": 60.0,
-            "quadrant": "low-high"
-          },
-          {
             "region": "7",
-            "x": 57.0,
-            "y": 55.0,
+            "x": 58.0,
+            "y": 52.0,
             "quadrant": "low-low"
           },
           {
             "region": "BARMM",
-            "x": 58.0,
-            "y": 56.0,
-            "quadrant": "low-low"
-          },
-          {
-            "region": "8",
-            "x": 61.0,
-            "y": 47.0,
-            "quadrant": "low-low"
+            "x": 62.0,
+            "y": 57.0,
+            "quadrant": "low-high"
           },
           {
             "region": "NCR",
-            "x": 61.0,
-            "y": 55.0,
+            "x": 63.0,
+            "y": 54.0,
             "quadrant": "low-low"
           },
           {
             "region": "4B",
-            "x": 65.0,
-            "y": 41.0,
+            "x": 64.0,
+            "y": 37.0,
             "quadrant": "low-low"
           },
           {
+            "region": "8",
+            "x": 64.0,
+            "y": 45.0,
+            "quadrant": "low-low"
+          },
+          {
+            "region": "11",
+            "x": 67.0,
+            "y": 57.0,
+            "quadrant": "low-high"
+          },
+          {
             "region": "9",
-            "x": 65.0,
-            "y": 44.0,
+            "x": 69.0,
+            "y": 52.0,
             "quadrant": "low-low"
           },
           {
             "region": "1",
-            "x": 67.0,
-            "y": 56.0,
-            "quadrant": "low-low"
-          },
-          {
-            "region": "12",
-            "x": 68.0,
-            "y": 37.0,
+            "x": 70.0,
+            "y": 54.0,
             "quadrant": "high-low"
           },
           {
             "region": "3",
-            "x": 68.0,
-            "y": 64.0,
+            "x": 70.0,
+            "y": 59.0,
             "quadrant": "high-high"
           },
           {
             "region": "4A",
-            "x": 68.0,
+            "x": 70.0,
             "y": 57.0,
             "quadrant": "high-high"
-          },
-          {
-            "region": "5",
-            "x": 68.0,
-            "y": 61.0,
-            "quadrant": "high-high"
-          },
-          {
-            "region": "CARAGA",
-            "x": 69.0,
-            "y": 56.0,
-            "quadrant": "high-low"
           },
           {
             "region": "10",
@@ -7121,52 +7238,70 @@
             "quadrant": "high-high"
           },
           {
-            "region": "CAR",
+            "region": "5",
             "x": 71.0,
-            "y": 65.0,
+            "y": 60.0,
+            "quadrant": "high-high"
+          },
+          {
+            "region": "CAR",
+            "x": 73.0,
+            "y": 67.0,
             "quadrant": "high-high"
           },
           {
             "region": "NIR",
-            "x": 73.0,
-            "y": 65.0,
+            "x": 74.0,
+            "y": 64.0,
             "quadrant": "high-high"
           },
           {
+            "region": "12",
+            "x": 75.0,
+            "y": 42.0,
+            "quadrant": "high-low"
+          },
+          {
+            "region": "CARAGA",
+            "x": 75.0,
+            "y": 52.0,
+            "quadrant": "high-low"
+          },
+          {
             "region": "2",
-            "x": 74.0,
+            "x": 78.0,
             "y": 68.0,
             "quadrant": "high-high"
           },
           {
             "region": "6",
-            "x": 79.0,
-            "y": 72.0,
+            "x": 80.0,
+            "y": 67.0,
             "quadrant": "high-high"
           }
         ],
-        "spearman_r": 0.647,
-        "median_x": 68.0,
-        "median_y": 56.5,
+        "spearman_r": 0.499,
+        "median_x": 70.0,
+        "median_y": 57.0,
         "fit_line": [
           {
-            "x": 51.0,
-            "y": 47.43
+            "x": 58.0,
+            "y": 47.2
           },
           {
-            "x": 79.0,
-            "y": 71.89
+            "x": 80.0,
+            "y": 63.13
           }
         ],
-        "fit_r_squared": 0.0,
-        "fit_model_type": "theil_sen",
+        "fit_r_squared": "",
+        "fit_model_type": "ols_linear",
         "above_fit": {
-          "region": "11",
-          "residual": 12.57
+          "region": "CAR",
+          "residual": 8.94
         },
         "below_fit": {
           "region": "12",
-          "residual": -25.28
+          "residual": -17.51
         }
       }
     ],
@@ -7298,42 +7433,34 @@
   "highlights": [
     {
       "title": "95-95-95 status",
-      "detail": "Latest national cascade readout: first 95 61.0%, second 95 66.0%, third 95 57.0%."
-    },
-    {
-      "title": "Longest historical series",
-      "detail": "Reported deaths currently spans 2015-01 to 2022-05 across 36 extracted points."
-    },
-    {
-      "title": "Transmission trend coverage",
-      "detail": "Sexual contact share of reported cases has the deepest structured history in the transmission layer with 51 points."
+      "detail": "Latest national cascade readout: first 95 55.0%, second 95 69.0%, third 95 55.0% at 2026 Q1."
     },
     {
       "title": "Diagnosis coverage by region",
-      "detail": "BARMM leads at 75.0%, while 3 trails in 2025 Q4."
+      "detail": "NCR leads at 61.0%, while 6 trails in 2026 Q1."
     },
     {
-      "title": "Largest remaining structuring family",
-      "detail": "non chart context accounts for 1357 backlog items."
+      "title": "Treatment coverage by region",
+      "detail": "6 leads at 80.0%, while 7 trails in 2026 Q1."
+    },
+    {
+      "title": "PrEP enrollment",
+      "detail": "New PrEP enrollment reached 8,229 clients in Jan-Mar 2026, 16% above the previous quarter."
+    },
+    {
+      "title": "Viral-load testing",
+      "detail": "61,413 PLHIV on ART were tested for viral load in the past 12 months; 59,540 were virally suppressed."
     }
   ],
   "analytics": {
     "relationship_highlights": [
       {
-        "title": "Diagnosis coverage by region",
-        "detail": "BARMM leads at 75.0%, while 3 trails at 53.0% in 2025 Q4."
-      },
-      {
-        "title": "Treatment coverage by region",
-        "detail": "6 leads at 79.0%, while 11 trails at 51.0% in 2025 Q4."
-      },
-      {
         "title": "Diagnosis vs treatment coverage",
-        "detail": "2025 Q4 shows a moderate negative regional association (Spearman r=-0.50)."
+        "detail": "2026 Q1 shows Spearman r=-0.61 for diagnosis versus treatment coverage."
       },
       {
-        "title": "Diagnosis vs treatment coverage outliers",
-        "detail": "6 sits above the fitted pattern (+5.6), while 11 sits below it (-19.4) in 2025 Q4."
+        "title": "Treatment vs viral suppression",
+        "detail": "2026 Q1 shows Spearman r=0.50 for treatment versus suppression."
       }
     ]
   }

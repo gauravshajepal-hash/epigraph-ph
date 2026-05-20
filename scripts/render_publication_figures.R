@@ -213,9 +213,9 @@ build_national_cascade <- function(data) {
     scale_colour_manual(values = stage_palette) +
     scale_fill_manual(values = stage_palette) +
     scale_x_continuous(
-      limits = c(2018, 2025.55),
-      breaks = 2018:2025,
-      labels = as.character(2018:2025)
+      limits = c(2018, 2026.75),
+      breaks = 2018:2026,
+      labels = as.character(2018:2026)
     ) +
     scale_y_continuous(limits = c(0, 100), labels = label_percent(scale = 1), breaks = c(0, 25, 50, 75, 95, 100)) +
     labs(
@@ -254,7 +254,7 @@ build_national_cascade <- function(data) {
     )) +
     scale_x_continuous(labels = label_number(scale_cut = cut_short_scale()), expand = expansion(mult = c(0, 0.22))) +
     labs(
-      title = "2025 cascade stage counts",
+      title = "2026 Q1 cascade stage counts",
       x = "People",
       y = NULL
     ) +
@@ -511,13 +511,13 @@ build_historical_board <- function(data) {
   plots <- lapply(panel_specs, function(spec) {
     points <- bind_rows(lapply(data[[spec$key]], as_tibble))
     if (!nrow(points)) return(NULL)
-    years <- tibble(year = 2015:2025)
+    years <- tibble(year = 2015:2026)
     df <- years %>% left_join(points %>% transmute(year = as.integer(year), value = as.numeric(value)), by = "year")
       ggplot(df, aes(x = year, y = value)) +
         geom_area(fill = alpha(spec$color, 0.12), colour = NA, na.rm = TRUE) +
         geom_line(color = spec$color, linewidth = 1.7, na.rm = TRUE) +
         geom_point(data = df %>% filter(!is.na(value)), color = "#db6b2c", fill = "#db6b2c", size = 3.0) +
-        scale_x_continuous(breaks = c(2015, 2020, 2025)) +
+        scale_x_continuous(breaks = c(2015, 2020, 2025, 2026)) +
         scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
         labs(title = spec$title, x = NULL, y = NULL) +
         compact_theme(12)
@@ -538,13 +538,13 @@ build_key_population_board <- function(data) {
   plots <- lapply(panel_specs, function(spec) {
     points <- bind_rows(lapply(data[[spec$key]], as_tibble))
     if (!nrow(points)) return(NULL)
-    years <- tibble(year = 2015:2025)
+    years <- tibble(year = 2015:2026)
     df <- years %>% left_join(points %>% transmute(year = as.integer(year), value = as.numeric(value)), by = "year")
       p <- ggplot(df, aes(x = year, y = value)) +
         geom_area(fill = alpha(spec$color, 0.12), colour = NA, na.rm = TRUE) +
         geom_line(color = spec$color, linewidth = 1.8, na.rm = TRUE) +
         geom_point(data = df %>% filter(!is.na(value)), color = "#db6b2c", size = 3.0) +
-        scale_x_continuous(breaks = c(2015, 2020, 2025)) +
+        scale_x_continuous(breaks = c(2015, 2020, 2025, 2026)) +
         labs(title = spec$title, x = NULL, y = NULL) +
         compact_theme(12)
     if (spec$unit == "percent") {
