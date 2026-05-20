@@ -203,6 +203,9 @@
     }
     .signal-tag { background: var(--signal-soft); color: var(--signal); }
     .pill { background: var(--accent-soft); color: var(--accent-strong); border: 1px solid var(--panel-border); font-family: var(--mono); }
+    .chart-guide { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .guide-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-family: var(--mono); color: var(--muted); }
+    .guide-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .mini-note { color: var(--muted); font-size: 0.94rem; line-height: 1.68; }
     .bar-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(24px, 1fr)); gap: 10px; align-items: end; min-height: 220px; margin-top: 18px; }
     .bar { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -1675,6 +1678,11 @@
             <span class="signal-tag" id="surprise-pill">Loading</span>
           </div>
           <p class="publication-shell-note">A single quadrant is the primary anomaly view. The publication board keeps one compact burden surface instead of pairing it with a second oversized leakage chart.</p>
+          <div class="chart-guide" style="margin-bottom: 8px;">
+            <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>Bubble size = patients off ART (leakage burden)</span>
+            <span class="guide-badge"><span class="guide-dot" style="background:#C62828"></span>Bar down = below-model performance (efficiency deficit)</span>
+            <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>Bar up = above-model performance (strategic frontier)</span>
+          </div>
           <div class="figure-actions" id="publication-anomaly-board-actions"></div>
           <div class="publication-figure" id="publication-anomaly-board"></div>
           <div class="atlas-note" id="publication-anomaly-board-note"></div>
@@ -1786,7 +1794,12 @@
             <div class="atlas-card">
               <div style="margin-bottom: 4px;">
                 <h3>Impact Bridge Matrix</h3>
-                <p class="analytic-subtitle">Performance gap (observed suppression vs model expectation) juxtaposed with raw leakage burden.</p>
+                <p class="analytic-subtitle">Vertical bars show whether a region beats or misses the expected suppression rate given its diagnosis coverage. Bubble size = total patients no longer on ART.</p>
+              </div>
+              <div class="chart-guide" style="margin-bottom:8px">
+                <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>Bubble = patients off ART (burden)</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#C62828"></span>▼ bar = below expected (deficit)</span>
+                <span class="guide-badge"><span class="guide-dot" style="background:#00897B"></span>▲ bar = above expected (frontier)</span>
               </div>
               <div class="summary-stack" id="anomaly-summary" style="margin: 12px 0 20px 0; font-size: 0.75rem;"></div>
               <div class="chart-host scatter" id="anomaly-quadrant-chart" style="height: 650px;"></div>
@@ -5289,12 +5302,12 @@
           <div class="national-chart-grid">
             <div class="atlas-card national-subpanel">
               <h3>Observed year-end trajectory</h3>
-              <div class="analytic-subtitle">Official DOH/HARP checkpoint values from 2018 through 2026 Q1.</div>
+              <div class="analytic-subtitle">Lines track diagnosis, ART, and suppression coverage from 2018 to 2026 Q1. Dashed line = 95% target.</div>
               <div class="chart-host national-timeline" id="national-cascade-timeline"></div>
             </div>
             <div class="atlas-card national-subpanel">
               <h3>2026 Q1 cascade counts</h3>
-              <div class="analytic-subtitle">Observed people retained at each national cascade stage.</div>
+              <div class="analytic-subtitle">Each block represents people at a cascade stage. Spouts show how many are lost between stages.</div>
               <div class="chart-host national-waterfall" id="national-cascade-waterfall"></div>
               <div class="national-note-inline">Counts use the official 2026 Q1 HASP report. The third 95 is virally suppressed among PLHIV on ART.</div>
             </div>
