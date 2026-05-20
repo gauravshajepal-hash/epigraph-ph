@@ -1504,6 +1504,53 @@ def update_html(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     if '<link rel="icon" href="data:,">' not in text:
         text = text.replace("<title>EpiGraph PH — Philippines HIV Surveillance Atlas</title>", "<title>EpiGraph PH — Philippines HIV Surveillance Atlas</title>\n  <link rel=\"icon\" href=\"data:,\">")
+    mount_plotly_chart = """    function mountPlotlyChart(id, spec) {
+      const target = document.getElementById(id);
+      if (!target) {
+        console.warn("[EpiGraph] mountPlotlyChart: no element", id);
+        return;
+      }
+      disposePlotlyChart(id);
+      if (!window.Plotly) {
+        target.innerHTML = `<div class="empty-state">Interactive chart engine unavailable.</div>`;
+        return;
+      }
+      try {
+        target.innerHTML = "";
+        const data = spec?.data || [];
+        const layout = {
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)",
+          margin: { t: 16, r: 12, b: 32, l: 48 },
+          font: { family: "IBM Plex Sans, sans-serif", color: "#546E7A", size: 12 },
+          legend: window.innerWidth < 640 ? { orientation: 'h', y: -0.2 } : { orientation: 'v' },
+          hoverlabel: {
+            bgcolor: "rgba(255,255,255,0.96)",
+            bordercolor: "rgba(0,0,0,0.1)",
+            font: { family: "IBM Plex Sans, sans-serif", color: "#2c3e50", size: 12 },
+          },
+          ...spec?.layout,
+        };
+        const config = {
+          responsive: true,
+          displayModeBar: false,
+          ...spec?.config,
+        };
+        window.Plotly.newPlot(target, data, layout, config);
+        state.plotlyCharts[id] = true;
+      } catch (error) {
+        console.error("[EpiGraph] Plotly render failed for", id, error);
+        target.innerHTML = `<div class="empty-state" style="color:#C62828">Render error: ${error.message}</div>`;
+      }
+    }
+
+"""
+    text = re.sub(
+        r"    function mountPlotlyChart\(id, spec\) \{[\s\S]*?\n    const LIGHT_CHART_THEME = \{",
+        mount_plotly_chart + "    const LIGHT_CHART_THEME = {",
+        text,
+        count=1,
+    )
     replacements = {
         "Official year-end cascade values use the DOH/HARP accomplishment table from 2018 through 2025. The board shows target position, observed year-end movement, and the 2025 year-end stage counts directly.": "Official HARP cascade checkpoints use year-end values from 2018 through 2025 plus the March 2026 HASP update. The board shows target position, observed movement, and the 2026 Q1 stage counts directly.",
         "<h3>PrEP Coverage</h3>": "<h3>Quarterly PrEP Enrollment</h3>",
@@ -1533,6 +1580,9 @@ def update_html(path: Path) -> None:
         'C ${spoutEnd} - 0.1 ${transitionBottom}, ${nextX1 + 0.1} ${transitionBottom}, ${nextX1} ${transitionBottom} Z',
         'C ${spoutEnd - 0.1} ${transitionBottom}, ${nextX1 + 0.1} ${transitionBottom}, ${nextX1} ${transitionBottom} Z',
     )
+    text = text.replace("orderedRows.forEach((row) => {", "orderedRows.forEach((row, index) => {")
+    text = text.replace("const yStagger = (i % 2 === 0 ? -5 : 5);", "const yStagger = (index % 2 === 0 ? -5 : 5);")
+    text = re.sub(r'\n\s*console\.log\("\[EpiGraph\] (?:renderNationalCascade called|orderedRows|timeline traces|waterfall shapes)[^\n]*\);', "", text)
     text = text.replace(
         "Four key metrics from the UNAIDS national estimates, embedded as interactive charts from the AIDSINFO portal. Use the toolbar on each chart to download or zoom. Source: UNAIDS Estimates 2025.",
         "Key metrics from UNAIDS national estimates rendered locally from packaged AIDSINFO series, with portal links retained for source review. Source: UNAIDS Estimates 2025.",

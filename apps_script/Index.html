@@ -2420,34 +2420,42 @@
 
     function mountPlotlyChart(id, spec) {
       const target = document.getElementById(id);
-      if (!target) return;
+      if (!target) {
+        console.warn("[EpiGraph] mountPlotlyChart: no element", id);
+        return;
+      }
       disposePlotlyChart(id);
       if (!window.Plotly) {
         target.innerHTML = `<div class="empty-state">Interactive chart engine unavailable.</div>`;
         return;
       }
-      target.innerHTML = "";
-      const data = spec?.data || [];
-      const layout = {
-        paper_bgcolor: "rgba(0,0,0,0)",
-        plot_bgcolor: "rgba(0,0,0,0)",
-        margin: { t: 16, r: 12, b: 32, l: 48 },
-        font: { family: "IBM Plex Sans, sans-serif", color: "#546E7A", size: 12 },
-        legend: window.innerWidth < 640 ? { orientation: 'h', y: -0.2 } : { orientation: 'v' },
-        hoverlabel: {
-          bgcolor: "rgba(255,255,255,0.96)",
-          bordercolor: "rgba(0,0,0,0.1)",
-          font: { family: "IBM Plex Sans, sans-serif", color: "#2c3e50", size: 12 },
-        },
-        ...spec?.layout,
-      };
-      const config = {
-        responsive: true,
-        displayModeBar: false,
-        ...spec?.config,
-      };
-      window.Plotly.newPlot(target, data, layout, config);
-      state.plotlyCharts[id] = true;
+      try {
+        target.innerHTML = "";
+        const data = spec?.data || [];
+        const layout = {
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)",
+          margin: { t: 16, r: 12, b: 32, l: 48 },
+          font: { family: "IBM Plex Sans, sans-serif", color: "#546E7A", size: 12 },
+          legend: window.innerWidth < 640 ? { orientation: 'h', y: -0.2 } : { orientation: 'v' },
+          hoverlabel: {
+            bgcolor: "rgba(255,255,255,0.96)",
+            bordercolor: "rgba(0,0,0,0.1)",
+            font: { family: "IBM Plex Sans, sans-serif", color: "#2c3e50", size: 12 },
+          },
+          ...spec?.layout,
+        };
+        const config = {
+          responsive: true,
+          displayModeBar: false,
+          ...spec?.config,
+        };
+        window.Plotly.newPlot(target, data, layout, config);
+        state.plotlyCharts[id] = true;
+      } catch (error) {
+        console.error("[EpiGraph] Plotly render failed for", id, error);
+        target.innerHTML = `<div class="empty-state" style="color:#C62828">Render error: ${error.message}</div>`;
+      }
     }
 
     const LIGHT_CHART_THEME = {
@@ -5068,7 +5076,7 @@
       }];
       const traces = [];
 
-      orderedRows.forEach((row) => {
+      orderedRows.forEach((row, index) => {
         const meta = getNationalCascadeMeta(row);
         const annual = row?.official_annual || [];
         if (!annual.length) return;
@@ -5096,7 +5104,7 @@
         const latest = annual[annual.length - 1];
         const staggerX = 0.12 * (orderedRows.findIndex(r => r.series_id === row.series_id) - 1);
         const yBase = Number(latest.value || 0);
-        const yStagger = (i % 2 === 0 ? -5 : 5);
+        const yStagger = (index % 2 === 0 ? -5 : 5);
         annotations.push({
           x: Number(latest.year) + 0.14 + staggerX,
           y: yBase + yStagger,
