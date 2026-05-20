@@ -5080,18 +5080,19 @@
         });
 
         const latest = annual[annual.length - 1];
+        const staggerX = 0.12 * (orderedRows.findIndex(r => r.series_id === row.series_id) - 1);
+        const yBase = Number(latest.value || 0);
+        const yStagger = (i % 2 === 0 ? -5 : 5);
         annotations.push({
-          x: Number(latest.year) + 0.14,
-          y: Number(latest.value || 0),
+          x: Number(latest.year) + 0.14 + staggerX,
+          y: yBase + yStagger,
           xref: "x",
           yref: "y",
-          text: `<b>${meta.label}</b><br><b>${Math.round(Number(latest.value || 0))}%</b>`,
+          text: `<b>${meta.label}</b><br><b>${Math.round(yBase)}%</b>`,
           showarrow: false,
-          xshift: 18,
-          yshift: meta.stageKey === "treatment" ? -18 : (meta.stageKey === "diagnosis" ? 0 : 18),
           xanchor: "left",
           yanchor: "middle",
-          font: { size: 11, color: meta.color },
+          font: { size: 10, color: meta.color },
           borderpad: 2,
         });
       });
